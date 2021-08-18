@@ -1,0 +1,71 @@
+type Query {
+  me: UserSchema
+  getUser(data: GetUserDto!): UserSchema
+  getUsers: [UserSchema!]
+}
+
+type UserSchema {
+  id: ID!
+  email: String!
+  username: String!
+  isVerified: Boolean!
+  isBanned: Boolean!
+  forgotPasswordLock: Boolean!
+  bio: String!
+  phoneNumber: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  status: UserStatus!
+  name: String!
+}
+
+"""The activity status of user"""
+enum UserStatus {
+  online
+  offline
+  busy
+  none
+  silence
+}
+
+input GetUserDto {
+  userId: String!
+}
+
+type Mutation {
+  login(data: LoginDto!): ErrorMessage
+  logout: Boolean
+  register(data: RegisterDto!): ErrorMessage
+  sendForgotPasswordEmail(data: SendForgotPasswordDto!): ErrorMessage
+  forgotPasswordChange(data: ForgotPasswordChangeDto!): ErrorMessage
+}
+
+type ErrorMessage {
+  path: String!
+  message: String!
+}
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
+input RegisterDto {
+  firstName: String!
+  lastName: String!
+  username: String!
+  email: String!
+  bio: String!
+  password: String!
+  phoneNumber: String!
+}
+
+input SendForgotPasswordDto {
+  email: String!
+}
+
+input ForgotPasswordChangeDto {
+  key: String!
+  newPassword: String!
+}

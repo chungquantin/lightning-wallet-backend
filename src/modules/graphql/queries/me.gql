@@ -1,0 +1,17 @@
+query me{
+    me{
+        id
+        email
+        username
+        isVerified
+        isBanned
+        forgotPasswordLock
+        bio
+        phoneNumber
+        password
+        firstName
+        lastName
+        status
+        name
+    }
+}
