@@ -1,49 +1,51 @@
-import { Field, ID, ObjectType, Root } from "type-graphql";
+import { Field, ID, ObjectType, Root } from 'type-graphql';
 import {
 	Entity,
 	Column,
 	PrimaryColumn,
 	BeforeInsert,
 	BaseEntity,
-} from "typeorm";
-import { v4 as uuidv4 } from "uuid";
-import * as bcrypt from "bcrypt";
-import { UserStatus } from "../shared/UserStatus.enum";
-import { env, EnvironmentType } from "../utils/environmentType";
-
-@ObjectType("UserSchema")
-@Entity("User")
+} from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
+import * as bcrypt from 'bcrypt';
+import { FiatCurrency } from '../shared/FiatCurrency.enum';
+@ObjectType('UserSchema')
+@Entity('User')
 export class User extends BaseEntity {
 	@Field(() => ID)
-	@PrimaryColumn("uuid")
+	@PrimaryColumn('uuid')
 	id: string;
 
 	@Field(() => String!)
-	@Column("text", { unique: true })
+	@Column('text', { unique: true })
 	email: string;
 
 	@Field(() => String!)
-	@Column("text", { unique: true })
+	@Column('text', { unique: true })
 	username: string;
 
-	@Field(() => Boolean!)
-	@Column("bool", { default: true })
-	isVerified: boolean;
+	@Field(() => String!)
+	@Column('text', { nullable: false })
+	avatar: string;
 
 	@Field(() => Boolean!)
-	@Column("bool", { default: false })
-	isBanned: boolean;
+	@Column('bool', { default: true })
+	emailVerified: boolean;
 
 	@Field(() => Boolean!)
-	@Column("bool", { default: false })
-	forgotPasswordLock: boolean;
+	@Column('bool', { default: true })
+	twoFactorVerified: boolean;
 
-	@Field(() => String)
-	@Column("varchar", { default: "", length: 150 })
-	bio: string;
+	@Field(() => Number!)
+	@Column('int', { default: 0 })
+	balance: number;
+
+	@Field(() => Boolean!)
+	@Column('bool', { default: true })
+	phoneNumberVerified: boolean;
 
 	@Field(() => String!)
-	@Column("text", { unique: true })
+	@Column('text', { unique: true })
 	phoneNumber: string;
 
 	// @Authorized(UserRole.super_admin)
@@ -59,9 +61,13 @@ export class User extends BaseEntity {
 	@Column({ nullable: true })
 	lastName: string;
 
-	@Field(() => UserStatus!)
-	@Column("text", { nullable: true, default: UserStatus.none })
-	status: UserStatus;
+	@Field(() => FiatCurrency!)
+	@Column('text', { nullable: false, default: FiatCurrency.USD })
+	defaultCurrency: FiatCurrency;
+
+	@Field(() => Boolean!)
+	@Column('bool', { default: false })
+	forgotPasswordLock: boolean;
 
 	// External
 	@Field(() => String!)

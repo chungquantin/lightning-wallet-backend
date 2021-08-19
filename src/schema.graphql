@@ -1,54 +1,92 @@
 type Query {
-  me: UserSchema
-  getUser(data: GetUserDto!): UserSchema
-  getUsers: [UserSchema!]
+  me: Me
+  getUser(data: GetUserDto!): GetUser
+  getUsers: GetUsers
+}
+
+type Me {
+  success: Boolean!
+  errors: [ApiError!]
+  data: UserSchema
+}
+
+type ApiError {
+  path: String!
+  message: String!
 }
 
 type UserSchema {
   id: ID!
   email: String!
   username: String!
-  isVerified: Boolean!
-  isBanned: Boolean!
-  forgotPasswordLock: Boolean!
-  bio: String!
+  avatar: String!
+  emailVerified: Boolean!
+  twoFactorVerified: Boolean!
+  balance: Float!
+  phoneNumberVerified: Boolean!
   phoneNumber: String!
   password: String!
   firstName: String!
   lastName: String!
-  status: UserStatus!
+  defaultCurrency: FiatCurrency!
+  forgotPasswordLock: Boolean!
   name: String!
 }
 
-"""The activity status of user"""
-enum UserStatus {
-  online
-  offline
-  busy
-  none
-  silence
+"""Fiat currency"""
+enum FiatCurrency {
+  USD
+  CAD
+  VND
+  AUD
+  MXN
+}
+
+type GetUser {
+  success: Boolean!
+  errors: [ApiError!]
+  data: UserSchema
 }
 
 input GetUserDto {
   userId: String!
 }
 
-type Mutation {
-  login(data: LoginDto!): ErrorMessage
-  logout: Boolean
-  register(data: RegisterDto!): ErrorMessage
-  sendForgotPasswordEmail(data: SendForgotPasswordDto!): ErrorMessage
-  forgotPasswordChange(data: ForgotPasswordChangeDto!): ErrorMessage
+type GetUsers {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [UserSchema!]!
 }
 
-type ErrorMessage {
-  path: String!
-  message: String!
+type Mutation {
+  login(data: LoginDto!): Login
+  logout: Logout
+  register(data: RegisterDto!): Register
+  sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword
+  forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword
+}
+
+type Login {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
 }
 
 input LoginDto {
   email: String!
   password: String!
+}
+
+type Logout {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+
+type Register {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
 }
 
 input RegisterDto {
@@ -61,8 +99,20 @@ input RegisterDto {
   phoneNumber: String!
 }
 
+type ForgotPassword {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+
 input SendForgotPasswordDto {
   email: String!
+}
+
+type SendForgotPassword {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
 }
 
 input ForgotPasswordChangeDto {
