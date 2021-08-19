@@ -68,6 +68,12 @@
 		"winston": "^3.3.3",
 		"yup": "^0.32.8"
 	},
+	"graphql-doctor": {
+		"schema.public.graphql": {
+			"ref": "heads/master",
+			"schemaPath": "./src/schema.graphql"
+		}
+	},
 	"scripts": {
 		"start": "node dist/src/index.js",
 		"dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development& ts-node-dev --respawn src/index.ts \" \" npm run gen-gql \" ",
