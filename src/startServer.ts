@@ -14,6 +14,7 @@ import { logger } from './config/winston.config';
 import * as fs from 'fs';
 import * as express from 'express';
 import { DEV_BASE_URL } from './constants/global-variables';
+import { register } from 'prom-client';
 import { Connection } from 'typeorm';
 
 // import NodeMailerService from "./helper/email";
@@ -69,6 +70,16 @@ export const startServer = async () => {
 			throw new Error('Query too large');
 		}
 		next();
+	});
+
+	// Grafana Configuration
+	app.use('/metric', async (req, res) => {
+		try {
+			res.set('Content-Type', register.contentType);
+			res.end(await register.metrics());
+		} catch (err) {
+			res.status(500).end(err);
+		}
 	});
 
 	const corsOptions = {

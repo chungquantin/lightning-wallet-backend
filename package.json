@@ -52,6 +52,7 @@
 		"nodemailer": "^6.5.0",
 		"nodemon": "^2.0.7",
 		"pg": "^8.5.1",
+		"prom-client": "^13.2.0",
 		"reflect-metadata": "^0.1.13",
 		"request-promise": "^4.2.6",
 		"rimraf": "^3.0.2",
