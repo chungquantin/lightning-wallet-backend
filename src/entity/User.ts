@@ -21,19 +21,15 @@ export class User extends BaseEntity {
 	email: string;
 
 	@Field(() => String!)
-	@Column('text', { unique: true })
-	username: string;
-
-	@Field(() => String!)
 	@Column('text', { nullable: false })
 	avatar: string;
 
 	@Field(() => Boolean!)
-	@Column('bool', { default: true })
+	@Column('bool', { default: false })
 	emailVerified: boolean;
 
 	@Field(() => Boolean!)
-	@Column('bool', { default: true })
+	@Column('bool', { default: false })
 	twoFactorVerified: boolean;
 
 	@Field(() => Number!)
@@ -41,7 +37,7 @@ export class User extends BaseEntity {
 	balance: number;
 
 	@Field(() => Boolean!)
-	@Column('bool', { default: true })
+	@Column('bool', { default: false })
 	phoneNumberVerified: boolean;
 
 	@Field(() => String!)

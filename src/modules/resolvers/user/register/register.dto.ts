@@ -1,4 +1,4 @@
-import { Field, InputType } from "type-graphql";
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class RegisterDto {
@@ -15,11 +15,11 @@ export class RegisterDto {
 	email: string;
 
 	@Field()
-	bio: string;
-
-	@Field()
 	password: string;
 
 	@Field()
 	phoneNumber: string;
+
+	@Field()
+	avatar: string;
 }

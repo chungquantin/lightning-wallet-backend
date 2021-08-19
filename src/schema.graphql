@@ -18,7 +18,6 @@ type ApiError {
 type UserSchema {
   id: ID!
   email: String!
-  username: String!
   avatar: String!
   emailVerified: Boolean!
   twoFactorVerified: Boolean!
@@ -94,9 +93,9 @@ input RegisterDto {
   lastName: String!
   username: String!
   email: String!
-  bio: String!
   password: String!
   phoneNumber: String!
+  avatar: String!
 }
 
 type ForgotPassword {

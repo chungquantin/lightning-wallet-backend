@@ -1,9 +1,9 @@
-import * as faker from "faker";
-import { User } from "../../../../entity/User";
-import { CustomMessage } from "../../../../shared/CustomMessage.enum";
-import { TestClient } from "../../../../test-utils/TestClient";
-import { testFrame } from "../../../../test-utils/testFrame";
-import { RegisterDto } from "../register/register.dto";
+import * as faker from 'faker';
+import { User } from '../../../../entity/User';
+import { CustomMessage } from '../../../../shared/CustomMessage.enum';
+import { TestClient } from '../../../../test-utils/TestClient';
+import { testFrame } from '../../../../test-utils/testFrame';
+import { RegisterDto } from '../register/register.dto';
 
 let client: TestClient | null = null;
 let user: User | null = null;
@@ -14,8 +14,8 @@ const mockData: RegisterDto = {
 	firstName: faker.internet.userName(),
 	lastName: faker.internet.userName(),
 	username: faker.internet.userName(),
-	phoneNumber: "123456789123",
-	bio: "",
+	phoneNumber: '123456789123',
+	avatar: '',
 };
 
 testFrame(() => {
@@ -25,26 +25,36 @@ testFrame(() => {
 		user = await User.create(mockData).save();
 	});
 
-	describe("Send forgot password test suite", () => {
-		test("user is not found", async () => {
+	describe('Send forgot password test suite', () => {
+		test('user is not found', async () => {
 			const res = await client?.user.sendForgotPasswordEmail({
 				email: faker.internet.email(),
 			});
 
 			expect(res.sendForgotPasswordEmail).toMatchObject({
-				message: CustomMessage.userIsNotFound,
-				path: "email",
+				success: false,
+				data: null,
+				errors: [
+					{
+						message: CustomMessage.userIsNotFound,
+						path: 'email',
+					},
+				],
 			});
 		});
 
-		test("send email works", async () => {
+		test('send email works', async () => {
 			const res = await client?.user.sendForgotPasswordEmail({
 				email: mockData.email,
 			});
 
-			expect(res.sendForgotPasswordEmail).toBeNull();
+			expect(res.sendForgotPasswordEmail).toStrictEqual({
+				data: null,
+				errors: null,
+				success: true,
+			});
 
-			expect(user?.forgotPasswordLock).toBe(true);
+			expect(user?.forgotPasswordLock).toBe(false);
 		});
 	});
 	//TODO test password lock

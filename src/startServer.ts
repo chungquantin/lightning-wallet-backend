@@ -63,6 +63,13 @@ export const startServer = async () => {
 	app.use(sessionConfiguration);
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
+	app.use('*', (req, _, next) => {
+		const query = req.query.query || req.body.query || '';
+		if (query.length > 2000) {
+			throw new Error('Query too large');
+		}
+		next();
+	});
 
 	const corsOptions = {
 		credentials: true,
@@ -85,9 +92,9 @@ export const startServer = async () => {
 							console.log('Subscription server disconnected!'),
 					},
 				} as Options,
-				env(EnvironmentType.PROD)
+				env(EnvironmentType.PROD) || env(EnvironmentType.PROD_STAGE)
 					? {
-							// playground: false as any,
+							playground: env(EnvironmentType.PROD_STAGE),
 					  }
 					: {
 							endpoint: '/graphql',

@@ -1,17 +1,25 @@
 query getUsers{
     getUsers{
-        id
-        email
-        username
-        isVerified
-        isBanned
-        forgotPasswordLock
-        bio
-        phoneNumber
-        password
-        firstName
-        lastName
-        status
-        name
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            id
+            email
+            avatar
+            emailVerified
+            twoFactorVerified
+            balance
+            phoneNumberVerified
+            phoneNumber
+            password
+            firstName
+            lastName
+            defaultCurrency
+            forgotPasswordLock
+            name
+        }
     }
 }

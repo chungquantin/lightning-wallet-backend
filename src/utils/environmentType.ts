@@ -1,10 +1,11 @@
-import "dotenv/config";
+import 'dotenv/config';
 
 export enum EnvironmentType {
-	PROD = "production",
-	DEV = "development",
-	STAGE = "staging",
-	TEST = "test",
+	PROD = 'production',
+	PROD_STAGE = 'production-staging',
+	DEV = 'development',
+	STAGE = 'staging',
+	TEST = 'test',
 }
 
 export const env = (type: EnvironmentType): boolean => {
