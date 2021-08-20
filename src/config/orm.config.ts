@@ -1,21 +1,28 @@
-import { Connection, createConnection, getConnectionOptions } from "typeorm";
-import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { env, EnvironmentType } from "../utils/environmentType";
+import {
+	Connection,
+	createConnection,
+	getConnectionOptions,
+} from 'typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { env, EnvironmentType } from '../utils/environmentType';
 
 export const genORMConnection = async (
-	logging: boolean = true
+	logging: boolean = true,
 ): Promise<Connection> => {
 	const connectionOptions = await getConnectionOptions(
-		env(EnvironmentType.PROD) ? "production-database" : "default"
+		env(EnvironmentType.PROD) ? 'production-database' : 'default',
 	);
 	const extendedOptions = {
 		...connectionOptions,
 		database: (connectionOptions.database +
-			(env(EnvironmentType.TEST) ? "-test" : "")) as any,
+			(env(EnvironmentType.TEST) ? '-test' : '')) as any,
 		dropSchema: env(EnvironmentType.TEST),
 		namingStrategy: new SnakeNamingStrategy(),
 		logging,
-		name: "default",
+		name: 'default',
+		synchronize: !(
+			env(EnvironmentType.PROD) || env(EnvironmentType.PROD_STAGE)
+		),
 	};
 	if (process.env.DATABASE_URL && env(EnvironmentType.PROD)) {
 		Object.assign(extendedOptions, {

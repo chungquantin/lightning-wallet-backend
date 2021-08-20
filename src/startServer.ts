@@ -21,8 +21,6 @@ import { Connection } from 'typeorm';
 // import { DEV_BASE_URL } from "./constants/global-variables";
 
 export const startServer = async () => {
-	console.log(process.env.NODE_ENV);
-
 	if (!env(EnvironmentType.PROD)) {
 		await new REDIS().server.flushall();
 	}
@@ -87,7 +85,7 @@ export const startServer = async () => {
 		origin: DEV_BASE_URL,
 	};
 
-	const PORT = process.env.PORT || 5000;
+	const PORT = process.argv[2] || process.env.PORT || 3000;
 
 	await server
 		.start(
@@ -117,6 +115,7 @@ export const startServer = async () => {
 						? {
 								ENDPOINT: `${process.env.SERVER_URI}:${options?.port}${process.env.SERVER_ENDPOINT}`,
 								ENVIRONMENT: process.env.NODE_ENV?.trim(),
+								PROCESS_ID: process.pid,
 								DATABASE_URL: process.env.DATABASE_URL,
 								REDIS_HOST: process.env.REDIS_HOST,
 								REDIS_PORT: process.env.REDIS_PORT,
@@ -124,6 +123,7 @@ export const startServer = async () => {
 						: {
 								ENDPOINT: `${process.env.SERVER_URI}:${options?.port}${process.env.SERVER_ENDPOINT}`,
 								ENVIRONMENT: process.env.NODE_ENV?.trim(),
+								PROCESS_ID: process.pid,
 								PORT: options.port,
 								DATABASE: conn?.options.database,
 						  },
