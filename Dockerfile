@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:alpine
 
 ENV SESSION_SECRET = s3ss1on-s3cr3t 
 
@@ -40,6 +40,8 @@ EXPOSE 5000
 
 RUN npm run build
 
+RUN npm install pm2 -g
+
 COPY wait-for-it.sh .
 
-CMD ["npm", "start"]
+CMD ["pm2", "ecosystem.config.js", "--no-autorestart"]
