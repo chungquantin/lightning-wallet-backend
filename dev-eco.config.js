@@ -5,7 +5,7 @@ module.exports = {
 			script: './src/index.ts',
 			instances: '3',
 			autorestart: false,
-			watch: true,
+			watch: false,
 			max_memory_restart: '1G',
 			exec_mode: 'cluster',
 			env: {
