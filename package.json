@@ -1,5 +1,5 @@
 {
-	"name": "ramen",
+	"name": "neutronpay",
 	"version": "0.0.1",
 	"main": "dist/index",
 	"typings": "dist/index",
@@ -77,13 +77,15 @@
 		}
 	},
 	"scripts": {
-		"start": "node dist/src/index.js",
-		"dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development& pm2 start dev-eco.config.js \" \" npm run gen-gql \" ",
-		"dev:test": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=test& ts-node-dev --respawn src/index.ts \" \" npm run gen-gql \"",
+		"start": "pm2 start dev-eco.config.js",
+		"start:dev": "SET NODE_ENV=development& pm2 start dev-eco.config.js --no-autorestart",
+		"dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development& pm2 start dev-eco.config.js --no-autorestart \" ",
+		"dev:test": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=test& ts-node-dev --respawn src/index.ts \"",
 		"restart": "pm2 restart src/index.ts -i 3 --watch",
 		"stop": "pm2 stop all",
 		"test": "jest --watch --runInBand",
 		"build": "rimraf ./dist & tsc",
+		"postinstall": "npm run build",
 		"heroku-deploy": "npm run build & git push heroku master",
 		"watch": "tsc -w",
 		"monit": "pm2 monit",

@@ -13,18 +13,27 @@ module.exports = {
 			},
 			env_production: {
 				NODE_ENV: 'production',
+				SESSION_SECRET: 's3ssion-s3cr3t',
+				DATABASE_HOST: 'localhost',
+				DATABASE_USERNAME: 'postgres',
+				DATABASE_PASSWORD: 'Cqt20011101',
+				REDIS_HOST: 'localhost',
+				REDIS_PORT: 6379,
+				REDIS_PASSWORD: '',
+				SERVER_URI: 'http://localhost',
+				SERVER_ENDPOINT: '',
 			},
 		},
 	],
 	deploy: {
-		production: {
+		development: {
 			user: 'node',
 			host: '212.83.163.1',
 			ref: 'origin/master',
 			repo: 'git@github.com:repo.git',
-			path: '/var/www/production',
+			path: '/var/www/development',
 			'post-deploy':
-				'npm install && pm2 reload ecosystem.config.js --env production',
+				'npm install && pm2 reload dev-eco.config.js --env development',
 		},
 	},
 };
