@@ -14,6 +14,7 @@ import { DEV_BASE_URL } from './constants/global-variables';
 import { register } from 'prom-client';
 import { Connection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
+import { MemcachedCache } from 'apollo-server-cache-memcached';
 import * as cors from 'cors';
 import * as fs from 'fs';
 import * as express from 'express';
@@ -58,6 +59,14 @@ export const startServer = async () => {
 			err.message = formatValidationError(err);
 			return err;
 		},
+		cache: new MemcachedCache(
+			[
+				'memcached-server-1',
+				'memcached-server-2',
+				'memcached-server-3',
+			],
+			{ retries: 10, retry: 10000 }, // Options
+		),
 		context: ({ req }): Partial<GQLContext> => {
 			return {
 				request: req,

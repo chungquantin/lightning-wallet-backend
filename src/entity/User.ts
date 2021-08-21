@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType, Root } from 'type-graphql';
+import { Directive, Field, ID, ObjectType, Root } from 'type-graphql';
 import {
 	Entity,
 	Column,
@@ -17,10 +17,12 @@ export class User extends BaseEntity {
 	id: string;
 
 	@Field(() => String!)
+	@Directive('@cacheControl(maxAge: 30)')
 	@Column('text', { unique: true })
 	email: string;
 
 	@Field(() => String!)
+	@Directive('@cacheControl(maxAge: 20)')
 	@Column('text', { nullable: false })
 	avatar: string;
 
@@ -41,6 +43,7 @@ export class User extends BaseEntity {
 	phoneNumberVerified: boolean;
 
 	@Field(() => String!)
+	@Directive('@cacheControl(maxAge: 30)')
 	@Column('text', { unique: true })
 	phoneNumber: string;
 
