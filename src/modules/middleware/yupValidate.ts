@@ -11,10 +11,10 @@ export const yupValidateMiddleware = (
 			{
 				...args.data,
 			},
-			{ abortEarly: false }
+			{ abortEarly: true }
 		)
 		.catch((err) => {
-			throw new GraphQLError(err);
+			throw new GraphQLError(err.message);
 		});
 
 	return next();

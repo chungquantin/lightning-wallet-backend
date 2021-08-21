@@ -23,6 +23,8 @@
 		"@types/uuid": "^8.3.0",
 		"@types/winston": "^2.4.4",
 		"amqplib": "^0.8.0",
+		"apollo-server": "^3.1.2",
+		"apollo-server-express": "^3.1.2",
 		"bcrypt": "^5.0.0",
 		"body-parser": "^1.19.0",
 		"class-validator": "^0.13.1",
@@ -78,7 +80,7 @@
 	},
 	"scripts": {
 		"start": "pm2 start dev-eco.config.js",
-		"start:dev": "SET NODE_ENV=development& pm2 start dev-eco.config.js --no-autorestart",
+		"start:dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development&  ts-node-dev --respawn src/index.ts --no-autorestart \" ",
 		"dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development& pm2 start dev-eco.config.js --no-autorestart \" ",
 		"dev:test": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=test& ts-node-dev --respawn src/index.ts \"",
 		"restart": "pm2 restart src/index.ts -i 3 --watch",

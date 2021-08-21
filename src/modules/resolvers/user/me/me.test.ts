@@ -33,7 +33,7 @@ testFrame(() => {
 		test('get current user before login', async () => {
 			await client?.user.me().then((res) =>
 				expect(yupErrorResponse(res)).toMatchObject({
-					message: 'not authenticated',
+					message: 'Not authenticated',
 					path: 'me',
 				}),
 			);

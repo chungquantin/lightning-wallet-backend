@@ -1,4 +1,4 @@
-import { ApiResponse } from '../shared';
+import { UserInputError } from 'apollo-server-express';
 import { formatYupErrors } from './formatYupErrors';
 
 export const formatValidationError = (err: any) => {
@@ -6,21 +6,23 @@ export const formatValidationError = (err: any) => {
 		err.extensions?.exception?.validationErrors;
 	//const errors: any[] = [];
 	if (err.message?.name == 'ValidationError') {
-		return formatYupErrors(err.message);
+		throw new UserInputError(
+			JSON.stringify(formatYupErrors(err.message)),
+		);
 	} else {
 		if (validationErrors) {
 			validationErrors?.forEach(({ constraints }) => {
-				return {
+				return JSON.stringify({
 					path: Object.keys(constraints)?.[0],
 					message: constraints[Object.keys(constraints)?.[0]],
-				};
+				});
 			});
 		} else {
-			return {
+			return JSON.stringify({
 				path: err.path?.[0] || 'undefined',
 				message: err.message,
-			};
+			});
 		}
-		return {};
+		return err;
 	}
 };

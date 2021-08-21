@@ -30,12 +30,12 @@ testFrame(() => {
 					userId: '123',
 				})
 				.then((res) => {
-					expect(yupErrorResponse(res)).toEqual([
+					expect(yupErrorResponse(res)).toEqual(
 						{
 							message: 'userId must be a valid UUID',
-							path: 'userId',
+							path: 'getUser',
 						},
-					]);
+					);
 				});
 		});
 
