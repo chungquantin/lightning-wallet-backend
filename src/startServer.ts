@@ -1,21 +1,23 @@
 import 'reflect-metadata';
 import 'dotenv/config';
-import { GraphQLServer, Options } from 'graphql-yoga';
+//import { GraphQLServer, Options } from 'graphql-yoga';
 import { genSchema } from './utils/genSchema';
 import { sessionConfiguration } from './helper/session';
 import { REDIS } from './helper/redis';
 import { env, EnvironmentType } from './utils/environmentType';
 import { formatValidationError } from './utils/formatValidationError';
 import { GQLContext } from './utils/graphql-utils';
-import { ContextParameters } from 'graphql-yoga/dist/types';
 import { genORMConnection } from './config/orm.config';
 import { printSchema } from 'graphql';
 import { logger } from './config/winston.config';
-import * as fs from 'fs';
-import * as express from 'express';
 import { DEV_BASE_URL } from './constants/global-variables';
 import { register } from 'prom-client';
 import { Connection } from 'typeorm';
+import { ApolloServer } from 'apollo-server-express';
+import { MemcachedCache } from 'apollo-server-cache-memcached';
+import * as cors from 'cors';
+import * as fs from 'fs';
+import * as express from 'express';
 
 // import NodeMailerService from "./helper/email";
 // import { DEV_BASE_URL } from "./constants/global-variables";
@@ -45,21 +47,45 @@ export const startServer = async () => {
 	const sdl = printSchema(schema);
 	await fs.writeFileSync(__dirname + '/schema.graphql', sdl);
 
-	const server = new GraphQLServer({
-		schema,
-		context: ({
-			request,
-		}: ContextParameters): Partial<GQLContext> => ({
-			request,
-			redis: new REDIS().server,
-			session: request?.session,
-			url: request?.protocol + '://' + request?.get('host'),
-		}),
-	} as any);
+	const corsOptions = {
+		credentials:
+			env(EnvironmentType.PROD) || env(EnvironmentType.PROD_STAGE),
+		origin: DEV_BASE_URL,
+	};
 
-	const app = server.express;
+	const server = new ApolloServer({
+		schema,
+		formatError: (err) => {
+			err.message = formatValidationError(err);
+			return err;
+		},
+		cache: new MemcachedCache(
+			[
+				'memcached-server-1',
+				'memcached-server-2',
+				'memcached-server-3',
+			],
+			{ retries: 10, retry: 10000 }, // Options
+		),
+		context: ({ req }): Partial<GQLContext> => {
+			return {
+				request: req,
+				redis: new REDIS().server,
+				session: req.session,
+				url: req?.protocol + '://' + req?.get('host'),
+			};
+		},
+	});
+
+	await server.start();
+
+	const app = express();
+	app.use(sessionConfiguration);
+
+	server.applyMiddleware({ app });
 
 	app.use(sessionConfiguration);
+	app.use(cors(corsOptions));
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 	app.use('*', (req, _, next) => {
@@ -80,55 +106,28 @@ export const startServer = async () => {
 		}
 	});
 
-	const corsOptions = {
-		credentials: true,
-		origin: DEV_BASE_URL,
-	};
+	const PORT = env(EnvironmentType.TEST)
+		? 8080
+		: process.env.PORT || 3000;
 
-	const PORT = process.argv[2] || process.env.PORT || 3000;
+	await app.listen({ port: PORT });
 
-	await server
-		.start(
-			Object.assign(
-				{
-					cors: corsOptions,
-					port: env(EnvironmentType.TEST) ? 8080 : PORT,
-					formatError: formatValidationError,
-					subscriptions: {
-						onConnect: () =>
-							console.log('Subscription server connected!'),
-						onDisconnect: () =>
-							console.log('Subscription server disconnected!'),
-					},
-				} as Options,
-				env(EnvironmentType.PROD) || env(EnvironmentType.PROD_STAGE)
-					? {
-							playground: env(EnvironmentType.PROD_STAGE),
-					  }
-					: {
-							endpoint: '/graphql',
-					  },
-			),
-			(options) => {
-				logger.info(
-					env(EnvironmentType.PROD)
-						? {
-								ENDPOINT: `${process.env.SERVER_URI}:${options?.port}${process.env.SERVER_ENDPOINT}`,
-								ENVIRONMENT: process.env.NODE_ENV?.trim(),
-								PROCESS_ID: process.pid,
-								DATABASE_URL: process.env.DATABASE_URL,
-								REDIS_HOST: process.env.REDIS_HOST,
-								REDIS_PORT: process.env.REDIS_PORT,
-						  }
-						: {
-								ENDPOINT: `${process.env.SERVER_URI}:${options?.port}${process.env.SERVER_ENDPOINT}`,
-								ENVIRONMENT: process.env.NODE_ENV?.trim(),
-								PROCESS_ID: process.pid,
-								PORT: options.port,
-								DATABASE: conn?.options.database,
-						  },
-				);
-			},
-		)
-		.catch((err) => console.log(err));
+	logger.info(
+		env(EnvironmentType.PROD)
+			? {
+					ENDPOINT: `${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
+					ENVIRONMENT: process.env.NODE_ENV?.trim(),
+					PROCESS_ID: process.pid,
+					DATABASE_URL: process.env.DATABASE_URL,
+					REDIS_HOST: process.env.REDIS_HOST,
+					REDIS_PORT: process.env.REDIS_PORT,
+			  }
+			: {
+					ENDPOINT: `${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
+					ENVIRONMENT: process.env.NODE_ENV?.trim(),
+					PROCESS_ID: process.pid,
+					PORT: PORT,
+					DATABASE: conn?.options.database,
+			  },
+	);
 };

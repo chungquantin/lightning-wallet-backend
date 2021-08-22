@@ -87,42 +87,21 @@ testFrame(() => {
 				email: 'tin',
 				password: '123',
 			});
-			expect(yupErrorResponse(data)).toEqual([
-				{
-					message: CustomMessage.inValidEmailAddress,
-					path: 'email',
-				},
-			]);
+			expect(yupErrorResponse(data)).toEqual({
+				message: CustomMessage.inValidEmailAddress,
+				path: 'login',
+			});
 		});
 
 		test('[Yup] password length matched', async () => {
 			const data = await client1?.user.login({
-				email: 'tin@email.com',
-				password: '1',
-			});
-			expect(yupErrorResponse(data)).toEqual([
-				{
-					message: 'password must be at least 3 characters',
-					path: 'password',
-				},
-			]);
-		});
-
-		test('[Yup] invalid email address & password length matched', async () => {
-			const data = await client1?.user.login({
 				email: 'tin',
 				password: '1',
 			});
-			expect(yupErrorResponse(data)).toEqual([
-				{
-					message: CustomMessage.inValidEmailAddress,
-					path: 'email',
-				},
-				{
-					message: 'password must be at least 3 characters',
-					path: 'password',
-				},
-			]);
+			expect(yupErrorResponse(data)).toEqual({
+				message: 'password must be at least 3 characters',
+				path: 'login',
+			});
 		});
 
 		test('password does not matched', async () => {
@@ -162,7 +141,7 @@ testFrame(() => {
 		test('get user before login', async () => {
 			const me = await client1?.user.me();
 			expect(yupErrorResponse(me)).toEqual({
-				message: 'not authenticated',
+				message: 'Not authenticated',
 				path: 'me',
 			});
 		});

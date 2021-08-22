@@ -30,7 +30,7 @@ testFrame(() => {
 		test('logout before login', async () => {
 			await client?.user.logout().then((res) =>
 				expect(yupErrorResponse(res)).toMatchObject({
-					message: 'not authenticated',
+					message: 'Not authenticated',
 					path: 'logout',
 				}),
 			);
@@ -55,7 +55,7 @@ testFrame(() => {
 
 			await client?.user.me().then((res) =>
 				expect(yupErrorResponse(res)).toMatchObject({
-					message: 'not authenticated',
+					message: 'Not authenticated',
 					path: 'me',
 				}),
 			);
