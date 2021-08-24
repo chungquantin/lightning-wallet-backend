@@ -89,7 +89,6 @@ input RegisterDto {
   lastName: String!
   password: String!
   phoneNumber: String!
-  username: String!
 }
 
 type SendForgotPassword {

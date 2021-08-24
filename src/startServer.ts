@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import 'dotenv/config';
 //import { genSchema } from './helpers/genSchema';
-import { sessionConfiguration } from './helpers/session';
 import { REDIS } from './helpers/redis';
 import { env, EnvironmentType } from './utils/environmentType';
 import { formatValidationError } from './utils/formatValidationError';
@@ -22,8 +21,9 @@ import {
 import * as cors from 'cors';
 import * as fs from 'fs';
 import * as express from 'express';
-import { UserModule } from './modules';
-import { CookieDataSource } from './helpers/dataSource';
+import * as expressJwt from 'express-jwt';
+import * as jwt from 'jsonwebtoken';
+import { AccountCreationModule } from './modules';
 
 // import NodeMailerService from "./helper/email";
 // import { DEV_BASE_URL } from "./constants/global-variables";
@@ -49,12 +49,11 @@ export const startServer = async () => {
 	}
 
 	const app = express();
-	app.use(sessionConfiguration);
 
 	const serviceList: ServiceEndpointDefinition[] = [
 		{
 			name: 'account-creation-module',
-			url: await UserModule.listen(3001),
+			url: await AccountCreationModule.listen(3001),
 		},
 	];
 
@@ -65,9 +64,9 @@ export const startServer = async () => {
 				url,
 				willSendRequest({ request, context }) {
 					request.http?.headers.set(
-						'session',
-						(context as any).session
-							? JSON.stringify((context as any).session)
+						'currentUser',
+						(context as any).currentUser
+							? JSON.stringify((context as any).currentUser)
 							: '',
 					);
 				},
@@ -102,10 +101,23 @@ export const startServer = async () => {
 			{ retries: 10, retry: 10000 }, // Options
 		),
 		context: ({ req }): Partial<GQLContext> => {
+			const token =
+				req.body.token ||
+				req.query.token ||
+				req.headers.authorization;
+
+			if (token) {
+				const decoded = jwt.verify(
+					token.split(' ')[1],
+					process.env.TOKEN_KEY,
+				);
+				req.user = decoded;
+			}
+			const user = token && (req.user || null);
 			return {
 				request: req,
+				currentUser: user,
 				redis: new REDIS().server,
-				session: req.session,
 				url: req?.protocol + '://' + req?.get('host'),
 			};
 		},
@@ -113,9 +125,17 @@ export const startServer = async () => {
 
 	await server.start();
 	server.applyMiddleware({ app });
+	app.use(
+		expressJwt({
+			secret: 'f1BtnWgD3VKY',
+			algorithms: ['HS256'],
+			credentialsRequired: false,
+		}),
+	);
 	app.use(cors(corsOptions));
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
+
 	app.use('*', (req, _, next) => {
 		const query = req.query.query || req.body.query || '';
 		if (query.length > 2000) {

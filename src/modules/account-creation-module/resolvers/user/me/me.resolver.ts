@@ -17,10 +17,10 @@ class MeResolver {
 	@UseMiddleware(isAuth)
 	@Query(() => ApiMeResponse!, { nullable: true })
 	async me(
-		@Ctx() { session }: GQLContext,
+		@Ctx() { currentUser }: GQLContext,
 	): Promise<ApiMeResponseType> {
 		const user = await this.userRepository.findOne({
-			where: { id: session?.userId },
+			where: { id: currentUser.userId },
 		});
 		if (!user) {
 			return {

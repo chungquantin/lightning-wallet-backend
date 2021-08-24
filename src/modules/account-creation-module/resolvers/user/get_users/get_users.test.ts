@@ -1,5 +1,5 @@
 import { testFrame } from '../../../../../test-utils/testFrame';
-import { TestClient } from '../../../../../test-utils/TestClient';
+import { TestClient } from '../../../utils/TestClient';
 import * as faker from 'faker';
 import { User } from '../../../entity/User';
 import { RegisterDto } from '../register/register.dto';
@@ -12,7 +12,6 @@ const mockData: RegisterDto = {
 	password: faker.internet.password(),
 	firstName: faker.internet.userName(),
 	lastName: faker.internet.userName(),
-	username: faker.internet.userName(),
 	phoneNumber: '12312312421',
 	avatar: '',
 };
@@ -22,7 +21,7 @@ testFrame(() => {
 		client = new TestClient();
 	});
 
-	describe('Get users test suite', () => {
+	describe('Get user test suite', () => {
 		test('should return empty array', async () => {
 			await client?.user.getUsers().then((res) => {
 				expect(res.getUsers.data).toHaveLength(0);

@@ -10,8 +10,9 @@ import { LoginDto } from './login.dto';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 import { GQLContext } from '../../../../../utils/graphql-utils';
-import { USER_SESSION_ID_PREFIX } from '../../../../../constants/global-variables';
+import { USER_TOKEN_ID_PREFIX } from '../../../../../constants/global-variables';
 import { yupValidateMiddleware } from '../../../../../middleware/yupValidate';
 import { ApiResponse, CustomMessage } from '../../../../../shared';
 import { YUP_LOGIN } from './login.validate';
@@ -28,7 +29,7 @@ class LoginResolver {
 	@Mutation(() => ApiLoginResponse, { nullable: true })
 	async login(
 		@Arg('data') { email, password }: LoginDto,
-		@Ctx() { request, session, redis }: GQLContext,
+		@Ctx() { request, redis, currentUser }: GQLContext,
 	): Promise<ApiLoginResponseType> {
 		let user = await this.userRepository.findByEmail(email);
 
@@ -75,7 +76,7 @@ class LoginResolver {
 			};
 		}
 
-		if (session?.userId) {
+		if (currentUser) {
 			return {
 				success: false,
 				errors: [
@@ -87,13 +88,20 @@ class LoginResolver {
 			};
 		}
 
-		session.userId = user.id;
-		if (request?.sessionID) {
-			redis.lpush(`${USER_SESSION_ID_PREFIX}${user.id}`, user.id);
-		}
-		session.save();
+		const token = jwt.sign(
+			{
+				email: user.email,
+				userId: user.id,
+			},
+			process.env.TOKEN_KEY,
+			{
+				expiresIn: '2h',
+			},
+		);
+
 		return {
 			success: true,
+			data: token,
 		};
 	}
 }

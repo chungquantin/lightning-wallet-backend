@@ -47,7 +47,7 @@ export async function listen(port: number): Promise<string> {
 				return {
 					request: req,
 					redis: new REDIS().server,
-					session: JSON.parse(req.headers.session),
+					currentUser: JSON.parse(req.headers.currentuser),
 					url: req?.protocol + '://' + req?.get('host'),
 				};
 			} catch (error) {

@@ -1,5 +1,5 @@
 import { testFrame } from '../../../../../test-utils/testFrame';
-import { TestClient } from '../../../../../test-utils/TestClient';
+import { TestClient } from '../../../utils/TestClient';
 import { yupErrorResponse } from '../../../../../test-utils/yupErrorResponse';
 import * as faker from 'faker';
 import { RegisterDto } from '../register/register.dto';
@@ -13,7 +13,6 @@ const mockData: RegisterDto = {
 	password: faker.internet.password(),
 	firstName: faker.internet.userName(),
 	lastName: faker.internet.userName(),
-	username: faker.internet.userName(),
 	phoneNumber: '1236187246',
 	avatar: '',
 };

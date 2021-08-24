@@ -1,5 +1,5 @@
 import { testFrame } from '../../../../../test-utils/testFrame';
-import { TestClient } from '../../../../../test-utils/TestClient';
+import { TestClient } from '../../../utils/TestClient';
 import { CustomMessage } from '../../../../../shared/CustomMessage.enum';
 import { yupErrorResponse } from '../../../../../test-utils/yupErrorResponse';
 import * as faker from 'faker';
@@ -15,7 +15,6 @@ const mockData: RegisterDto = {
 	password: faker.internet.password(),
 	firstName: faker.internet.userName(),
 	lastName: faker.internet.userName(),
-	username: faker.internet.userName(),
 	phoneNumber: '123456789123',
 	avatar: '',
 };
@@ -106,7 +105,6 @@ testFrame(() => {
 				.register({
 					...mockData,
 					email: faker.internet.email(),
-					username: '123',
 				})
 				.then((res) =>
 					expect(yupErrorResponse(res)).toEqual({
@@ -119,7 +117,6 @@ testFrame(() => {
 				.register({
 					...mockData,
 					email: faker.internet.email(),
-					username: '1'.repeat(50),
 				})
 				.then((res) =>
 					expect(yupErrorResponse(res)).toEqual({
@@ -135,7 +132,6 @@ testFrame(() => {
 				password: faker.internet.password(),
 				firstName: '',
 				lastName: '',
-				username: 'tin123',
 				phoneNumber: '1231231231',
 				avatar: '',
 			});
@@ -149,7 +145,6 @@ testFrame(() => {
 			const data = await client?.user.register({
 				...mockData,
 				email: faker.internet.email(),
-				username: faker.internet.userName(),
 				phoneNumber: '1'.repeat(30),
 			});
 			expect(yupErrorResponse(data)).toEqual({
@@ -161,7 +156,6 @@ testFrame(() => {
 		test('[Yup] phoneNumber has been taken', async () => {
 			const data = await client?.user.register({
 				...mockData,
-				username: faker.internet.userName(),
 				email: faker.internet.email(),
 			});
 			expect(data.register).toEqual({

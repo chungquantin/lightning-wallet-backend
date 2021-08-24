@@ -1,13 +1,13 @@
 import { AuthenticationError } from 'apollo-server-express';
 import { MiddlewareFn } from 'type-graphql';
-import { logger } from '../config/winston.config';
 import { GQLContext } from '../utils/graphql-utils';
 
 export const isAuth: MiddlewareFn<GQLContext> = (
-	{ args, context: { session } },
+	{ args, context: { currentUser, request } },
 	next,
 ) => {
-	if (!session.userId) {
+	console.log(request.headers);
+	if (!currentUser) {
 		throw new AuthenticationError('Not authenticated');
 	}
 	console.log('Authenticated');

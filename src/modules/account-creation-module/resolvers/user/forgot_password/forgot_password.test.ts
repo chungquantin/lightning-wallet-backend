@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { User } from '../../../entity/User';
 import { CustomMessage } from '../../../../../shared/CustomMessage.enum';
-import { TestClient } from '../../../../../test-utils/TestClient';
+import { TestClient } from '../../../utils/TestClient';
 import { testFrame } from '../../../../../test-utils/testFrame';
 import { RegisterDto } from '../register/register.dto';
 
@@ -13,7 +13,6 @@ const mockData: RegisterDto = {
 	password: faker.internet.password(),
 	firstName: faker.internet.userName(),
 	lastName: faker.internet.userName(),
-	username: faker.internet.userName(),
 	phoneNumber: '123456789123',
 	avatar: '',
 };

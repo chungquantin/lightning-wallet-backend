@@ -4,6 +4,7 @@ import { formatYupErrors } from './formatYupErrors';
 export const formatValidationError = (err: any) => {
 	const validationErrors: any[] =
 		err.extensions?.exception?.validationErrors;
+
 	//const errors: any[] = [];
 	if (err.message?.name == 'ValidationError') {
 		throw new UserInputError(
@@ -19,7 +20,7 @@ export const formatValidationError = (err: any) => {
 			});
 		} else {
 			return JSON.stringify({
-				path: err.path?.[0] || 'undefined',
+				path: err.extensions.exception.path[0] || 'undefined',
 				message: err.message,
 			});
 		}

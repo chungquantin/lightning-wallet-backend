@@ -9,9 +9,6 @@ export class RegisterDto {
 	lastName: string;
 
 	@Field()
-	username: string;
-
-	@Field()
 	email: string;
 
 	@Field()
