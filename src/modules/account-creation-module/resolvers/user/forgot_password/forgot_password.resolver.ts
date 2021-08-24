@@ -11,7 +11,7 @@ import { User } from '../../../entity/User';
 import { SendForgotPasswordDto } from './send_forgot_password_email.dto';
 import { yupValidateMiddleware } from '../../../../../middleware';
 import { CustomMessage } from '../../../../../shared/CustomMessage.enum';
-import { forgotPasswordLockAccount } from '../../../../../utils/forgotPasswordLock';
+import { forgotPasswordLockAccount } from '../../../utils/forgotPasswordLock';
 import { GQLContext } from '../../../../../utils/graphql-utils';
 import NodeMailerService from '../../../../../helpers/email';
 import { YUP_SEND_FORGOT_PASSWORD_EMAIL } from './send_forgot_password_email.validate';

@@ -16,6 +16,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import {
 	ApolloGateway,
+	RemoteGraphQLDataSource,
 	ServiceEndpointDefinition,
 } from '@apollo/gateway';
 import * as cors from 'cors';
@@ -47,6 +48,9 @@ export const startServer = async () => {
 		}
 	}
 
+	const app = express();
+	app.use(sessionConfiguration);
+
 	const serviceList: ServiceEndpointDefinition[] = [
 		{
 			name: 'account-creation-module',
@@ -57,7 +61,17 @@ export const startServer = async () => {
 	const gateway = new ApolloGateway({
 		serviceList,
 		buildService({ url }) {
-			return new CookieDataSource({ url });
+			return new RemoteGraphQLDataSource({
+				url,
+				willSendRequest({ request, context }) {
+					request.http?.headers.set(
+						'session',
+						(context as any).session
+							? JSON.stringify((context as any).session)
+							: '',
+					);
+				},
+			});
 		},
 	});
 
@@ -97,14 +111,8 @@ export const startServer = async () => {
 		},
 	});
 
-	const app = express();
 	await server.start();
-
-	app.use(sessionConfiguration);
-
 	server.applyMiddleware({ app });
-
-	app.use(sessionConfiguration);
 	app.use(cors(corsOptions));
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));

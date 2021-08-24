@@ -7,7 +7,6 @@ export const isAuth: MiddlewareFn<GQLContext> = (
 	{ args, context: { session } },
 	next,
 ) => {
-	logger.info(session);
 	if (!session.userId) {
 		throw new AuthenticationError('Not authenticated');
 	}

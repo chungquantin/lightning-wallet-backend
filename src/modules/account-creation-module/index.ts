@@ -2,32 +2,16 @@ import { printSchema } from '@apollo/federation';
 import { ApolloServer } from 'apollo-server';
 import Container from 'typedi';
 import { buildFederatedSchema } from '../../helpers/buildFederatedSchema';
-import { redisPubSub } from '../../helpers/redis';
+import { REDIS, redisPubSub } from '../../helpers/redis';
 import { ResolveTime } from '../../middleware';
 import { customAuthChecker } from '../../utils/authChecker';
 import { User } from './entity';
 import * as UserResolver from './resolvers/user';
 import * as fs from 'fs';
-import { Connection } from 'typeorm';
-import { genORMConnection } from '../../config/orm.config';
-import { logger } from '../../config/winston.config';
+import { MemcachedCache } from 'apollo-server-cache-memcached';
+import { GQLContext } from '../../utils/graphql-utils';
 
 export async function listen(port: number): Promise<string> {
-	//let retries = 5;
-	//let conn: Connection | null = null;
-	//while (retries) {
-	//	try {
-	//		conn = await genORMConnection(true, 'production-database');
-	//		break;
-	//	} catch (error) {
-	//		logger.error(error.message);
-	//		retries -= 1;
-	//		console.log(`retries left: ${retries}`);
-	//		// wait 5 seconds before retry
-	//		await new Promise((res) => setTimeout(res, 5000));
-	//	}
-	//}
-
 	const schema = await buildFederatedSchema({
 		resolvers: [
 			UserResolver.LoginResolver,
@@ -50,6 +34,27 @@ export async function listen(port: number): Promise<string> {
 
 	const server = new ApolloServer({
 		schema,
+		cache: new MemcachedCache(
+			[
+				'memcached-server-1',
+				'memcached-server-2',
+				'memcached-server-3',
+			],
+			{ retries: 10, retry: 10000 }, // Options
+		),
+		context: ({ req }): Partial<GQLContext | undefined> => {
+			try {
+				return {
+					request: req,
+					redis: new REDIS().server,
+					session: JSON.parse(req.headers.session),
+					url: req?.protocol + '://' + req?.get('host'),
+				};
+			} catch (error) {
+				console.log(error.message);
+				return undefined;
+			}
+		},
 	});
 
 	const { url } = await server.listen({ port });

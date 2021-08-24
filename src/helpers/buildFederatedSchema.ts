@@ -1,6 +1,5 @@
 import gql from 'graphql-tag';
 import {
-	printSchema,
 	buildFederatedSchema as buildApolloFederationSchema,
 } from '@apollo/federation';
 import {
@@ -12,8 +11,7 @@ import {
 	createResolversMap,
 	BuildSchemaOptions,
 } from 'type-graphql';
-import federationDirectives from '@apollo/federation/dist/directives';
-import { specifiedDirectives } from 'graphql';
+import { printSchema, specifiedDirectives } from 'graphql';
 
 export async function buildFederatedSchema(
 	options: Omit<BuildSchemaOptions, 'skipCheck'>,
@@ -23,7 +21,6 @@ export async function buildFederatedSchema(
 		...options,
 		directives: [
 			...specifiedDirectives,
-			...federationDirectives,
 			...(options.directives || []),
 		],
 		skipCheck: true,

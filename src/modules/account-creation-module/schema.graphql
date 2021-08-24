@@ -71,7 +71,6 @@ type Mutation {
 }
 
 type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
   me: Me
   getUser(data: GetUserDto!): GetUser
@@ -104,7 +103,7 @@ input SendForgotPasswordDto {
   email: String!
 }
 
-type UserSchema @key(fields: "id") {
+type UserSchema {
   id: ID!
   email: String!
   avatar: String!
