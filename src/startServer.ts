@@ -11,7 +11,10 @@ import { logger } from './config/winston.config';
 import { DEV_BASE_URL } from './constants/global-variables';
 import { register } from 'prom-client';
 import { Connection } from 'typeorm';
-import { ApolloServer } from 'apollo-server-express';
+import {
+	ApolloServer,
+	AuthenticationError,
+} from 'apollo-server-express';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import {
 	ApolloGateway,
@@ -104,19 +107,18 @@ export const startServer = async () => {
 			const token =
 				req.body.token ||
 				req.query.token ||
-				req.headers.authorization;
+				req.headers['x-access-token'];
 
-			if (token) {
-				const decoded = jwt.verify(
-					token.split(' ')[1],
-					process.env.TOKEN_KEY,
-				);
+			try {
+				const decoded = jwt.verify(token, 's3ssion-webtok3n');
 				req.user = decoded;
+			} catch (error) {
+				throw new AuthenticationError(error.message);
 			}
-			const user = token && (req.user || null);
+
 			return {
 				request: req,
-				currentUser: user,
+				currentUser: req.user || null,
 				redis: new REDIS().server,
 				url: req?.protocol + '://' + req?.get('host'),
 			};
@@ -124,14 +126,17 @@ export const startServer = async () => {
 	});
 
 	await server.start();
+
 	server.applyMiddleware({ app });
+
 	app.use(
 		expressJwt({
 			secret: 'f1BtnWgD3VKY',
-			algorithms: ['HS256'],
+			algorithms: ['HMACSHA256'],
 			credentialsRequired: false,
 		}),
 	);
+
 	app.use(cors(corsOptions));
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));

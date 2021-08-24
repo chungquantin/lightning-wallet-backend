@@ -88,20 +88,20 @@ class LoginResolver {
 			};
 		}
 
-		const token = jwt.sign(
+		const accessToken = jwt.sign(
 			{
 				email: user.email,
 				userId: user.id,
 			},
-			process.env.TOKEN_KEY,
+			's3ssion-webtok3n',
 			{
-				expiresIn: '2h',
+				expiresIn: 60 * 60 * 24 * 7,
 			},
 		);
 
 		return {
 			success: true,
-			data: token,
+			data: accessToken,
 		};
 	}
 }

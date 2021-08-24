@@ -2,6 +2,7 @@ import { UserInputError } from 'apollo-server-express';
 import { formatYupErrors } from './formatYupErrors';
 
 export const formatValidationError = (err: any) => {
+	console.log(err);
 	const validationErrors: any[] =
 		err.extensions?.exception?.validationErrors;
 
