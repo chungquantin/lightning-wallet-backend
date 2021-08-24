@@ -1,21 +1,21 @@
 type ApiError {
-  message: String!
   path: String!
+  message: String!
 }
 
 """Fiat currency"""
 enum FiatCurrency {
-  AUD
-  CAD
-  MXN
   USD
+  CAD
   VND
+  AUD
+  MXN
 }
 
 type ForgotPassword {
-  data: String
-  errors: [ApiError!]
   success: Boolean!
+  errors: [ApiError!]
+  data: String
 }
 
 input ForgotPasswordChangeDto {
@@ -24,9 +24,9 @@ input ForgotPasswordChangeDto {
 }
 
 type GetUser {
-  data: UserSchema
-  errors: [ApiError!]
   success: Boolean!
+  errors: [ApiError!]
+  data: UserSchema
 }
 
 input GetUserDto {
@@ -34,15 +34,15 @@ input GetUserDto {
 }
 
 type GetUsers {
-  data: [UserSchema!]!
-  errors: [ApiError!]
   success: Boolean!
+  errors: [ApiError!]
+  data: [UserSchema!]!
 }
 
 type Login {
-  data: String
-  errors: [ApiError!]
   success: Boolean!
+  errors: [ApiError!]
+  data: String
 }
 
 input LoginDto {
@@ -51,70 +51,72 @@ input LoginDto {
 }
 
 type Logout {
-  data: String
-  errors: [ApiError!]
   success: Boolean!
+  errors: [ApiError!]
+  data: String
 }
 
 type Me {
-  data: UserSchema
-  errors: [ApiError!]
   success: Boolean!
+  errors: [ApiError!]
+  data: UserSchema
 }
 
 type Mutation {
-  forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword
   login(data: LoginDto!): Login
   logout: Logout
   register(data: RegisterDto!): Register
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword
+  forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword
 }
 
 type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+  me: Me
   getUser(data: GetUserDto!): GetUser
   getUsers: GetUsers
-  me: Me
 }
 
 type Register {
-  data: String
-  errors: [ApiError!]
   success: Boolean!
+  errors: [ApiError!]
+  data: String
 }
 
 input RegisterDto {
-  avatar: String!
-  email: String!
   firstName: String!
   lastName: String!
+  username: String!
+  email: String!
   password: String!
   phoneNumber: String!
-  username: String!
+  avatar: String!
 }
 
 type SendForgotPassword {
-  data: String
-  errors: [ApiError!]
   success: Boolean!
+  errors: [ApiError!]
+  data: String
 }
 
 input SendForgotPasswordDto {
   email: String!
 }
 
-type UserSchema {
-  avatar: String!
-  balance: Float!
-  defaultCurrency: FiatCurrency!
-  email: String!
-  emailVerified: Boolean!
-  firstName: String!
-  forgotPasswordLock: Boolean!
+type UserSchema @key(fields: "id") {
   id: ID!
-  lastName: String!
-  name: String!
-  password: String!
-  phoneNumber: String!
-  phoneNumberVerified: Boolean!
+  email: String!
+  avatar: String!
+  emailVerified: Boolean!
   twoFactorVerified: Boolean!
+  balance: Float!
+  phoneNumberVerified: Boolean!
+  phoneNumber: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  defaultCurrency: FiatCurrency!
+  forgotPasswordLock: Boolean!
+  name: String!
 }

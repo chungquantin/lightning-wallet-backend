@@ -8,9 +8,14 @@ import { env, EnvironmentType } from '../utils/environmentType';
 
 export const genORMConnection = async (
 	logging: boolean = true,
+	connection?: string,
 ): Promise<Connection> => {
 	const connectionOptions = await getConnectionOptions(
-		env(EnvironmentType.PROD) ? 'production-database' : 'default',
+		connection
+			? connection
+			: env(EnvironmentType.PROD)
+			? 'production-database'
+			: 'default',
 	);
 	const extendedOptions = {
 		...connectionOptions,

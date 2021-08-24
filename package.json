@@ -16,6 +16,8 @@
 		"ts-node-dev": "^1.1.1"
 	},
 	"dependencies": {
+		"@apollo/federation": "^0.29.0",
+		"@apollo/gateway": "^0.38.0",
 		"@types/body-parser": "^1.19.0",
 		"@types/express-winston": "^4.0.0",
 		"@types/jest": "^26.0.20",

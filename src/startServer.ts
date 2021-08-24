@@ -1,9 +1,8 @@
 import 'reflect-metadata';
 import 'dotenv/config';
-//import { GraphQLServer, Options } from 'graphql-yoga';
-import { genSchema } from './utils/genSchema';
-import { sessionConfiguration } from './helper/session';
-import { REDIS } from './helper/redis';
+//import { genSchema } from './helpers/genSchema';
+import { sessionConfiguration } from './helpers/session';
+import { REDIS } from './helpers/redis';
 import { env, EnvironmentType } from './utils/environmentType';
 import { formatValidationError } from './utils/formatValidationError';
 import { GQLContext } from './utils/graphql-utils';
@@ -15,9 +14,15 @@ import { register } from 'prom-client';
 import { Connection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
+import {
+	ApolloGateway,
+	ServiceEndpointDefinition,
+} from '@apollo/gateway';
 import * as cors from 'cors';
 import * as fs from 'fs';
 import * as express from 'express';
+import { UserModule } from './modules';
+import { CookieDataSource } from './helpers/dataSource';
 
 // import NodeMailerService from "./helper/email";
 // import { DEV_BASE_URL } from "./constants/global-variables";
@@ -42,7 +47,21 @@ export const startServer = async () => {
 		}
 	}
 
-	const schema = await genSchema();
+	const serviceList: ServiceEndpointDefinition[] = [
+		{
+			name: 'account-creation-module',
+			url: await UserModule.listen(3001),
+		},
+	];
+
+	const gateway = new ApolloGateway({
+		serviceList,
+		buildService({ url }) {
+			return new CookieDataSource({ url });
+		},
+	});
+
+	const { schema, executor } = await gateway.load();
 
 	const sdl = printSchema(schema);
 	await fs.writeFileSync(__dirname + '/schema.graphql', sdl);
@@ -55,6 +74,7 @@ export const startServer = async () => {
 
 	const server = new ApolloServer({
 		schema,
+		executor,
 		formatError: (err) => {
 			err.message = formatValidationError(err);
 			return err;
@@ -77,9 +97,9 @@ export const startServer = async () => {
 		},
 	});
 
+	const app = express();
 	await server.start();
 
-	const app = express();
 	app.use(sessionConfiguration);
 
 	server.applyMiddleware({ app });
@@ -115,7 +135,7 @@ export const startServer = async () => {
 	logger.info(
 		env(EnvironmentType.PROD)
 			? {
-					ENDPOINT: `${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
+					GATEWAY_ENDPOINT: `${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
 					ENVIRONMENT: process.env.NODE_ENV?.trim(),
 					PROCESS_ID: process.pid,
 					DATABASE_URL: process.env.DATABASE_URL,
@@ -123,7 +143,7 @@ export const startServer = async () => {
 					REDIS_PORT: process.env.REDIS_PORT,
 			  }
 			: {
-					ENDPOINT: `${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
+					GATEWAY_ENDPOINT: `${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
 					ENVIRONMENT: process.env.NODE_ENV?.trim(),
 					PROCESS_ID: process.pid,
 					PORT: PORT,
