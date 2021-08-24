@@ -25,16 +25,40 @@ export class TestClient {
 		});
 	}
 
-	private async mutation<T>(resolver: string, args: T) {
+	private async mutation<T>(
+		resolver: string,
+		args: T,
+		headers?: {
+			accessToken: string;
+			refreshToken: string;
+		},
+	) {
 		return await this.client
-			.request(GQL.mutations[resolver], { data: args })
+			.request(
+				GQL.mutations[resolver],
+				{ data: args },
+				{
+					'x-access-token': headers?.accessToken || '',
+					'x-refresh-token': headers?.refreshToken || '',
+				},
+			)
 			.then((data) => data)
 			.catch((err) => err);
 	}
 
-	private async query<T>(resolver: string, args?: T) {
+	private async query<T>(
+		resolver: string,
+		args?: T,
+		headers?: {
+			accessToken: string;
+			refreshToken: string;
+		},
+	) {
 		return await this.client
-			.request(GQL.queries[resolver], args && { data: args })
+			.request(GQL.queries[resolver], args && { data: args }, {
+				'x-access-token': headers?.accessToken || '',
+				'x-refresh-token': headers?.refreshToken || '',
+			})
 			.then((data) => data)
 			.catch((err) => err);
 	}
