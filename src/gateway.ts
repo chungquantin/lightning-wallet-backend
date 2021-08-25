@@ -6,15 +6,11 @@ import { env, EnvironmentType } from './utils/environmentType';
 import { formatValidationError } from './utils/formatValidationError';
 import { GQLContext } from './utils/graphql-utils';
 import { genORMConnection } from './config/orm.config';
-import { printSchema } from 'graphql';
 import { logger } from './config/winston.config';
 import { DEV_BASE_URL } from './constants/global-variables';
 import { register } from 'prom-client';
 import { Connection } from 'typeorm';
-import {
-	ApolloServer,
-	AuthenticationError,
-} from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import {
 	ApolloGateway,
@@ -27,11 +23,12 @@ import * as express from 'express';
 import * as expressJwt from 'express-jwt';
 import * as jwt from 'jsonwebtoken';
 import { AccountCreationModule } from './modules';
+import { printSchemaWithDirectives } from 'graphql-tools';
 
 // import NodeMailerService from "./helper/email";
 // import { DEV_BASE_URL } from "./constants/global-variables";
 
-export const startServer = async () => {
+export const buildGateway = async () => {
 	if (!env(EnvironmentType.PROD)) {
 		await new REDIS().server.flushall();
 	}
@@ -79,7 +76,7 @@ export const startServer = async () => {
 
 	const { schema, executor } = await gateway.load();
 
-	const sdl = printSchema(schema);
+	const sdl = printSchemaWithDirectives(schema);
 	await fs.writeFileSync(__dirname + '/schema.graphql', sdl);
 
 	const corsOptions = {
@@ -110,18 +107,24 @@ export const startServer = async () => {
 				req.headers['x-access-token'];
 
 			try {
-				const decoded = jwt.verify(token, 's3ssion-webtok3n');
-				req.user = decoded;
+				if (token !== '') {
+					const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+					req.user = decoded;
+				}
+				return {
+					request: req,
+					currentUser: req.user || undefined,
+					redis: new REDIS().server,
+					url: req?.protocol + '://' + req?.get('host'),
+				};
 			} catch (error) {
-				throw new AuthenticationError(error.message);
+				return {
+					request: req,
+					currentUser: undefined,
+					redis: new REDIS().server,
+					url: req?.protocol + '://' + req?.get('host'),
+				};
 			}
-
-			return {
-				request: req,
-				currentUser: req.user || null,
-				redis: new REDIS().server,
-				url: req?.protocol + '://' + req?.get('host'),
-			};
 		},
 	});
 

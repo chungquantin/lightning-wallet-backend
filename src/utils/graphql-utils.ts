@@ -27,7 +27,7 @@ export interface CurrentUser {
 
 export type GQLContext = {
 	request: Request;
-	currentUser: CurrentUser;
+	currentUser: CurrentUser | null;
 	url: string;
 	redis: Redis;
 };

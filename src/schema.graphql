@@ -1,8 +1,11 @@
+schema @core(feature: "https://specs.apollo.dev/core/v0.1") @core(feature: "https://specs.apollo.dev/join/v0.1") {
+  query: Query
+  mutation: Mutation
+}
 type ApiError {
   message: String!
   path: String!
 }
-
 """Fiat currency"""
 enum FiatCurrency {
   AUD
@@ -11,77 +14,64 @@ enum FiatCurrency {
   USD
   VND
 }
-
 type ForgotPassword {
   data: String
   errors: [ApiError!]
   success: Boolean!
 }
-
 input ForgotPasswordChangeDto {
   key: String!
   newPassword: String!
 }
-
 type GetUser {
   data: UserSchema
   errors: [ApiError!]
   success: Boolean!
 }
-
 input GetUserDto {
   userId: String!
 }
-
 type GetUsers {
   data: [UserSchema!]!
   errors: [ApiError!]
   success: Boolean!
 }
-
 type Login {
-  data: String
+  data: TokenResponse
   errors: [ApiError!]
   success: Boolean!
 }
-
 input LoginDto {
   email: String!
   password: String!
 }
-
 type Logout {
   data: String
   errors: [ApiError!]
   success: Boolean!
 }
-
 type Me {
   data: UserSchema
   errors: [ApiError!]
   success: Boolean!
 }
-
 type Mutation {
-  forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword
-  login(data: LoginDto!): Login
-  logout: Logout
-  register(data: RegisterDto!): Register
-  sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword
+  forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword @join__field(graph: ACCOUNT_CREATION_MODULE)
+  login(data: LoginDto!): Login @join__field(graph: ACCOUNT_CREATION_MODULE)
+  logout: Logout @join__field(graph: ACCOUNT_CREATION_MODULE)
+  register(data: RegisterDto!): Register @join__field(graph: ACCOUNT_CREATION_MODULE)
+  sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword @join__field(graph: ACCOUNT_CREATION_MODULE)
 }
-
 type Query {
-  getUser(data: GetUserDto!): GetUser
-  getUsers: GetUsers
-  me: Me
+  getUser(data: GetUserDto!): GetUser @join__field(graph: ACCOUNT_CREATION_MODULE)
+  getUsers: GetUsers @join__field(graph: ACCOUNT_CREATION_MODULE)
+  me: Me @join__field(graph: ACCOUNT_CREATION_MODULE)
 }
-
 type Register {
   data: String
   errors: [ApiError!]
   success: Boolean!
 }
-
 input RegisterDto {
   avatar: String!
   email: String!
@@ -90,30 +80,31 @@ input RegisterDto {
   password: String!
   phoneNumber: String!
 }
-
 type SendForgotPassword {
   data: String
   errors: [ApiError!]
   success: Boolean!
 }
-
 input SendForgotPasswordDto {
   email: String!
 }
-
-type UserSchema {
-  avatar: String!
-  balance: Float!
-  defaultCurrency: FiatCurrency!
-  email: String!
-  emailVerified: Boolean!
-  firstName: String!
-  forgotPasswordLock: Boolean!
-  id: ID!
-  lastName: String!
-  name: String!
-  password: String!
-  phoneNumber: String!
-  phoneNumberVerified: Boolean!
-  twoFactorVerified: Boolean!
+type TokenResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+type UserSchema @join__owner(graph: ACCOUNT_CREATION_MODULE) @join__type(graph: ACCOUNT_CREATION_MODULE, key: "id") {
+  avatar: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  balance: Float! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  defaultCurrency: FiatCurrency! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  email: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  emailVerified: Boolean! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  firstName: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  forgotPasswordLock: Boolean! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  id: ID! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  lastName: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  name: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  password: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  phoneNumber: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  phoneNumberVerified: Boolean! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  twoFactorVerified: Boolean! @join__field(graph: ACCOUNT_CREATION_MODULE)
 }

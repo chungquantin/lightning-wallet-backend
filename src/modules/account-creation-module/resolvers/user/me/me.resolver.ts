@@ -22,6 +22,7 @@ class MeResolver {
 		const user = await this.userRepository.findOne({
 			where: { id: currentUser?.userId },
 		});
+		
 		if (!user) {
 			return {
 				success: false,

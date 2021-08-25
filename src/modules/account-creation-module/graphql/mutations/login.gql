@@ -5,6 +5,9 @@ mutation login($data: LoginDto!){
             path
             message
         }
-        data
+        data{
+            accessToken
+            refreshToken
+        }
     }
 }

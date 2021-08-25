@@ -6,6 +6,7 @@ export const isAuth: MiddlewareFn<GQLContext> = (
 	{ args, context: { currentUser } },
 	next,
 ) => {
+	console.log('Current User: ', currentUser);
 	if (!currentUser) {
 		throw new AuthenticationError('Not authenticated');
 	}

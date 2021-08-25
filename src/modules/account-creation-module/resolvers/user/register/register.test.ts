@@ -99,75 +99,49 @@ testFrame(() => {
 				path: 'register',
 			});
 		});
+	});
 
-		test('[Yup] username length matched', async () => {
-			await client?.user
-				.register({
-					...mockData,
-					email: faker.internet.email(),
-				})
-				.then((res) =>
-					expect(yupErrorResponse(res)).toEqual({
-						message: 'username must be at least 4 characters',
-						path: 'register',
-					}),
-				);
-
-			await client?.user
-				.register({
-					...mockData,
-					email: faker.internet.email(),
-				})
-				.then((res) =>
-					expect(yupErrorResponse(res)).toEqual({
-						message: 'username must be at most 20 characters',
-						path: 'register',
-					}),
-				);
+	test('[Yup] firstName & lastName length match', async () => {
+		const data = await client?.user.register({
+			email: faker.internet.email(),
+			password: faker.internet.password(),
+			firstName: '',
+			lastName: '',
+			phoneNumber: '1231231231',
+			avatar: '',
 		});
-
-		test('[Yup] firstName & lastName length match', async () => {
-			const data = await client?.user.register({
-				email: faker.internet.email(),
-				password: faker.internet.password(),
-				firstName: '',
-				lastName: '',
-				phoneNumber: '1231231231',
-				avatar: '',
-			});
-			expect(yupErrorResponse(data)).toEqual({
-				message: 'lastName must be at least 3 characters',
-				path: 'register',
-			});
+		expect(yupErrorResponse(data)).toEqual({
+			message: 'lastName must be at least 3 characters',
+			path: 'register',
 		});
+	});
 
-		test('[Yup] phoneNumber length match', async () => {
-			const data = await client?.user.register({
-				...mockData,
-				email: faker.internet.email(),
-				phoneNumber: '1'.repeat(30),
-			});
-			expect(yupErrorResponse(data)).toEqual({
-				message: 'phoneNumber must be at most 20 characters',
-				path: 'register',
-			});
+	test('[Yup] phoneNumber length match', async () => {
+		const data = await client?.user.register({
+			...mockData,
+			email: faker.internet.email(),
+			phoneNumber: '1'.repeat(30),
 		});
+		expect(yupErrorResponse(data)).toEqual({
+			message: 'phoneNumber must be at most 20 characters',
+			path: 'register',
+		});
+	});
 
-		test('[Yup] phoneNumber has been taken', async () => {
-			const data = await client?.user.register({
-				...mockData,
-				email: faker.internet.email(),
-			});
-			expect(data?.register).toEqual({
-				data: null,
-				success: false,
-				errors: [
-					{
-						message: CustomMessage.phoneNumberIsTaken,
-						path: 'phoneNumber',
-					},
-				],
-			});
+	test('[Yup] phoneNumber has been taken', async () => {
+		const data = await client?.user.register({
+			...mockData,
+			email: faker.internet.email(),
+		});
+		expect(data?.register).toEqual({
+			data: null,
+			success: false,
+			errors: [
+				{
+					message: CustomMessage.phoneNumberIsTaken,
+					path: 'phoneNumber',
+				},
+			],
 		});
 	});
 });

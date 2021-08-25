@@ -1,6 +1,4 @@
 import * as Redis from 'ioredis';
-import * as connectRedis from 'connect-redis';
-import { REDIS_TOKEN_PREFIX } from '../constants/global-variables';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { EnvironmentType } from '../utils/environmentType';
 import 'dotenv/config';
@@ -33,14 +31,3 @@ export const redisPubSub = new RedisPubSub({
 	publisher: new REDIS().server,
 	subscriber: new REDIS().client,
 });
-
-export const initializeRedisStore = (
-	session: any,
-): connectRedis.RedisStore => {
-	const RedisStore = connectRedis(session);
-
-	return new RedisStore({
-		client: new REDIS().client,
-		prefix: REDIS_TOKEN_PREFIX,
-	});
-};

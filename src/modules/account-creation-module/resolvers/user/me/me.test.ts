@@ -38,45 +38,44 @@ testFrame(() => {
 			);
 		});
 		test('get current user after login', async () => {
-			await client?.user
-				.login({
-					email: mockData.email,
-					password: mockData.password,
-				})
-				.then((res) =>
-					expect(res.login).toStrictEqual({
-						data: null,
-						errors: null,
-						success: true,
-					}),
-				);
+			const response = await client?.user.login({
+				email: mockData.email,
+				password: mockData.password,
+			});
+			expect(response?.login.success).toBeTruthy();
 			const user = await getRepository(User).findOne({
 				where: {
 					email: mockData.email,
 				},
 			});
-			await client?.user.me().then((res) =>
-				expect(res.me).toStrictEqual({
-					errors: null,
-					success: true,
-					data: {
-						email: mockData.email,
-						firstName: mockData.firstName,
-						id: user?.id,
-						emailVerified: true,
-						lastName: mockData.lastName,
-						name: `${mockData.firstName} ${mockData.lastName}`,
-						password: user?.password,
-						avatar: '',
-						phoneNumber: mockData.phoneNumber,
-						forgotPasswordLock: false,
-						phoneNumberVerified: false,
-						twoFactorVerified: false,
-						balance: 0,
-						defaultCurrency: 'USD',
-					},
-				}),
-			);
+
+			await client?.user
+				.me({
+					accessToken: response?.login.data?.accessToken as any,
+					refreshToken: response?.login.data?.refreshToken as any,
+				})
+				.then((res) =>
+					expect(res).toStrictEqual({
+						errors: null,
+						success: true,
+						data: {
+							email: mockData.email,
+							firstName: mockData.firstName,
+							id: user?.id,
+							emailVerified: false,
+							lastName: mockData.lastName,
+							name: `${mockData.firstName} ${mockData.lastName}`,
+							password: user?.password,
+							avatar: '',
+							phoneNumber: mockData.phoneNumber,
+							forgotPasswordLock: false,
+							phoneNumberVerified: false,
+							twoFactorVerified: false,
+							balance: 0,
+							defaultCurrency: 'USD',
+						},
+					}),
+				);
 		});
 	});
 });

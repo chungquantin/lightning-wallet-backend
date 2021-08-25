@@ -1,11 +1,6 @@
-query getUsers{
-    getUsers{
-        success
-        errors{
-            path
-            message
-        }
-        data{
+query _entities($representations: [_Any!]!){
+    _entities(representations: $representations){
+        ... on UserSchema {
             id
             email
             avatar

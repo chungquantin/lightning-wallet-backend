@@ -27,13 +27,14 @@ export class User extends BaseEntity {
 	avatar: string;
 
 	@Field(() => Boolean!)
-	@Column('bool', { default: true })
+	@Column('bool', { default: false })
 	emailVerified: boolean;
 
 	@Field(() => Boolean!)
 	@Column('bool', { default: false })
 	twoFactorVerified: boolean;
 
+	// TODO Extend in transfer service
 	@Field(() => Number!)
 	@Column('int', { default: 0 })
 	balance: number;
@@ -59,6 +60,7 @@ export class User extends BaseEntity {
 	@Column({ nullable: true })
 	lastName: string;
 
+	// TODO Extend in transfer service
 	@Field(() => FiatCurrency!)
 	@Column('text', { nullable: false, default: FiatCurrency.USD })
 	defaultCurrency: FiatCurrency;

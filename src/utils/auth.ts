@@ -12,7 +12,7 @@ export const customAuthChecker: AuthChecker<GQLContext> = (
 	// and check his permission in the db against the `roles` argument
 	// that comes from the `@Authorized` decorator, eg. ["ADMIN", "MODERATOR"]
 	console.log(roles);
-	return !!currentUser.userId; // or false if access is denied
+	return !!currentUser?.userId; // or false if access is denied
 };
 
 export const createTokens = async (user, secret, secret2) => {
@@ -23,7 +23,7 @@ export const createTokens = async (user, secret, secret2) => {
 		},
 		secret,
 		{
-			expiresIn: '3d',
+			expiresIn: 60 * 60 * 24 * 3,
 		},
 	);
 
@@ -34,7 +34,7 @@ export const createTokens = async (user, secret, secret2) => {
 		},
 		secret2,
 		{
-			expiresIn: '14d',
+			expiresIn: 60 * 60 * 24 * 10,
 		},
 	);
 

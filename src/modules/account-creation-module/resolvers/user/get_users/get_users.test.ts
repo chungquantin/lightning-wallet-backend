@@ -21,7 +21,7 @@ testFrame(() => {
 		client = new TestClient();
 	});
 
-	describe('Get user test suite', () => {
+	describe('Get users test suite', () => {
 		test('should return empty array', async () => {
 			await client?.user.getUsers().then((res) => {
 				expect(res.getUsers.data).toHaveLength(0);
@@ -40,7 +40,7 @@ testFrame(() => {
 							email: mockData.email,
 							firstName: mockData.firstName,
 							id: user?.id,
-							emailVerified: true,
+							emailVerified: false,
 							lastName: mockData.lastName,
 							name: `${mockData.firstName} ${mockData.lastName}`,
 							password: user?.password,

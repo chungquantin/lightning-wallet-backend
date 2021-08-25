@@ -36,15 +36,18 @@ testFrame(() => {
 		});
 
 		test('login to account', async () => {
-			await client?.user
-				.login({ email: mockData.email, password: mockData.password })
-				.then((res) =>
-					expect(res.login).toStrictEqual({
-						data: null,
-						errors: null,
-						success: true,
-					}),
-				);
+			const response = await client?.user.login({
+				email: mockData.email,
+				password: mockData.password,
+			});
+			expect(response?.login).toStrictEqual({
+				data: {
+					accessToken: response?.login.data?.accessToken,
+					refreshToken: response?.login.data?.refreshToken,
+				},
+				errors: null,
+				success: true,
+			});
 		});
 
 		test('logout works', async () => {

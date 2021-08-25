@@ -36,9 +36,9 @@ testFrame(() => {
 			await client1?.user
 				.login({ email: mockData.email, password: mockData.password })
 				.then((res) => {
-					console.log(res);
 					accessToken = res.login.data?.accessToken as string;
 					return expect(res.login).toEqual({
+						data: null,
 						success: false,
 						errors: [
 							{
@@ -153,31 +153,7 @@ testFrame(() => {
 				email: mockData.email,
 				password: mockData.password,
 			});
-			expect(data?.login).toStrictEqual({
-				data: null,
-				errors: null,
-				success: true,
-			});
-		});
-
-		test(CustomMessage.userHasLoggedIn, async () => {
-			await client1?.user
-				.login({
-					email: mockData.email,
-					password: mockData.password,
-				})
-				.then((res) =>
-					expect(res.login).toMatchObject({
-						data: null,
-						success: false,
-						errors: [
-							{
-								message: CustomMessage.userHasLoggedIn,
-								path: 'login',
-							},
-						],
-					}),
-				);
+			expect(data?.login.success).toBeTruthy();
 		});
 	});
 });

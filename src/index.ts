@@ -1,7 +1,6 @@
-import { startServer } from './startServer';
+import { buildGateway } from './gateway';
 import { Container } from 'typedi';
 import * as typeorm from 'typeorm';
-import { logger } from './config/winston.config';
 import { collectDefaultMetrics } from 'prom-client';
 
 console.log('Server boots up!');
@@ -10,4 +9,4 @@ typeorm.useContainer(Container);
 
 collectDefaultMetrics();
 
-startServer().catch((err) => logger.error(err.message));
+buildGateway().catch((err) => console.log(err));

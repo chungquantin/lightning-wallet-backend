@@ -7,6 +7,7 @@ import { customAuthChecker } from '../../utils/authChecker';
 import { User } from './entity';
 import * as UserResolver from './resolvers/user';
 import * as fs from 'fs';
+import * as jwt from 'jsonwebtoken';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import { GQLContext } from '../../utils/graphql-utils';
 import { printSchemaWithDirectives } from 'graphql-tools';
@@ -49,7 +50,23 @@ export async function listen(port: number): Promise<string> {
 			),
 			context: ({ req }): Partial<GQLContext> => {
 				const redis = new REDIS().server;
+
+				const token =
+					req.body.token ||
+					req.query.token ||
+					req.headers['x-access-token'];
+
 				try {
+					if (token !== '') {
+						const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+						req.user = decoded;
+						return {
+							request: req,
+							redis,
+							currentUser: req.user || undefined,
+							url: req?.protocol + '://' + req?.get('host'),
+						};
+					}
 					return {
 						request: req,
 						redis,

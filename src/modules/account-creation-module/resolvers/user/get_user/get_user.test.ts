@@ -22,7 +22,7 @@ testFrame(() => {
 		client = new TestClient();
 	});
 
-	describe('Get users test suite', () => {
+	describe('Get user test suite', () => {
 		test('should be invalid id', async () => {
 			await client?.user
 				.getUser({
@@ -68,7 +68,7 @@ testFrame(() => {
 							email: user.email,
 							firstName: user.firstName,
 							id: user?.id,
-							emailVerified: true,
+							emailVerified: false,
 							lastName: user.lastName,
 							name: `${user.firstName} ${user.lastName}`,
 							password: user?.password,
