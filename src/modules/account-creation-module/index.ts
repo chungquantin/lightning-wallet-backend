@@ -13,22 +13,26 @@ import { printSchemaWithDirectives } from 'graphql-tools';
 
 export async function listen(port: number): Promise<string> {
 	try {
-		const schema = await buildFederatedSchema({
-			resolvers: [
-				UserResolver.LoginResolver,
-				UserResolver.ForgotPasswordResolver,
-				UserResolver.GetUserResolver,
-				UserResolver.GetUsersResolver,
-				UserResolver.LogoutResolver,
-				UserResolver.MeResolver,
-				UserResolver.RegisterResolver,
-			],
-			orphanedTypes: [User],
-			container: Container,
-			pubSub: redisPubSub,
-			authChecker: customAuthChecker,
-			globalMiddlewares: [ResolveTime],
-		});
+		const schema = await buildFederatedSchema(
+			{
+				resolvers: [
+					UserResolver.LoginResolver,
+					UserResolver.ForgotPasswordResolver,
+					UserResolver.GetUserResolver,
+					UserResolver.GetUsersResolver,
+					UserResolver.LogoutResolver,
+					UserResolver.MeResolver,
+					UserResolver.RegisterResolver,
+				],
+				orphanedTypes: [User],
+				container: Container,
+				pubSub: redisPubSub,
+				authChecker: customAuthChecker,
+				globalMiddlewares: [ResolveTime],
+			},
+			{},
+			__dirname,
+		);
 
 		const sdl = printSchemaWithDirectives(schema);
 		await fs.writeFileSync(__dirname + '/schema.graphql', sdl);

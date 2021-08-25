@@ -27,17 +27,9 @@ enum FiatCurrency {
   MXN
 }
 type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
   me: Me
   getUser(data: GetUserDto!): GetUser
   getUsers: GetUsers
-}
-union _Entity = UserSchema
-scalar _Any
-type _Service {
-  """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
-  sdl: String
 }
 type Me {
   success: Boolean!
@@ -116,8 +108,3 @@ input ForgotPasswordChangeDto {
   key: String!
   newPassword: String!
 }
-directive @key(fields: String!) on OBJECT | INTERFACE
-directive @extends on OBJECT | INTERFACE
-directive @external on OBJECT | FIELD_DEFINITION
-directive @requires(fields: String!) on FIELD_DEFINITION
-directive @provides(fields: String!) on FIELD_DEFINITION

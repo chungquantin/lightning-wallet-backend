@@ -12,7 +12,6 @@ import { FiatCurrency } from '../../../shared/FiatCurrency.enum';
 
 @ObjectType('UserSchema')
 @Directive('@key(fields: "id")')
-@Directive('@extends')
 @Entity('User')
 export class User extends BaseEntity {
 	@Field(() => ID)
@@ -20,12 +19,10 @@ export class User extends BaseEntity {
 	id: string;
 
 	@Field(() => String!)
-	@Directive('@cacheControl(maxAge: 30)')
 	@Column('text', { unique: true })
 	email: string;
 
 	@Field(() => String!)
-	@Directive('@cacheControl(maxAge: 20)')
 	@Column('text', { nullable: false })
 	avatar: string;
 
@@ -46,7 +43,6 @@ export class User extends BaseEntity {
 	phoneNumberVerified: boolean;
 
 	@Field(() => String!)
-	@Directive('@cacheControl(maxAge: 30)')
 	@Column('text', { unique: true })
 	phoneNumber: string;
 
