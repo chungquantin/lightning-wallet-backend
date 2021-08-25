@@ -4,8 +4,8 @@ import { UserRepository } from '../../../repository/user/UserRepository';
 import { User } from '../../../entity';
 import { ApiArrayResponse } from '../../../../../shared';
 
-const ApiUsersResponse = ApiArrayResponse<User>('GetUsers', User);
-type ApiUsersResponseType = InstanceType<typeof ApiUsersResponse>;
+export const ApiUsersResponse = ApiArrayResponse<User>('GetUsers', User);
+export type ApiUsersResponseType = InstanceType<typeof ApiUsersResponse>;
 
 @Resolver((of) => User)
 class GetUsersResolver {

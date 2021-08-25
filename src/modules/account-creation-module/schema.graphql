@@ -1,8 +1,40 @@
-type ApiError {
-  path: String!
-  message: String!
+schema {
+  query: Query
+  mutation: Mutation
 }
-
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+scalar _Any
+scalar _FieldSet
+union _Entity = UserSchema
+type _Service {
+  sdl: String
+}
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service
+  getUser(data: GetUserDto!): GetUser
+  getUsers: GetUsers
+  me: Me
+}
+type UserSchema @key(fields: "id") @extends {
+  id: ID!
+  email: String! @cacheControl(maxAge: 30)
+  avatar: String! @cacheControl(maxAge: 20)
+  emailVerified: Boolean!
+  twoFactorVerified: Boolean!
+  balance: Float!
+  phoneNumberVerified: Boolean!
+  phoneNumber: String! @cacheControl(maxAge: 30)
+  password: String!
+  firstName: String!
+  lastName: String!
+  defaultCurrency: FiatCurrency!
+  forgotPasswordLock: Boolean!
+  name: String!
+}
 """Fiat currency"""
 enum FiatCurrency {
   USD
@@ -11,57 +43,28 @@ enum FiatCurrency {
   AUD
   MXN
 }
-
-type ForgotPassword {
-  success: Boolean!
-  errors: [ApiError!]
-  data: String
-}
-
-input ForgotPasswordChangeDto {
-  key: String!
-  newPassword: String!
-}
-
-type GetUser {
-  success: Boolean!
-  errors: [ApiError!]
-  data: UserSchema
-}
-
-input GetUserDto {
-  userId: String!
-}
-
-type GetUsers {
-  success: Boolean!
-  errors: [ApiError!]
-  data: [UserSchema!]!
-}
-
-type Login {
-  success: Boolean!
-  errors: [ApiError!]
-  data: String
-}
-
-input LoginDto {
-  email: String!
-  password: String!
-}
-
-type Logout {
-  success: Boolean!
-  errors: [ApiError!]
-  data: String
-}
-
 type Me {
   success: Boolean!
   errors: [ApiError!]
   data: UserSchema
 }
-
+type ApiError {
+  path: String!
+  message: String!
+}
+type GetUser {
+  success: Boolean!
+  errors: [ApiError!]
+  data: UserSchema
+}
+input GetUserDto {
+  userId: String!
+}
+type GetUsers {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [UserSchema!]!
+}
 type Mutation {
   login(data: LoginDto!): Login
   logout: Logout
@@ -69,20 +72,29 @@ type Mutation {
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword
   forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword
 }
-
-type Query {
-  _service: _Service!
-  me: Me
-  getUser(data: GetUserDto!): GetUser
-  getUsers: GetUsers
+type Login {
+  success: Boolean!
+  errors: [ApiError!]
+  data: TokenResponse
 }
-
+type TokenResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+input LoginDto {
+  email: String!
+  password: String!
+}
+type Logout {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
 type Register {
   success: Boolean!
   errors: [ApiError!]
   data: String
 }
-
 input RegisterDto {
   firstName: String!
   lastName: String!
@@ -91,30 +103,26 @@ input RegisterDto {
   phoneNumber: String!
   avatar: String!
 }
-
+type ForgotPassword {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input SendForgotPasswordDto {
+  email: String!
+}
 type SendForgotPassword {
   success: Boolean!
   errors: [ApiError!]
   data: String
 }
-
-input SendForgotPasswordDto {
-  email: String!
+input ForgotPasswordChangeDto {
+  key: String!
+  newPassword: String!
 }
-
-type UserSchema {
-  id: ID!
-  email: String!
-  avatar: String!
-  emailVerified: Boolean!
-  twoFactorVerified: Boolean!
-  balance: Float!
-  phoneNumberVerified: Boolean!
-  phoneNumber: String!
-  password: String!
-  firstName: String!
-  lastName: String!
-  defaultCurrency: FiatCurrency!
-  forgotPasswordLock: Boolean!
-  name: String!
-}
+directive @key(fields: String!) on OBJECT | INTERFACE
+directive @extends on OBJECT | INTERFACE
+directive @external on OBJECT | FIELD_DEFINITION
+directive @requires(fields: String!) on FIELD_DEFINITION
+directive @provides(fields: String!) on FIELD_DEFINITION
+directive @cacheControl(maxAge: Int, scope: CacheControlScope) on OBJECT | FIELD | FIELD_DEFINITION

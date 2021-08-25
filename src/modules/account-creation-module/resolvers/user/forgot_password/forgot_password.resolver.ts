@@ -26,11 +26,11 @@ import {
 } from '../../../../../utils/environmentType';
 import { ApiResponse } from '../../../../../shared';
 
-const ApiForgotPasswordResponse = ApiResponse<String>(
+export const ApiForgotPasswordResponse = ApiResponse<String>(
 	'ForgotPassword',
 	String,
 );
-type ApiForgotPasswordResponseType = InstanceType<
+export type ApiForgotPasswordResponseType = InstanceType<
 	typeof ApiForgotPasswordResponse
 >;
 
@@ -69,23 +69,24 @@ class ForgotPasswordResolver {
 				],
 			};
 		}
-		console.log(user);
-		await forgotPasswordLockAccount(user.id, redis);
+		
+		await forgotPasswordLockAccount(user.id);
+		// TODO Replace with Mailgun
 		// Send reset password link to email
-		const link =
-			await new NodeMailerService().createForgotPasswordLink(
-				env(EnvironmentType.PROD)
-					? process.env.PROD_SERVER_HOST
-					: (process.env.TEST_HOST as any),
-				user.id,
-				redis,
-			);
+		//const link =
+		//	await new NodeMailerService().createForgotPasswordLink(
+		//		env(EnvironmentType.PROD)
+		//			? process.env.PROD_SERVER_HOST
+		//			: (process.env.TEST_HOST as any),
+		//		user.id,
+		//		redis,
+		//	);
 
-		await new NodeMailerService().sendEmail(
-			email,
-			'Ramen | Forgot Password',
-			link,
-		);
+		//await new NodeMailerService().sendEmail(
+		//	email,
+		//	'Ramen | Forgot Password',
+		//	link,
+		//);
 
 		return {
 			success: true,

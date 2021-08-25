@@ -40,7 +40,7 @@ testFrame(() => {
 							email: mockData.email,
 							firstName: mockData.firstName,
 							id: user?.id,
-							emailVerified: false,
+							emailVerified: true,
 							lastName: mockData.lastName,
 							name: `${mockData.firstName} ${mockData.lastName}`,
 							password: user?.password,

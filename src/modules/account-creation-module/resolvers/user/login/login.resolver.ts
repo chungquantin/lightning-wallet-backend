@@ -4,21 +4,40 @@ import {
 	Mutation,
 	Ctx,
 	UseMiddleware,
+	ObjectType,
+	Field,
 } from 'type-graphql';
 import { User } from '../../../entity';
 import { LoginDto } from './login.dto';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
 import { GQLContext } from '../../../../../utils/graphql-utils';
-import { USER_TOKEN_ID_PREFIX } from '../../../../../constants/global-variables';
+import {
+	REDIS_ACCESS_TOKEN_PREFIX,
+	REDIS_REFRESH_TOKEN_PREFIX,
+} from '../../../../../constants/global-variables';
 import { yupValidateMiddleware } from '../../../../../middleware/yupValidate';
 import { ApiResponse, CustomMessage } from '../../../../../shared';
 import { YUP_LOGIN } from './login.validate';
+import { createTokens } from '../../../../../utils/auth';
 
-const ApiLoginResponse = ApiResponse<String>('Login', String);
-type ApiLoginResponseType = InstanceType<typeof ApiLoginResponse>;
+@ObjectType()
+class TokenResponse {
+	@Field()
+	accessToken: String;
+
+	@Field()
+	refreshToken: String;
+}
+
+export const ApiLoginResponse = ApiResponse<TokenResponse>(
+	'Login',
+	TokenResponse,
+);
+export type ApiLoginResponseType = InstanceType<
+	typeof ApiLoginResponse
+>;
 
 @Resolver((of) => User)
 class LoginResolver {
@@ -29,7 +48,7 @@ class LoginResolver {
 	@Mutation(() => ApiLoginResponse, { nullable: true })
 	async login(
 		@Arg('data') { email, password }: LoginDto,
-		@Ctx() { request, redis, currentUser }: GQLContext,
+		@Ctx() { redis, currentUser }: GQLContext,
 	): Promise<ApiLoginResponseType> {
 		let user = await this.userRepository.findByEmail(email);
 
@@ -88,20 +107,30 @@ class LoginResolver {
 			};
 		}
 
-		const accessToken = jwt.sign(
-			{
-				email: user.email,
-				userId: user.id,
-			},
-			's3ssion-webtok3n',
-			{
-				expiresIn: 60 * 60 * 24 * 7,
-			},
+		const [accessToken, refreshToken] = await createTokens(
+			user,
+			process.env.TOKEN_KEY,
+			process.env.REFRESH_TOKEN_KEY,
 		);
+
+		if (accessToken && refreshToken) {
+			await redis.set(
+				`${REDIS_ACCESS_TOKEN_PREFIX}${user.id}`,
+				accessToken,
+				'ex',
+				60 * 60 * 24 * 3,
+			);
+			await redis.set(
+				`${REDIS_REFRESH_TOKEN_PREFIX}${user.id}`,
+				accessToken,
+				'ex',
+				60 * 60 * 24 * 10,
+			);
+		}
 
 		return {
 			success: true,
-			data: accessToken,
+			data: { accessToken, refreshToken },
 		};
 	}
 }

@@ -68,7 +68,7 @@ testFrame(() => {
 							email: user.email,
 							firstName: user.firstName,
 							id: user?.id,
-							emailVerified: false,
+							emailVerified: true,
 							lastName: user.lastName,
 							name: `${user.firstName} ${user.lastName}`,
 							password: user?.password,

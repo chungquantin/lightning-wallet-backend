@@ -6,8 +6,8 @@ import { GQLContext } from '../../../../../utils/graphql-utils';
 import { isAuth } from '../../../../../middleware/isAuth';
 import { ApiResponse, CustomMessage } from '../../../../../shared';
 
-const ApiMeResponse = ApiResponse<User>('Me', User);
-type ApiMeResponseType = InstanceType<typeof ApiMeResponse>;
+export const ApiMeResponse = ApiResponse<User>('Me', User);
+export type ApiMeResponseType = InstanceType<typeof ApiMeResponse>;
 
 @Resolver((of) => User)
 class MeResolver {
@@ -20,7 +20,7 @@ class MeResolver {
 		@Ctx() { currentUser }: GQLContext,
 	): Promise<ApiMeResponseType> {
 		const user = await this.userRepository.findOne({
-			where: { id: currentUser.userId },
+			where: { id: currentUser?.userId },
 		});
 		if (!user) {
 			return {

@@ -7,8 +7,8 @@ import { User } from '../../../entity/User';
 import { YUP_USER_READ } from './get_user.validate';
 import { ApiResponse, CustomMessage } from '../../../../../shared';
 
-const ApiUserResponse = ApiResponse<User>('GetUser', User);
-type ApiUserResponseType = InstanceType<typeof ApiUserResponse>;
+export const ApiUserResponse = ApiResponse<User>('GetUser', User);
+export type ApiUserResponseType = InstanceType<typeof ApiUserResponse>;
 
 @Resolver((of) => User)
 class GetUserResolver {

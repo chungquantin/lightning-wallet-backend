@@ -28,7 +28,7 @@ testFrame(() => {
 		test('register works', async () => {
 			const data = await client?.user.register(mockData);
 
-			expect(data.register).toStrictEqual({
+			expect(data?.register).toStrictEqual({
 				data: null,
 				errors: null,
 				success: true,
@@ -74,7 +74,7 @@ testFrame(() => {
 				email: mockData.email,
 				password: mockData.password,
 			});
-			expect(data.login.success).toBeTruthy();
+			expect(data?.login.success).toBeTruthy();
 		});
 
 		test('[Yup] email is not valid', async () => {
@@ -158,7 +158,7 @@ testFrame(() => {
 				...mockData,
 				email: faker.internet.email(),
 			});
-			expect(data.register).toEqual({
+			expect(data?.register).toEqual({
 				data: null,
 				success: false,
 				errors: [

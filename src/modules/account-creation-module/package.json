@@ -1,0 +1,12 @@
+{
+	"name": "account-creation-module",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"gen-gql": "rimraf ./graphql & gqlg --schemaFilePath ./schema.graphql --destDirPath ./graphql --depthLimit 5"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}

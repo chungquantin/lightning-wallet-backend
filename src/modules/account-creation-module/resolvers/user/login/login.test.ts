@@ -20,6 +20,8 @@ const mockData: RegisterDto = {
 	avatar: '',
 };
 
+let accessToken = '';
+
 testFrame(() => {
 	beforeAll(async () => {
 		client1 = new TestClient();
@@ -33,9 +35,10 @@ testFrame(() => {
 		test('account is not verified', async () => {
 			await client1?.user
 				.login({ email: mockData.email, password: mockData.password })
-				.then((res) =>
-					expect(res.login).toEqual({
-						data: null,
+				.then((res) => {
+					console.log(res);
+					accessToken = res.login.data?.accessToken as string;
+					return expect(res.login).toEqual({
 						success: false,
 						errors: [
 							{
@@ -43,8 +46,8 @@ testFrame(() => {
 								path: 'emailVerified',
 							},
 						],
-					}),
-				);
+					});
+				});
 		});
 		test('verify account', async () => {
 			await getRepository(User).update(
@@ -108,7 +111,7 @@ testFrame(() => {
 				email: mockData.email,
 				password: mockData.password + '123',
 			});
-			expect(data.login).toMatchObject({
+			expect(data?.login).toMatchObject({
 				success: false,
 				data: null,
 				errors: [
@@ -125,7 +128,7 @@ testFrame(() => {
 				email: faker.internet.email(),
 				password: mockData.password,
 			});
-			expect(data.login).toMatchObject({
+			expect(data?.login).toMatchObject({
 				success: false,
 				data: null,
 				errors: [
@@ -150,7 +153,7 @@ testFrame(() => {
 				email: mockData.email,
 				password: mockData.password,
 			});
-			expect(data.login).toStrictEqual({
+			expect(data?.login).toStrictEqual({
 				data: null,
 				errors: null,
 				success: true,
@@ -173,21 +176,6 @@ testFrame(() => {
 								path: 'login',
 							},
 						],
-					}),
-				);
-		});
-
-		test('Multi session login works', async () => {
-			await client2?.user
-				.login({
-					email: mockData.email,
-					password: mockData.password,
-				})
-				.then((res) =>
-					expect(res.login).toStrictEqual({
-						data: null,
-						errors: null,
-						success: true,
 					}),
 				);
 		});

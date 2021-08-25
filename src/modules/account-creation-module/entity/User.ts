@@ -12,6 +12,7 @@ import { FiatCurrency } from '../../../shared/FiatCurrency.enum';
 
 @ObjectType('UserSchema')
 @Directive('@key(fields: "id")')
+@Directive('@extends')
 @Entity('User')
 export class User extends BaseEntity {
 	@Field(() => ID)

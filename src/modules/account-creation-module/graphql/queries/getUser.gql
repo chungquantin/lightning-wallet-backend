@@ -1,0 +1,25 @@
+query getUser($data: GetUserDto!){
+    getUser(data: $data){
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            id
+            email
+            avatar
+            emailVerified
+            twoFactorVerified
+            balance
+            phoneNumberVerified
+            phoneNumber
+            password
+            firstName
+            lastName
+            defaultCurrency
+            forgotPasswordLock
+            name
+        }
+    }
+}

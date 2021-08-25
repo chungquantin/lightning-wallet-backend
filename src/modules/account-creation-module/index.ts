@@ -1,4 +1,3 @@
-import { printSchema } from '@apollo/federation';
 import { ApolloServer } from 'apollo-server';
 import Container from 'typedi';
 import { buildFederatedSchema } from '../../helpers/buildFederatedSchema';
@@ -10,55 +9,66 @@ import * as UserResolver from './resolvers/user';
 import * as fs from 'fs';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import { GQLContext } from '../../utils/graphql-utils';
+import { printSchemaWithDirectives } from 'graphql-tools';
 
 export async function listen(port: number): Promise<string> {
-	const schema = await buildFederatedSchema({
-		resolvers: [
-			UserResolver.LoginResolver,
-			UserResolver.ForgotPasswordResolver,
-			UserResolver.GetUserResolver,
-			UserResolver.GetUsersResolver,
-			UserResolver.LogoutResolver,
-			UserResolver.MeResolver,
-			UserResolver.RegisterResolver,
-		],
-		orphanedTypes: [User],
-		container: Container,
-		pubSub: redisPubSub,
-		authChecker: customAuthChecker,
-		globalMiddlewares: [ResolveTime],
-	});
-
-	const sdl = printSchema(schema);
-	await fs.writeFileSync(__dirname + '/schema.graphql', sdl);
-
-	const server = new ApolloServer({
-		schema,
-		cache: new MemcachedCache(
-			[
-				'memcached-server-1',
-				'memcached-server-2',
-				'memcached-server-3',
+	try {
+		const schema = await buildFederatedSchema({
+			resolvers: [
+				UserResolver.LoginResolver,
+				UserResolver.ForgotPasswordResolver,
+				UserResolver.GetUserResolver,
+				UserResolver.GetUsersResolver,
+				UserResolver.LogoutResolver,
+				UserResolver.MeResolver,
+				UserResolver.RegisterResolver,
 			],
-			{ retries: 10, retry: 10000 }, // Options
-		),
-		context: ({ req }): Partial<GQLContext | undefined> => {
-			try {
-				return {
-					request: req,
-					redis: new REDIS().server,
-					currentUser: JSON.parse(req.headers.currentuser),
-					url: req?.protocol + '://' + req?.get('host'),
-				};
-			} catch (error) {
-				console.log(error.message);
-				return undefined;
-			}
-		},
-	});
+			orphanedTypes: [User],
+			container: Container,
+			pubSub: redisPubSub,
+			authChecker: customAuthChecker,
+			globalMiddlewares: [ResolveTime],
+		});
 
-	const { url } = await server.listen({ port });
-	console.log(`+ Account Creation service ready at ${url}`);
+		const sdl = printSchemaWithDirectives(schema);
+		await fs.writeFileSync(__dirname + '/schema.graphql', sdl);
 
-	return url;
+		const server = new ApolloServer({
+			schema,
+			cache: new MemcachedCache(
+				[
+					'memcached-server-1',
+					'memcached-server-2',
+					'memcached-server-3',
+				],
+				{ retries: 10, retry: 10000 }, // Options
+			),
+			context: ({ req }): Partial<GQLContext> => {
+				const redis = new REDIS().server;
+				try {
+					return {
+						request: req,
+						redis,
+						currentUser: JSON.parse(req.headers.currentuser),
+						url: req?.protocol + '://' + req?.get('host'),
+					};
+				} catch (error) {
+					return {
+						request: req,
+						redis,
+						currentUser: undefined,
+						url: req?.protocol + '://' + req?.get('host'),
+					};
+				}
+			},
+		});
+
+		const { url } = await server.listen({ port });
+		console.log(`[SERVICE: ACCOUNT CREATION] Ready at ${url}`);
+
+		return url;
+	} catch (error) {
+		console.log('[SERVICE: ACCOUNT CREATION] ERROR!!!');
+		throw new Error(error);
+	}
 }
