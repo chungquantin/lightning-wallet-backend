@@ -6,10 +6,15 @@ import {
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { env, EnvironmentType } from '../utils/environmentType';
 
-export const genORMConnection = async (
-	logging: boolean = true,
-	connection?: string,
-): Promise<Connection> => {
+export const genORMConnection = async ({
+	databaseName,
+	logging,
+	connection,
+}: Partial<{
+	databaseName: string;
+	logging: boolean;
+	connection: string;
+}>): Promise<Connection> => {
 	const connectionOptions = await getConnectionOptions(
 		connection
 			? connection
@@ -20,11 +25,12 @@ export const genORMConnection = async (
 	const extendedOptions = {
 		...connectionOptions,
 		database: (connectionOptions.database +
-			(env(EnvironmentType.TEST) ? '-test' : '')) as any,
+			(env(EnvironmentType.TEST)
+				? '-test'
+				: `-${databaseName}` || '')) as any,
 		dropSchema: env(EnvironmentType.TEST),
 		namingStrategy: new SnakeNamingStrategy(),
 		logging,
-		name: 'default',
 	};
 	if (process.env.DATABASE_URL && env(EnvironmentType.PROD)) {
 		Object.assign(extendedOptions, {

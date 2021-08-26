@@ -36,7 +36,7 @@ export async function buildFederatedSchema(
 		skipCheck: true,
 	});
 
-	exportGraphQL(schema, path, 'account-creation');
+	exportGraphQL(schema, path, 'service-schema');
 
 	const federatedSchema = buildApolloFederationSchema({
 		typeDefs: gql(printSchemaWithDirectives(schema)),

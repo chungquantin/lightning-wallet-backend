@@ -10,25 +10,9 @@
 		"migrations": ["src/modules/**/migration/*.ts"],
 		"subscribers": ["src/modules/**/subscribers/*.ts"],
 		"cli": {
-			"entitiesDir": "src/entity",
-			"migrationsDir": "src/migration",
-			"subscribersDir": "src/subscriber"
-		}
-	},
-	{
-		"type": "postgres",
-		"name": "production-database",
-		"port": 5432,
-		"database": "wallet-prod",
-		"synchronize": true,
-		"logging": true,
-		"entities": ["src/modules/**/entity/*.ts"],
-		"migrations": ["src/modules/**/migration/*.ts"],
-		"subscribers": ["src/modules/**/subscribers/*.ts"],
-		"cli": {
-			"entitiesDir": "src/entity",
-			"migrationsDir": "src/migration",
-			"subscribersDir": "src/subscriber"
+			"entitiesDir": "src/modules/**/src/entity",
+			"migrationsDir": "src/modules/**/src/migration",
+			"subscribersDir": "src/modules/**/src/subscriber"
 		}
 	}
 ]

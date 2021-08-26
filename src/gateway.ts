@@ -5,11 +5,8 @@ import { REDIS } from './common/helpers/redis';
 import { env, EnvironmentType } from './common/utils/environmentType';
 import { formatValidationError } from './common/utils/formatValidationError';
 import { GQLContext } from './common/utils/graphql-utils';
-import { genORMConnection } from './common/config/orm.config';
-import { logger } from './common/config/winston.config';
 import { DEV_BASE_URL } from './common/constants/global-variables';
 import { register } from 'prom-client';
-import { Connection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import {
@@ -29,25 +26,6 @@ import { printSchemaWithDirectives } from 'graphql-tools';
 // import { DEV_BASE_URL } from "./constants/global-variables";
 
 export const buildGateway = async () => {
-	if (!env(EnvironmentType.PROD)) {
-		await new REDIS().server.flushall();
-	}
-
-	let retries = 5;
-	let conn: Connection | null = null;
-	while (retries) {
-		try {
-			conn = await genORMConnection();
-			break;
-		} catch (error) {
-			logger.error(error.message);
-			retries -= 1;
-			console.log(`retries left: ${retries}`);
-			// wait 5 seconds before retry
-			await new Promise((res) => setTimeout(res, 5000));
-		}
-	}
-
 	const app = express();
 
 	const serviceList: ServiceEndpointDefinition[] = [
@@ -171,22 +149,7 @@ export const buildGateway = async () => {
 
 	await app.listen({ port: PORT });
 
-	logger.info(
-		env(EnvironmentType.PROD)
-			? {
-					GATEWAY_ENDPOINT: `${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
-					ENVIRONMENT: process.env.NODE_ENV?.trim(),
-					PROCESS_ID: process.pid,
-					DATABASE_URL: process.env.DATABASE_URL,
-					REDIS_HOST: process.env.REDIS_HOST,
-					REDIS_PORT: process.env.REDIS_PORT,
-			  }
-			: {
-					GATEWAY_ENDPOINT: `${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
-					ENVIRONMENT: process.env.NODE_ENV?.trim(),
-					PROCESS_ID: process.pid,
-					PORT: PORT,
-					DATABASE: conn?.options.database,
-			  },
+	console.log(
+		`Gateway is ready at ${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
 	);
 };
