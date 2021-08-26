@@ -1,0 +1,13 @@
+mutation login($data: LoginDto!){
+    login(data: $data){
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            accessToken
+            refreshToken
+        }
+    }
+}

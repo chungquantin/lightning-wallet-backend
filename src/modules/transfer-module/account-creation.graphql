@@ -1,0 +1,28 @@
+schema {
+  query: Query
+}
+type UserSchema @extends @key(fields: "id") {
+  id: ID! @external
+  balance: Float!
+  defaultCurrency: FiatCurrency!
+}
+"""Fiat currency"""
+enum FiatCurrency {
+  USD
+  CAD
+  VND
+  AUD
+  MXN
+}
+type Query {
+  helloWorld: HelloWorld
+}
+type HelloWorld {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+type ApiError {
+  path: String!
+  message: String!
+}

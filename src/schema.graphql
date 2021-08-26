@@ -36,6 +36,11 @@ type GetUsers {
   errors: [ApiError!]
   success: Boolean!
 }
+type HelloWorld {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
 type Login {
   data: TokenResponse
   errors: [ApiError!]
@@ -65,10 +70,11 @@ type Mutation {
 type Query {
   getUser(data: GetUserDto!): GetUser @join__field(graph: ACCOUNT_CREATION_MODULE)
   getUsers: GetUsers @join__field(graph: ACCOUNT_CREATION_MODULE)
+  helloWorld: HelloWorld @join__field(graph: TRANSFER_MODULE)
   me: Me @join__field(graph: ACCOUNT_CREATION_MODULE)
 }
 type Register {
-  data: String
+  data: UserSchema
   errors: [ApiError!]
   success: Boolean!
 }
@@ -92,10 +98,10 @@ type TokenResponse {
   accessToken: String!
   refreshToken: String!
 }
-type UserSchema @join__owner(graph: ACCOUNT_CREATION_MODULE) @join__type(graph: ACCOUNT_CREATION_MODULE, key: "id") {
+type UserSchema @join__owner(graph: ACCOUNT_CREATION_MODULE) @join__type(graph: ACCOUNT_CREATION_MODULE, key: "id") @join__type(graph: TRANSFER_MODULE, key: "id") {
   avatar: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
-  balance: Float! @join__field(graph: ACCOUNT_CREATION_MODULE)
-  defaultCurrency: FiatCurrency! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  balance: Float! @join__field(graph: TRANSFER_MODULE)
+  defaultCurrency: FiatCurrency! @join__field(graph: TRANSFER_MODULE)
   email: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
   emailVerified: Boolean! @join__field(graph: ACCOUNT_CREATION_MODULE)
   firstName: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
@@ -103,7 +109,7 @@ type UserSchema @join__owner(graph: ACCOUNT_CREATION_MODULE) @join__type(graph: 
   id: ID! @join__field(graph: ACCOUNT_CREATION_MODULE)
   lastName: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
   name: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
-  password: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
+  password: String @join__field(graph: ACCOUNT_CREATION_MODULE)
   phoneNumber: String! @join__field(graph: ACCOUNT_CREATION_MODULE)
   phoneNumberVerified: Boolean! @join__field(graph: ACCOUNT_CREATION_MODULE)
   twoFactorVerified: Boolean! @join__field(graph: ACCOUNT_CREATION_MODULE)

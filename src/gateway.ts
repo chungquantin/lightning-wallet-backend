@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 import 'dotenv/config';
 //import { genSchema } from './helpers/genSchema';
-import { REDIS } from './helpers/redis';
-import { env, EnvironmentType } from './utils/environmentType';
-import { formatValidationError } from './utils/formatValidationError';
-import { GQLContext } from './utils/graphql-utils';
-import { genORMConnection } from './config/orm.config';
-import { logger } from './config/winston.config';
-import { DEV_BASE_URL } from './constants/global-variables';
+import { REDIS } from './common/helpers/redis';
+import { env, EnvironmentType } from './common/utils/environmentType';
+import { formatValidationError } from './common/utils/formatValidationError';
+import { GQLContext } from './common/utils/graphql-utils';
+import { genORMConnection } from './common/config/orm.config';
+import { logger } from './common/config/winston.config';
+import { DEV_BASE_URL } from './common/constants/global-variables';
 import { register } from 'prom-client';
 import { Connection } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
@@ -22,7 +22,7 @@ import * as fs from 'fs';
 import * as express from 'express';
 import * as expressJwt from 'express-jwt';
 import * as jwt from 'jsonwebtoken';
-import { AccountCreationModule } from './modules';
+import { AccountCreationModule, TransferModule } from './modules';
 import { printSchemaWithDirectives } from 'graphql-tools';
 
 // import NodeMailerService from "./helper/email";
@@ -54,6 +54,10 @@ export const buildGateway = async () => {
 		{
 			name: 'account-creation-module',
 			url: await AccountCreationModule.listen(3001),
+		},
+		{
+			name: 'transfer-module',
+			url: await TransferModule.listen(3002),
 		},
 	];
 
@@ -139,7 +143,6 @@ export const buildGateway = async () => {
 			credentialsRequired: false,
 		}),
 	);
-
 	app.use(cors(corsOptions));
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));

@@ -1,0 +1,41 @@
+schema {
+  query: Query
+}
+type UserSchema @extends @key(fields: "id") {
+  id: ID! @external
+  balance: Float!
+  defaultCurrency: FiatCurrency!
+}
+"""Fiat currency"""
+enum FiatCurrency {
+  USD
+  CAD
+  VND
+  AUD
+  MXN
+}
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+  helloWorld: HelloWorld
+}
+union _Entity = UserSchema
+scalar _Any
+type _Service {
+  """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
+  sdl: String
+}
+type HelloWorld {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+type ApiError {
+  path: String!
+  message: String!
+}
+directive @key(fields: String!) on OBJECT | INTERFACE
+directive @extends on OBJECT | INTERFACE
+directive @external on OBJECT | FIELD_DEFINITION
+directive @requires(fields: String!) on FIELD_DEFINITION
+directive @provides(fields: String!) on FIELD_DEFINITION
