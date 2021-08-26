@@ -18,12 +18,17 @@ import {
 } from '../../common/utils/environmentType';
 import { genORMConnection } from '../../common/helpers/orm.config';
 import { Connection, getConnection } from 'typeorm';
+import { Channel } from 'amqplib';
+
+const channelHandler = (channel: Channel) => {};
 
 export async function listen(port: number): Promise<string> {
 	return withRabbitMQConnect(
 		'ACCOUNT',
 		'amqps://glsybgql:k-oBlQmxYuFpOboPLTqItT_XS6fSJdbu@gerbil.rmq.cloudamqp.com/glsybgql',
 		async ({ channel }) => {
+			channelHandler(channel);
+
 			let conn: Connection;
 			try {
 				conn = await getConnection('default');
@@ -74,13 +79,12 @@ export async function listen(port: number): Promise<string> {
 				context: ({ req }): Partial<GQLContext> => {
 					const redis = new REDIS().server;
 
-					const token =
-						req.body.token ||
-						req.query.token ||
-						req.headers['x-access-token'];
-
 					try {
-						if (token !== '') {
+						const token =
+							req.body.token ||
+							req.query.token ||
+							req.headers['x-access-token'];
+						if (token) {
 							const decoded = jwt.verify(
 								token,
 								process.env.TOKEN_KEY,
@@ -89,6 +93,7 @@ export async function listen(port: number): Promise<string> {
 							return {
 								request: req,
 								redis,
+								channel,
 								currentUser: req.user || undefined,
 								url: req?.protocol + '://' + req?.get('host'),
 							};
@@ -96,6 +101,7 @@ export async function listen(port: number): Promise<string> {
 						return {
 							request: req,
 							redis,
+							channel,
 							currentUser: JSON.parse(req.headers.currentuser),
 							url: req?.protocol + '://' + req?.get('host'),
 						};
@@ -103,6 +109,7 @@ export async function listen(port: number): Promise<string> {
 						return {
 							request: req,
 							redis,
+							channel,
 							currentUser: undefined,
 							url: req?.protocol + '://' + req?.get('host'),
 						};

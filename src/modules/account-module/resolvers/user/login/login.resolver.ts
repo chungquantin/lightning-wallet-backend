@@ -18,7 +18,10 @@ import {
 	REDIS_REFRESH_TOKEN_PREFIX,
 } from '../../../../../common/constants/global-variables';
 import { yupValidateMiddleware } from '../../../../../common/middleware/yupValidate';
-import { ApiResponse, CustomMessage } from '../../../../../common/shared';
+import {
+	ApiResponse,
+	CustomMessage,
+} from '../../../../../common/shared';
 import { YUP_LOGIN } from './login.validate';
 import { createTokens } from '../../../../../common/utils/auth';
 import {
@@ -70,7 +73,7 @@ class LoginResolver {
 
 		user = user as User;
 
-		if (!env(EnvironmentType.DEV) || !user.emailVerified) {
+		if (!env(EnvironmentType.DEV) && !user.emailVerified) {
 			return {
 				success: false,
 				errors: [

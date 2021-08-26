@@ -18,6 +18,25 @@ import {
 } from '../../common/utils/environmentType';
 import { Connection, getConnection } from 'typeorm';
 import { genORMConnection } from '../../common/helpers/orm.config';
+import { Channel } from 'amqplib';
+import { QUEUE } from '../../common/constants/global-variables';
+
+const channelHandler = async (conn: Connection, channel: Channel) => {
+	channel.assertQueue(QUEUE.ACCOUNT_CREATED, { durable: true });
+	const walletRepository = await conn.getRepository(Wallet);
+
+	channel.consume(
+		QUEUE.ACCOUNT_CREATED,
+		async (msg) => {
+			await walletRepository
+				.create({
+					userId: msg?.content.toString(),
+				})
+				.save();
+		},
+		{ noAck: true },
+	);
+};
 
 export async function listen(port: number): Promise<string> {
 	if (!env(EnvironmentType.PROD)) {
@@ -28,7 +47,7 @@ export async function listen(port: number): Promise<string> {
 		conn = await getConnection('default');
 	} catch (error) {
 		conn = await genORMConnection({
-			databaseName: 'account',
+			databaseName: 'transfer',
 		});
 	}
 
@@ -36,9 +55,13 @@ export async function listen(port: number): Promise<string> {
 		'TRANSFER',
 		'amqps://glsybgql:k-oBlQmxYuFpOboPLTqItT_XS6fSJdbu@gerbil.rmq.cloudamqp.com/glsybgql',
 		async ({ channel }) => {
+			channelHandler(conn, channel);
 			const schema = await buildFederatedSchema(
 				{
-					resolvers: [WalletResolver.HelloWorldResolver],
+					resolvers: [
+						WalletResolver.GetMeWalletResolver,
+						WalletResolver.GetWalletResolver,
+					],
 					orphanedTypes: [Wallet],
 					container: Container,
 					pubSub: redisPubSub,
@@ -65,13 +88,12 @@ export async function listen(port: number): Promise<string> {
 				context: ({ req }): Partial<GQLContext> => {
 					const redis = new REDIS().server;
 
-					const token =
-						req.body.token ||
-						req.query.token ||
-						req.headers['x-access-token'];
-
 					try {
-						if (token !== '') {
+						const token =
+							req.body.token ||
+							req.query.token ||
+							req.headers['x-access-token'];
+						if (token) {
 							const decoded = jwt.verify(
 								token,
 								process.env.TOKEN_KEY,
@@ -80,6 +102,7 @@ export async function listen(port: number): Promise<string> {
 							return {
 								request: req,
 								redis,
+								channel,
 								currentUser: req.user || undefined,
 								url: req?.protocol + '://' + req?.get('host'),
 							};
@@ -87,6 +110,7 @@ export async function listen(port: number): Promise<string> {
 						return {
 							request: req,
 							redis,
+							channel,
 							currentUser: JSON.parse(req.headers.currentuser),
 							url: req?.protocol + '://' + req?.get('host'),
 						};
@@ -94,6 +118,7 @@ export async function listen(port: number): Promise<string> {
 						return {
 							request: req,
 							redis,
+							channel,
 							currentUser: undefined,
 							url: req?.protocol + '://' + req?.get('host'),
 						};

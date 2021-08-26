@@ -14,6 +14,7 @@ import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
 import { YUP_REGISTER } from './register.validate';
 import { GQLContext } from '../../../../../common/utils/graphql-utils';
 import { ApiResponse } from '../../../../../common/shared';
+import { QUEUE } from '../../../../../common/constants/global-variables';
 
 export const ApiRegisterResponse = ApiResponse<User>(
 	'Register',
@@ -32,7 +33,7 @@ class RegisterResolver {
 	@Mutation(() => ApiRegisterResponse!, { nullable: true })
 	async register(
 		@Arg('data') dto: RegisterDto,
-		@Ctx() context: GQLContext,
+		@Ctx() { channel }: GQLContext,
 	): Promise<ApiRegisterResponseType> {
 		try {
 			if (!!(await this.userRepository.findByEmail(dto.email))) {
@@ -65,6 +66,11 @@ class RegisterResolver {
 
 			const user = await this.userRepository.create(dto).save();
 
+			channel.sendToQueue(
+				QUEUE.ACCOUNT_CREATED,
+				Buffer.from(user.id),
+			);
+
 			// TODO Disable for now
 			// const link =
 			//	await new NodeMailerService().createConfirmedEmailLink(
@@ -83,7 +89,7 @@ class RegisterResolver {
 
 			return {
 				success: true,
-				data: user
+				data: user,
 			};
 		} catch (err) {
 			return {

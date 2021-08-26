@@ -1,8 +1,8 @@
 schema {
   query: Query
 }
-type UserSchema @extends @key(fields: "id") {
-  id: ID! @external
+type WalletSchema @key(fields: "id") {
+  id: ID!
   balance: Float!
   defaultCurrency: FiatCurrency!
 }
@@ -15,14 +15,23 @@ enum FiatCurrency {
   MXN
 }
 type Query {
-  helloWorld: HelloWorld
+  getWallet(data: GetWalletDto!): GetWallet
+  getMeWallet: GetMeWallet
 }
-type HelloWorld {
+type GetWallet {
   success: Boolean!
   errors: [ApiError!]
-  data: String
+  data: WalletSchema
 }
 type ApiError {
   path: String!
   message: String!
+}
+input GetWalletDto {
+  userId: String!
+}
+type GetMeWallet {
+  success: Boolean!
+  errors: [ApiError!]
+  data: WalletSchema
 }

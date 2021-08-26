@@ -1,8 +1,8 @@
 schema {
   query: Query
 }
-type UserSchema @extends @key(fields: "id") {
-  id: ID! @external
+type WalletSchema @key(fields: "id") {
+  id: ID!
   balance: Float!
   defaultCurrency: FiatCurrency!
 }
@@ -17,22 +17,31 @@ enum FiatCurrency {
 type Query {
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
-  helloWorld: HelloWorld
+  getWallet(data: GetWalletDto!): GetWallet
+  getMeWallet: GetMeWallet
 }
-union _Entity = UserSchema
+union _Entity = WalletSchema
 scalar _Any
 type _Service {
   """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
   sdl: String
 }
-type HelloWorld {
+type GetWallet {
   success: Boolean!
   errors: [ApiError!]
-  data: String
+  data: WalletSchema
 }
 type ApiError {
   path: String!
   message: String!
+}
+input GetWalletDto {
+  userId: String!
+}
+type GetMeWallet {
+  success: Boolean!
+  errors: [ApiError!]
+  data: WalletSchema
 }
 directive @key(fields: String!) on OBJECT | INTERFACE
 directive @extends on OBJECT | INTERFACE

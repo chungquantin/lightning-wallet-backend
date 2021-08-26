@@ -9,15 +9,16 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { FiatCurrency } from '../../../common/shared';
 
-@Directive('@extends')
 @Directive('@key(fields: "id")')
-@ObjectType('UserSchema')
+@ObjectType('WalletSchema')
 @Entity('Wallet')
 export class Wallet extends BaseEntity {
-	@Directive('@external')
 	@Field(() => ID)
 	@PrimaryColumn('uuid')
 	id: string;
+
+	@PrimaryColumn('uuid')
+	userId: string;
 
 	@Field(() => Number!)
 	@Column('int', { default: 0 })

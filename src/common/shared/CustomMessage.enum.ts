@@ -9,4 +9,5 @@ export enum CustomMessage {
 	userEmailIsNotVerified = 'Your email is not verified yet',
 	phoneNumberIsTaken = 'Phone Number is taken',
 	expiredKeyError = 'Key has expired',
+	walletIsNotFound = 'Wallet is not found',
 }

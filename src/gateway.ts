@@ -30,7 +30,7 @@ export const buildGateway = async () => {
 
 	const serviceList: ServiceEndpointDefinition[] = [
 		{
-			name: 'account-creation-module',
+			name: 'account-module',
 			url: await AccountCreationModule.listen(3001),
 		},
 		{
