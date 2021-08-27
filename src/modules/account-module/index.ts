@@ -31,7 +31,6 @@ export async function listen(
 				conn = await getConnection('default');
 			} catch (error) {
 				conn = await genORMConnection({
-					databaseName: 'account',
 					connection: 'default',
 				});
 			}

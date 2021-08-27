@@ -1,6 +1,6 @@
 import { Resolver, Query, UseMiddleware } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { WalletRepository } from '../../../repository/wallet/WalletRepository';
+import { WalletRepository } from '../../../repository/WalletRepository';
 import { ApiArrayResponse } from '../../../../../common/shared';
 import { Wallet } from '../../../entity';
 
@@ -18,7 +18,9 @@ class GetWalletsResolver {
 	@UseMiddleware()
 	@Query(() => ApiGetWallets, { nullable: true })
 	async getWallets(): Promise<ApiGetWalletType> {
-		const wallets = await this.walletRepository.find();
+		const wallets = await this.walletRepository.find({
+			relations: ['transactions'],
+		});
 		return {
 			success: true,
 			data: wallets,

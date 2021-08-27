@@ -14,6 +14,7 @@ type UserSchema @key(fields: "id") {
   lastName: String!
   forgotPasswordLock: Boolean!
   contacts: [UserSchema!]!
+  createdAt: String!
   name: String!
 }
 type Query {

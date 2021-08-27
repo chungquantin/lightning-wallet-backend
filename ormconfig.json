@@ -3,7 +3,7 @@
 		"type": "postgres",
 		"port": 5432,
 		"name": "default",
-		"database": "wallet-dev",
+		"database": "dba364grilo7gk",
 		"synchronize": true,
 		"logging": true,
 		"entities": ["src/**/entity/*.ts"],

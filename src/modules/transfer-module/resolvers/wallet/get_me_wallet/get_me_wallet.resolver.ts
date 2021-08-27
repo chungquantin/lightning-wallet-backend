@@ -1,6 +1,6 @@
 import { Resolver, Query, UseMiddleware, Ctx } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { WalletRepository } from '../../../repository/wallet/WalletRepository';
+import { WalletRepository } from '../../../repository/WalletRepository';
 import {
 	ApiResponse,
 	CustomMessage,
@@ -28,7 +28,7 @@ class GetMeWalletResolver {
 			where: {
 				userId: currentUser?.userId,
 			},
-			relations: ['contacts'],
+			relations: ['transactions'],
 		});
 		if (!wallet) {
 			return {

@@ -10,8 +10,11 @@ export enum CustomMessage {
 	contactWasAdded = 'Contact was added already',
 	phoneNumberIsTaken = 'Phone Number is taken',
 	expiredKeyError = 'Key has expired',
+
 	walletIsNotFound = 'Wallet is not found',
 	walletIsCreatedAlready = 'Wallet was created for this user',
+	walletDontHaveEnoughBalance = "Wallet don't have enough balance",
+	amountIsNotValid = 'Amount is not valid',
 
 	stopBeingNaughty = 'Stop being naughty',
 }

@@ -4,8 +4,6 @@ export enum FiatCurrency {
 	USD = 'USD',
 	CAD = 'CAD',
 	VND = 'VND',
-	AUD = 'AUD',
-	MXN = 'MXN',
 }
 
 registerEnumType(FiatCurrency, {

@@ -19,6 +19,13 @@ import { queueHandler } from './queue';
 import * as WalletResolver from './resolvers/wallet';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
+import { dataSource } from './utils';
+
+export interface WalletGQLContext extends GQLContext {
+	dataSources: {
+		exchangeRateApi: dataSource.ExchangeRateApi;
+	};
+}
 
 export async function listen(
 	port: number,
@@ -48,6 +55,7 @@ export async function listen(
 						WalletResolver.GetMeWalletResolver,
 						WalletResolver.GetWalletResolver,
 						WalletResolver.GetWalletsResolver,
+						WalletResolver.SendTransactionResolver,
 					],
 					orphanedTypes: [Wallet],
 					container: Container,
@@ -72,8 +80,18 @@ export async function listen(
 					],
 					{ retries: 10, retry: 10000 }, // Options
 				),
-				context: ({ req }): Partial<GQLContext> => {
+				context: ({ req }): Partial<WalletGQLContext> => {
 					const redis = new REDIS().server;
+
+					const contextResponse = {
+						request: req,
+						redis,
+						channel,
+						dataSources: {
+							exchangeRateApi: new dataSource.ExchangeRateApi(),
+						},
+						url: req?.protocol + '://' + req?.get('host'),
+					};
 
 					try {
 						const token =
@@ -86,29 +104,17 @@ export async function listen(
 								process.env.TOKEN_KEY,
 							);
 							req.user = decoded;
-							return {
-								request: req,
-								redis,
-								channel,
+							return Object.assign(contextResponse, {
 								currentUser: req.user || undefined,
-								url: req?.protocol + '://' + req?.get('host'),
-							};
+							});
 						}
-						return {
-							request: req,
-							redis,
-							channel,
+						return Object.assign(contextResponse, {
 							currentUser: JSON.parse(req.headers.currentuser),
-							url: req?.protocol + '://' + req?.get('host'),
-						};
+						});
 					} catch (error) {
-						return {
-							request: req,
-							redis,
-							channel,
+						return Object.assign(contextResponse, {
 							currentUser: undefined,
-							url: req?.protocol + '://' + req?.get('host'),
-						};
+						});
 					}
 				},
 			});

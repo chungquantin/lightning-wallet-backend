@@ -27,7 +27,9 @@ export const genORMConnection = async ({
 		database: (connectionOptions.database +
 			(env(EnvironmentType.TEST)
 				? '-test'
-				: `-${databaseName}` || '')) as any,
+				: databaseName
+				? `-${databaseName}`
+				: '')) as any,
 		dropSchema: env(EnvironmentType.TEST),
 		namingStrategy: new SnakeNamingStrategy(),
 		logging,
@@ -42,6 +44,7 @@ export const genORMConnection = async ({
 			host: process.env.DATABASE_HOST,
 			username: process.env.DATABASE_USERNAME,
 			password: process.env.DATABASE_PASSWORD,
+			ssl: { rejectUnauthorized: false },
 		});
 	}
 

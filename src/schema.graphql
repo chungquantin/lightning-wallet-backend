@@ -16,9 +16,7 @@ type ApiError {
 }
 """Fiat currency"""
 enum FiatCurrency {
-  AUD
   CAD
-  MXN
   USD
   VND
 }
@@ -88,6 +86,7 @@ type Mutation {
   logout: Logout @join__field(graph: ACCOUNT_MODULE)
   register(data: RegisterDto!): Register @join__field(graph: ACCOUNT_MODULE)
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword @join__field(graph: ACCOUNT_MODULE)
+  sendTransaction(data: SendTransactionDto!): SendTransaction @join__field(graph: TRANSFER_MODULE)
 }
 type Query {
   getMeWallet: GetMeWallet @join__field(graph: TRANSFER_MODULE)
@@ -118,13 +117,44 @@ type SendForgotPassword {
 input SendForgotPasswordDto {
   email: String!
 }
+type SendTransaction {
+  data: TransactionResponse
+  errors: [ApiError!]
+  success: Boolean!
+}
+input SendTransactionDto {
+  amount: Float!
+  currency: String!
+  method: String!
+  walletId: String!
+}
 type TokenResponse {
   accessToken: String!
   refreshToken: String!
 }
+"""Transaction method"""
+enum TransactionMethod {
+  LIGHTNING
+  ON_CHAIN
+}
+type TransactionResponse {
+  transaction: TransactionSchema!
+}
+type TransactionSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
+  amount: Float! @join__field(graph: TRANSFER_MODULE)
+  btcAmount: Float! @join__field(graph: TRANSFER_MODULE)
+  btcExchangeRate: Float! @join__field(graph: TRANSFER_MODULE)
+  createdAt: String! @join__field(graph: TRANSFER_MODULE)
+  currency: FiatCurrency! @join__field(graph: TRANSFER_MODULE)
+  fromWalletId: String! @join__field(graph: TRANSFER_MODULE)
+  id: ID! @join__field(graph: TRANSFER_MODULE)
+  method: TransactionMethod! @join__field(graph: TRANSFER_MODULE)
+  toWalletId: String! @join__field(graph: TRANSFER_MODULE)
+}
 type UserSchema @join__owner(graph: ACCOUNT_MODULE) @join__type(graph: ACCOUNT_MODULE, key: "id") {
   avatar: String! @join__field(graph: ACCOUNT_MODULE)
   contacts: [UserSchema!]! @join__field(graph: ACCOUNT_MODULE)
+  createdAt: String! @join__field(graph: ACCOUNT_MODULE)
   email: String! @join__field(graph: ACCOUNT_MODULE)
   emailVerified: Boolean! @join__field(graph: ACCOUNT_MODULE)
   firstName: String! @join__field(graph: ACCOUNT_MODULE)
@@ -138,6 +168,8 @@ type UserSchema @join__owner(graph: ACCOUNT_MODULE) @join__type(graph: ACCOUNT_M
 }
 type WalletSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
   balance: Float! @join__field(graph: TRANSFER_MODULE)
+  createdAt: String! @join__field(graph: TRANSFER_MODULE)
   defaultCurrency: FiatCurrency! @join__field(graph: TRANSFER_MODULE)
   id: ID! @join__field(graph: TRANSFER_MODULE)
+  transactions: [TransactionSchema!]! @join__field(graph: TRANSFER_MODULE)
 }

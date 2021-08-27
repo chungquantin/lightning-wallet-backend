@@ -1,13 +1,20 @@
 import { Channel } from 'amqplib';
 import { Connection } from 'typeorm';
-import { CustomMessage } from '../../common/shared';
+import { CustomMessage, FiatCurrency } from '../../common/shared';
 import { Wallet } from './entity';
 
 export enum Queue {
 	ACCOUNT_TRANSFER_QUEUE = 'ACCOUNT_TRANSFER_QUEUE',
 }
 
-interface OutgoingMessageDataMap {}
+interface OutgoingMessageDataMap {
+	transaction_sended: {
+		fromWallet: string;
+		toWallet: string;
+		amount: number;
+		currency: FiatCurrency;
+	};
+}
 
 type OutgoingMessage<Key extends keyof OutgoingMessageDataMap> = {
 	operation: Key;
@@ -45,6 +52,7 @@ const handlerMap: HandlerMap = {
 		await walletRepository
 			.create({
 				userId,
+				balance: 100000,
 			})
 			.save();
 	},

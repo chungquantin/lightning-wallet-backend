@@ -5,9 +5,12 @@ import {
 	BeforeInsert,
 	BaseEntity,
 	Column,
+	JoinTable,
+	ManyToMany,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { FiatCurrency } from '../../../common/shared';
+import { Transaction } from './Transaction';
 
 @Directive('@key(fields: "id")')
 @ObjectType('WalletSchema')
@@ -21,12 +24,32 @@ export class Wallet extends BaseEntity {
 	userId: string;
 
 	@Field(() => Number!)
-	@Column('int', { default: 0 })
+	@Column('float', { default: 0 })
 	balance: number;
 
 	@Field(() => FiatCurrency!)
 	@Column('text', { nullable: false, default: FiatCurrency.USD })
 	defaultCurrency: FiatCurrency;
+
+	@Field(() => [Transaction])
+	@ManyToMany(
+		() => Transaction,
+		(transaction) => transaction.wallet,
+		{
+			onDelete: 'CASCADE',
+			onUpdate: 'CASCADE',
+			cascade: true,
+		},
+	)
+	@JoinTable()
+	transactions: Transaction[];
+
+	@Field(() => String!)
+	@Column('text', {
+		nullable: false,
+		default: new Date().toISOString(),
+	})
+	createdAt: string;
 
 	@BeforeInsert()
 	async addId() {

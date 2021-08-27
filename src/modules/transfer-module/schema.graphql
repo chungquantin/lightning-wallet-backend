@@ -1,18 +1,35 @@
 schema {
   query: Query
+  mutation: Mutation
 }
 type WalletSchema @key(fields: "id") {
   id: ID!
   balance: Float!
   defaultCurrency: FiatCurrency!
+  transactions: [TransactionSchema!]!
+  createdAt: String!
 }
 """Fiat currency"""
 enum FiatCurrency {
   USD
   CAD
   VND
-  AUD
-  MXN
+}
+type TransactionSchema @key(fields: "id") {
+  id: ID!
+  fromWalletId: String!
+  toWalletId: String!
+  amount: Float!
+  method: TransactionMethod!
+  currency: FiatCurrency!
+  btcExchangeRate: Float!
+  btcAmount: Float!
+  createdAt: String!
+}
+"""Transaction method"""
+enum TransactionMethod {
+  ON_CHAIN
+  LIGHTNING
 }
 type Query {
   _entities(representations: [_Any!]!): [_Entity]!
@@ -21,7 +38,7 @@ type Query {
   getMeWallet: GetMeWallet
   getWallets: GetWallets
 }
-union _Entity = WalletSchema
+union _Entity = WalletSchema | TransactionSchema
 scalar _Any
 type _Service {
   """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
@@ -48,6 +65,23 @@ type GetWallets {
   success: Boolean!
   errors: [ApiError!]
   data: [WalletSchema!]!
+}
+type Mutation {
+  sendTransaction(data: SendTransactionDto!): SendTransaction
+}
+type SendTransaction {
+  success: Boolean!
+  errors: [ApiError!]
+  data: TransactionResponse
+}
+type TransactionResponse {
+  transaction: TransactionSchema!
+}
+input SendTransactionDto {
+  walletId: String!
+  amount: Float!
+  currency: String!
+  method: String!
 }
 directive @key(fields: String!) on OBJECT | INTERFACE
 directive @extends on OBJECT | INTERFACE

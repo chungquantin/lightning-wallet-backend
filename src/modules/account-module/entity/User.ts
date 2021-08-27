@@ -64,6 +64,13 @@ export class User extends BaseEntity {
 	@JoinTable()
 	contacts: User[];
 
+	@Field(() => String!)
+	@Column('text', {
+		nullable: false,
+		default: new Date().toISOString(),
+	})
+	createdAt: string;
+
 	// External
 	@Field(() => String!)
 	name(@Root() parent: User): string {
