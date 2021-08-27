@@ -3,11 +3,16 @@ import { Connection } from 'typeorm';
 
 export enum Queue {
 	ACCOUNT_TRANSFER_QUEUE = 'ACCOUNT_TRANSFER_QUEUE',
+	NOTIFICATION_QUEUE = 'NOTIFICATION_QUEUE',
 }
 
 interface OutgoingMessageDataMap {
 	new_account_created: {
 		userId: string;
+	};
+	new_contact_added: {
+		userId: string;
+		contactId: string;
 	};
 }
 

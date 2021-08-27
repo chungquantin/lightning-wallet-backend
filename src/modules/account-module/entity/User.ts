@@ -5,6 +5,8 @@ import {
 	PrimaryColumn,
 	BeforeInsert,
 	BaseEntity,
+	ManyToMany,
+	JoinTable,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
@@ -42,7 +44,6 @@ export class User extends BaseEntity {
 	phoneNumber: string;
 
 	// @Authorized(UserRole.super_admin)
-	@Field(() => String!, { nullable: true })
 	@Column()
 	password: string;
 
@@ -57,6 +58,11 @@ export class User extends BaseEntity {
 	@Field(() => Boolean!)
 	@Column('bool', { default: false })
 	forgotPasswordLock: boolean;
+
+	@Field(() => [User])
+	@ManyToMany((type) => User, (user) => user.contacts)
+	@JoinTable()
+	contacts: User[];
 
 	// External
 	@Field(() => String!)

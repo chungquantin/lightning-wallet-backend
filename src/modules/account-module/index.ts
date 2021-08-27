@@ -46,6 +46,7 @@ export async function listen(
 						UserResolver.LogoutResolver,
 						UserResolver.MeResolver,
 						UserResolver.RegisterResolver,
+						UserResolver.AddNewContactResolver,
 					],
 					orphanedTypes: [User],
 					container: Container,

@@ -28,6 +28,7 @@ class GetMeWalletResolver {
 			where: {
 				userId: currentUser?.userId,
 			},
+			relations: ['contacts'],
 		});
 		if (!wallet) {
 			return {

@@ -10,10 +10,10 @@ type UserSchema @key(fields: "id") {
   twoFactorVerified: Boolean!
   phoneNumberVerified: Boolean!
   phoneNumber: String!
-  password: String
   firstName: String!
   lastName: String!
   forgotPasswordLock: Boolean!
+  contacts: [UserSchema!]!
   name: String!
 }
 type Query {
@@ -57,6 +57,7 @@ type Mutation {
   register(data: RegisterDto!): Register
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword
   forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword
+  addNewContact(data: AddNewContactDto!): AddNewContact
 }
 type Login {
   success: Boolean!
@@ -105,6 +106,14 @@ type SendForgotPassword {
 input ForgotPasswordChangeDto {
   key: String!
   newPassword: String!
+}
+type AddNewContact {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input AddNewContactDto {
+  userId: String!
 }
 directive @key(fields: String!) on OBJECT | INTERFACE
 directive @extends on OBJECT | INTERFACE

@@ -15,6 +15,16 @@ export class UserRepository extends Repository<User> {
 		});
 	}
 
+	addContact(user: User, contact: User) {
+		if (user.contacts) {
+			user.contacts.push(contact);
+		} else {
+			user.contacts = [];
+			user.contacts.push(contact);
+		}
+		user.save();
+	}
+
 	async resolveUserReference(
 		reference: Pick<User, 'id'>,
 	): Promise<User | undefined> {

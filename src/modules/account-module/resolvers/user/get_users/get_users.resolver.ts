@@ -4,8 +4,13 @@ import { UserRepository } from '../../../repository/user/UserRepository';
 import { User } from '../../../entity';
 import { ApiArrayResponse } from '../../../../../common/shared';
 
-export const ApiUsersResponse = ApiArrayResponse<User>('GetUsers', User);
-export type ApiUsersResponseType = InstanceType<typeof ApiUsersResponse>;
+export const ApiUsersResponse = ApiArrayResponse<User>(
+	'GetUsers',
+	User,
+);
+export type ApiUsersResponseType = InstanceType<
+	typeof ApiUsersResponse
+>;
 
 @Resolver((of) => User)
 class GetUsersResolver {
@@ -15,7 +20,9 @@ class GetUsersResolver {
 	@UseMiddleware()
 	@Query(() => ApiUsersResponse, { nullable: true })
 	async getUsers(): Promise<ApiUsersResponseType> {
-		const users = await this.userRepository.find();
+		const users = await this.userRepository.find({
+			relations: ['contacts'],
+		});
 		return {
 			success: true,
 			data: users,

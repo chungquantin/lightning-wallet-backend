@@ -5,3 +5,4 @@ export { default as RegisterResolver } from './register/register.resolver';
 export { default as GetUserResolver } from './get_user/get_user.resolver';
 export { default as GetUsersResolver } from './get_users/get_users.resolver';
 export { default as ForgotPasswordResolver } from './forgot_password/forgot_password.resolver';
+export { default as AddNewContactResolver } from './add_contact/add_new_contact.resolver';

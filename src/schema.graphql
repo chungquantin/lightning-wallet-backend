@@ -2,6 +2,14 @@ schema @core(feature: "https://specs.apollo.dev/core/v0.1") @core(feature: "http
   query: Query
   mutation: Mutation
 }
+type AddNewContact {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
+input AddNewContactDto {
+  userId: String!
+}
 type ApiError {
   message: String!
   path: String!
@@ -74,6 +82,7 @@ type Me {
   success: Boolean!
 }
 type Mutation {
+  addNewContact(data: AddNewContactDto!): AddNewContact @join__field(graph: ACCOUNT_MODULE)
   forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword @join__field(graph: ACCOUNT_MODULE)
   login(data: LoginDto!): Login @join__field(graph: ACCOUNT_MODULE)
   logout: Logout @join__field(graph: ACCOUNT_MODULE)
@@ -115,6 +124,7 @@ type TokenResponse {
 }
 type UserSchema @join__owner(graph: ACCOUNT_MODULE) @join__type(graph: ACCOUNT_MODULE, key: "id") {
   avatar: String! @join__field(graph: ACCOUNT_MODULE)
+  contacts: [UserSchema!]! @join__field(graph: ACCOUNT_MODULE)
   email: String! @join__field(graph: ACCOUNT_MODULE)
   emailVerified: Boolean! @join__field(graph: ACCOUNT_MODULE)
   firstName: String! @join__field(graph: ACCOUNT_MODULE)
@@ -122,7 +132,6 @@ type UserSchema @join__owner(graph: ACCOUNT_MODULE) @join__type(graph: ACCOUNT_M
   id: ID! @join__field(graph: ACCOUNT_MODULE)
   lastName: String! @join__field(graph: ACCOUNT_MODULE)
   name: String! @join__field(graph: ACCOUNT_MODULE)
-  password: String @join__field(graph: ACCOUNT_MODULE)
   phoneNumber: String! @join__field(graph: ACCOUNT_MODULE)
   phoneNumberVerified: Boolean! @join__field(graph: ACCOUNT_MODULE)
   twoFactorVerified: Boolean! @join__field(graph: ACCOUNT_MODULE)

@@ -7,8 +7,11 @@ export enum CustomMessage {
 	userHasLoggedIn = 'You have already logged in',
 	userHasNotLoggedIn = 'You have not logged in yet',
 	userEmailIsNotVerified = 'Your email is not verified yet',
+	contactWasAdded = 'Contact was added already',
 	phoneNumberIsTaken = 'Phone Number is taken',
 	expiredKeyError = 'Key has expired',
 	walletIsNotFound = 'Wallet is not found',
 	walletIsCreatedAlready = 'Wallet was created for this user',
+
+	stopBeingNaughty = 'Stop being naughty',
 }
