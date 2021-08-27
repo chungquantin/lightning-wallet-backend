@@ -20,7 +20,7 @@ export const genORMConnection = async ({
 			? connection
 			: env(EnvironmentType.PROD)
 			? 'production-database'
-			: 'default',
+			: 'dbConnection1',
 	);
 	const extendedOptions = {
 		...connectionOptions,

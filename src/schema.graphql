@@ -49,6 +49,11 @@ type GetWallet {
 input GetWalletDto {
   userId: String!
 }
+type GetWallets {
+  data: [WalletSchema!]!
+  errors: [ApiError!]
+  success: Boolean!
+}
 type Login {
   data: TokenResponse
   errors: [ApiError!]
@@ -80,6 +85,7 @@ type Query {
   getUser(data: GetUserDto!): GetUser @join__field(graph: ACCOUNT_MODULE)
   getUsers: GetUsers @join__field(graph: ACCOUNT_MODULE)
   getWallet(data: GetWalletDto!): GetWallet @join__field(graph: TRANSFER_MODULE)
+  getWallets: GetWallets @join__field(graph: TRANSFER_MODULE)
   me: Me @join__field(graph: ACCOUNT_MODULE)
 }
 type Register {

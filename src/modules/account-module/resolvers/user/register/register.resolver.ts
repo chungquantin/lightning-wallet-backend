@@ -14,7 +14,7 @@ import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
 import { YUP_REGISTER } from './register.validate';
 import { GQLContext } from '../../../../../common/utils/graphql-utils';
 import { ApiResponse } from '../../../../../common/shared';
-import { QUEUE } from '../../../../../common/constants/global-variables';
+import { mqProduce, Queue } from '../../../queue';
 
 export const ApiRegisterResponse = ApiResponse<User>(
 	'Register',
@@ -66,9 +66,15 @@ class RegisterResolver {
 
 			const user = await this.userRepository.create(dto).save();
 
-			channel.sendToQueue(
-				QUEUE.ACCOUNT_CREATED,
-				Buffer.from(user.id),
+			mqProduce<'new_account_created'>(
+				channel,
+				Queue.ACCOUNT_TRANSFER_QUEUE,
+				{
+					data: {
+						userId: user.id,
+					},
+					operation: 'new_account_created',
+				},
 			);
 
 			// TODO Disable for now

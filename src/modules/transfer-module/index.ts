@@ -5,9 +5,6 @@ import { REDIS, redisPubSub } from '../../common/helpers/redis';
 import { ResolveTime } from '../../common/middleware';
 import { customAuthChecker } from '../../common/utils/authChecker';
 import { Wallet } from './entity';
-import * as WalletResolver from './resolvers/wallet';
-import * as fs from 'fs';
-import * as jwt from 'jsonwebtoken';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import { GQLContext } from '../../common/utils/graphql-utils';
 import { printSchemaWithDirectives } from 'graphql-tools';
@@ -18,49 +15,39 @@ import {
 } from '../../common/utils/environmentType';
 import { Connection, getConnection } from 'typeorm';
 import { genORMConnection } from '../../common/helpers/orm.config';
-import { Channel } from 'amqplib';
-import { QUEUE } from '../../common/constants/global-variables';
+import { queueHandler } from './queue';
+import * as WalletResolver from './resolvers/wallet';
+import * as fs from 'fs';
+import * as jwt from 'jsonwebtoken';
 
-const channelHandler = async (conn: Connection, channel: Channel) => {
-	channel.assertQueue(QUEUE.ACCOUNT_CREATED, { durable: true });
-	const walletRepository = await conn.getRepository(Wallet);
-
-	channel.consume(
-		QUEUE.ACCOUNT_CREATED,
-		async (msg) => {
-			await walletRepository
-				.create({
-					userId: msg?.content.toString(),
-				})
-				.save();
-		},
-		{ noAck: true },
-	);
-};
-
-export async function listen(port: number): Promise<string> {
-	if (!env(EnvironmentType.PROD)) {
-		await new REDIS().server.flushall();
-	}
-	let conn: Connection;
-	try {
-		conn = await getConnection('default');
-	} catch (error) {
-		conn = await genORMConnection({
-			databaseName: 'transfer',
-		});
-	}
-
-	return withRabbitMQConnect(
-		'TRANSFER',
-		'amqps://glsybgql:k-oBlQmxYuFpOboPLTqItT_XS6fSJdbu@gerbil.rmq.cloudamqp.com/glsybgql',
-		async ({ channel }) => {
-			channelHandler(conn, channel);
+export async function listen(
+	port: number,
+): Promise<string | undefined> {
+	return withRabbitMQConnect({
+		name: 'TRANSFER',
+		url: 'amqps://glsybgql:k-oBlQmxYuFpOboPLTqItT_XS6fSJdbu@gerbil.rmq.cloudamqp.com/glsybgql',
+		callback: async ({ channel }) => {
+			if (!env(EnvironmentType.PROD)) {
+				await new REDIS().server.flushall();
+			}
+			let conn: Connection;
+			try {
+				conn = await getConnection('default');
+			} catch (error) {
+				conn = await genORMConnection({
+					databaseName: 'transfer',
+					connection: 'default',
+				});
+			}
+			if (channel) {
+				queueHandler(conn, channel);
+			}
 			const schema = await buildFederatedSchema(
 				{
 					resolvers: [
 						WalletResolver.GetMeWalletResolver,
 						WalletResolver.GetWalletResolver,
+						WalletResolver.GetWalletsResolver,
 					],
 					orphanedTypes: [Wallet],
 					container: Container,
@@ -151,5 +138,5 @@ export async function listen(port: number): Promise<string> {
 
 			return url;
 		},
-	);
+	});
 }

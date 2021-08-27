@@ -18,23 +18,21 @@ import {
 } from '../../common/utils/environmentType';
 import { genORMConnection } from '../../common/helpers/orm.config';
 import { Connection, getConnection } from 'typeorm';
-import { Channel } from 'amqplib';
 
-const channelHandler = (channel: Channel) => {};
-
-export async function listen(port: number): Promise<string> {
-	return withRabbitMQConnect(
-		'ACCOUNT',
-		'amqps://glsybgql:k-oBlQmxYuFpOboPLTqItT_XS6fSJdbu@gerbil.rmq.cloudamqp.com/glsybgql',
-		async ({ channel }) => {
-			channelHandler(channel);
-
+export async function listen(
+	port: number,
+): Promise<string | undefined> {
+	return withRabbitMQConnect({
+		name: 'ACCOUNT',
+		url: 'amqps://glsybgql:k-oBlQmxYuFpOboPLTqItT_XS6fSJdbu@gerbil.rmq.cloudamqp.com/glsybgql',
+		callback: async ({ channel }) => {
 			let conn: Connection;
 			try {
 				conn = await getConnection('default');
 			} catch (error) {
 				conn = await genORMConnection({
 					databaseName: 'account',
+					connection: 'default',
 				});
 			}
 
@@ -142,5 +140,5 @@ export async function listen(port: number): Promise<string> {
 
 			return url;
 		},
-	);
+	});
 }

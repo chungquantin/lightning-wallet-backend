@@ -9,7 +9,3 @@ export const REDIS_REFRESH_TOKEN_PREFIX = 'refresh-token: ';
 export const USER_TOKEN_ID_PREFIX = 'userTokenId:';
 export const EMAIL_CONFIRM_PREFIX = 'emailConfirm:';
 export const FORGOT_PASSWORD_PREFIX = 'forgotPassword:';
-
-export enum QUEUE {
-	ACCOUNT_CREATED = 'ACCOUNT_CREATED',
-}

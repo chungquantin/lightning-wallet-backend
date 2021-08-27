@@ -6,13 +6,29 @@
 		"database": "wallet-dev",
 		"synchronize": true,
 		"logging": true,
-		"entities": ["src/modules/**/entity/*.ts"],
-		"migrations": ["src/modules/**/migration/*.ts"],
-		"subscribers": ["src/modules/**/subscribers/*.ts"],
+		"entities": ["src/**/entity/*.ts"],
+		"migrations": ["src/**/migration/*.ts"],
+		"subscribers": ["src/**/subscribers/*.ts"],
 		"cli": {
-			"entitiesDir": "src/modules/**/src/entity",
-			"migrationsDir": "src/modules/**/src/migration",
-			"subscribersDir": "src/modules/**/src/subscriber"
+			"entitiesDir": "src/**/entity",
+			"migrationsDir": "src/**/migration",
+			"subscribersDir": "src/**/subscriber"
+		}
+	},
+	{
+		"type": "postgres",
+		"port": 5432,
+		"name": "dbConnection2",
+		"database": "wallet-dev",
+		"synchronize": true,
+		"logging": true,
+		"entities": ["src/**/entity/*.ts"],
+		"migrations": ["src/**/migration/*.ts"],
+		"subscribers": ["src/**/subscribers/*.ts"],
+		"cli": {
+			"entitiesDir": "src/**/entity",
+			"migrationsDir": "src/**/migration",
+			"subscribersDir": "src/**/subscriber"
 		}
 	}
 ]

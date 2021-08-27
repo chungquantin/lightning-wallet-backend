@@ -10,4 +10,5 @@ export enum CustomMessage {
 	phoneNumberIsTaken = 'Phone Number is taken',
 	expiredKeyError = 'Key has expired',
 	walletIsNotFound = 'Wallet is not found',
+	walletIsCreatedAlready = 'Wallet was created for this user',
 }

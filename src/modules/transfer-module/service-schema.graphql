@@ -17,6 +17,7 @@ enum FiatCurrency {
 type Query {
   getWallet(data: GetWalletDto!): GetWallet
   getMeWallet: GetMeWallet
+  getWallets: GetWallets
 }
 type GetWallet {
   success: Boolean!
@@ -34,4 +35,9 @@ type GetMeWallet {
   success: Boolean!
   errors: [ApiError!]
   data: WalletSchema
+}
+type GetWallets {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [WalletSchema!]!
 }
