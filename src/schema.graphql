@@ -60,6 +60,11 @@ type GetWallets {
   errors: [ApiError!]
   success: Boolean!
 }
+type HelloWorld {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
 type Login {
   data: TokenResponse
   errors: [ApiError!]
@@ -94,6 +99,7 @@ type Query {
   getUsers: GetUsers @join__field(graph: ACCOUNT_MODULE)
   getWallet(data: GetWalletDto!): GetWallet @join__field(graph: TRANSFER_MODULE)
   getWallets: GetWallets @join__field(graph: TRANSFER_MODULE)
+  helloWorld: HelloWorld @join__field(graph: BANK_MODULE)
   me: Me @join__field(graph: ACCOUNT_MODULE)
 }
 type Register {

@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import 'dotenv/config';
-//import { genSchema } from './helpers/genSchema';
 import { REDIS } from './common/helpers/redis';
 import { env, EnvironmentType } from './common/utils/environmentType';
 import { formatValidationError } from './common/utils/formatValidationError';
@@ -19,7 +18,11 @@ import * as fs from 'fs';
 import * as express from 'express';
 import * as expressJwt from 'express-jwt';
 import * as jwt from 'jsonwebtoken';
-import { AccountCreationModule, TransferModule } from './modules';
+import {
+	AccountCreationModule,
+	BankModule,
+	TransferModule,
+} from './modules';
 import { printSchemaWithDirectives } from 'graphql-tools';
 
 // import NodeMailerService from "./helper/email";
@@ -36,6 +39,10 @@ export const buildGateway = async () => {
 		{
 			name: 'transfer-module',
 			url: await TransferModule.listen(3002),
+		},
+		{
+			name: 'bank-module',
+			url: await BankModule.listen(3003),
 		},
 	];
 

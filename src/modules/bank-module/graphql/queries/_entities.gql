@@ -1,0 +1,20 @@
+query _entities($representations: [_Any!]!){
+    _entities(representations: $representations){
+        ... on UserSchema {
+            id
+            email
+            avatar
+            emailVerified
+            twoFactorVerified
+            balance
+            phoneNumberVerified
+            phoneNumber
+            password
+            firstName
+            lastName
+            defaultCurrency
+            forgotPasswordLock
+            name
+        }
+    }
+}
