@@ -2,14 +2,25 @@ schema {
   query: Query
 }
 type Query {
-  helloWorldLnd: HelloWorldLnd
+  lndGetTransactions(Pagination: PaginationInputType): LndGetTransactions
 }
-type HelloWorldLnd {
+type LndGetTransactions {
   success: Boolean!
   errors: [ApiError!]
-  data: String
+  data: [LightningTransaction!]!
 }
 type ApiError {
   path: String!
   message: String!
+}
+type LightningTransaction {
+  amount: Float!
+  hash: String!
+  fees: Float!
+  blockHash: String!
+  timeStamp: Float!
+}
+input PaginationInputType {
+  limit: Int
+  skip: Int
 }

@@ -47,7 +47,10 @@ export async function listen(
 			}
 			const schema = await buildFederatedSchema(
 				{
-					resolvers: [LndResolver.HelloWorldResolver],
+					resolvers: [
+						LndResolver.LndGetTransactions,
+						LndResolver.LndGetTransactions,
+					],
 					orphanedTypes: [],
 					container: Container,
 					pubSub: redisPubSub,
@@ -109,11 +112,11 @@ export async function listen(
 			});
 
 			const { url } = await server.listen({ port });
-			console.log(`--- [SERVICE: LND] Ready at ${url}`);
+			console.log(`--- [SERVICE: LIGHTNING-DAEMON] Ready at ${url}`);
 			console.table(
 				env(EnvironmentType.PROD)
 					? {
-							SERVICE_NAME: 'LND',
+							SERVICE_NAME: 'LIGHTNING-DAEMON',
 							SERVICE_ENDPOINT: url,
 							ENVIRONMENT: process.env.NODE_ENV?.trim(),
 							PROCESS_ID: process.pid,
@@ -122,7 +125,7 @@ export async function listen(
 							REDIS_PORT: process.env.REDIS_PORT,
 					  }
 					: {
-							SERVICE_NAME: 'LND',
+							SERVICE_NAME: 'LIGHTNING-DAEMON',
 							SERVICE_ENDPOINT: url,
 							ENVIRONMENT: process.env.NODE_ENV?.trim(),
 							PROCESS_ID: process.pid,

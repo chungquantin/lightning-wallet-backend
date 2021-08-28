@@ -3,20 +3,31 @@ schema {
 }
 type Query {
   _service: _Service!
-  helloWorldLnd: HelloWorldLnd
+  lndGetTransactions(Pagination: PaginationInputType): LndGetTransactions
 }
 type _Service {
   """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
   sdl: String
 }
-type HelloWorldLnd {
+type LndGetTransactions {
   success: Boolean!
   errors: [ApiError!]
-  data: String
+  data: [LightningTransaction!]!
 }
 type ApiError {
   path: String!
   message: String!
+}
+type LightningTransaction {
+  amount: Float!
+  hash: String!
+  fees: Float!
+  blockHash: String!
+  timeStamp: Float!
+}
+input PaginationInputType {
+  limit: Int
+  skip: Int
 }
 directive @key(fields: String!) on OBJECT | INTERFACE
 directive @extends on OBJECT | INTERFACE

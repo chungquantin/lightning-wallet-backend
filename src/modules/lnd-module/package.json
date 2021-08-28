@@ -4,15 +4,24 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"build": "sh scripts/build-protos.sh",
 		"gen-gql": "rimraf ./graphql & gqlg --schemaFilePath ./schema.graphql --destDirPath ./graphql --depthLimit 5",
-		"start": "SET NODE_ENV=development& ts-node-dev index.ts",
+		"start": "SET NODE_ENV=development& ts-node index.ts",
+		"dev": "SET NODE_ENV=development& ts-node-dev index.ts",
 		"start:dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development&  ts-node-dev --respawn index.ts --no-autorestart \" "
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@grpc/proto-loader": "^0.6.4",
+		"grpc": "^1.24.11",
+		"grpc-tools": "^1.11.2",
+		"grpc_tools_node_protoc_ts": "^5.3.2",
+		"module": "^1.2.5",
+		"moment": "^2.29.1",
 		"rimraf": "^3.0.2",
-		"ts-node-dev": "^1.1.8"
+		"ts-node-dev": "^1.1.8",
+		"ts-proto": "^1.82.5"
 	}
 }
