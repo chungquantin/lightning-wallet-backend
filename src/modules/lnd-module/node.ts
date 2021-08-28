@@ -47,7 +47,7 @@ const credentials: grpc.ServerCredentials =
 const lnrpcDescriptor = grpc.load(__dirname + '/proto/lnd.proto');
 const lnrpc: any = lnrpcDescriptor.lnrpc;
 const client: ILightningRPCServer = new lnrpc.Lightning(
-	'165.232.151.71:2269',
+	'165.232.151.71:10009',
 	credentials,
 	{ 'grpc.max_receive_message_length': 50 * 1024 * 1024 },
 );
