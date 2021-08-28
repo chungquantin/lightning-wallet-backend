@@ -47,7 +47,7 @@ type Query {
   _service: _Service!
   getWallet(data: GetWalletDto!): GetWallet
   getMeWallet: GetMeWallet
-  getWallets: GetWallets
+  getWallets(Pagination: PaginationInputType): GetWallets
 }
 union _Entity = WalletSchema | TransactionSchema
 scalar _Any
@@ -76,6 +76,10 @@ type GetWallets {
   success: Boolean!
   errors: [ApiError!]
   data: [WalletSchema!]!
+}
+input PaginationInputType {
+  limit: Int
+  skip: Int
 }
 type Mutation {
   sendTransaction(data: SendTransactionDto!): SendTransaction

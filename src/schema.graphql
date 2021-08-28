@@ -65,8 +65,15 @@ type HelloWorld {
   errors: [ApiError!]
   success: Boolean!
 }
-type HelloWorldLnd {
-  data: String
+type LightningTransaction {
+  amount: Float!
+  blockHash: String!
+  fees: Float!
+  hash: String!
+  timeStamp: Float!
+}
+type LndGetTransactions {
+  data: [LightningTransaction!]!
   errors: [ApiError!]
   success: Boolean!
 }
@@ -98,14 +105,18 @@ type Mutation {
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword @join__field(graph: ACCOUNT_MODULE)
   sendTransaction(data: SendTransactionDto!): SendTransaction @join__field(graph: TRANSFER_MODULE)
 }
+input PaginationInputType {
+  limit: Int
+  skip: Int
+}
 type Query {
   getMeWallet: GetMeWallet @join__field(graph: TRANSFER_MODULE)
   getUser(data: GetUserDto!): GetUser @join__field(graph: ACCOUNT_MODULE)
-  getUsers: GetUsers @join__field(graph: ACCOUNT_MODULE)
+  getUsers(Pagination: PaginationInputType): GetUsers @join__field(graph: ACCOUNT_MODULE)
   getWallet(data: GetWalletDto!): GetWallet @join__field(graph: TRANSFER_MODULE)
-  getWallets: GetWallets @join__field(graph: TRANSFER_MODULE)
+  getWallets(Pagination: PaginationInputType): GetWallets @join__field(graph: TRANSFER_MODULE)
   helloWorld: HelloWorld @join__field(graph: BANK_MODULE)
-  helloWorldLnd: HelloWorldLnd @join__field(graph: LND_MODULE)
+  lndGetTransactions(Pagination: PaginationInputType): LndGetTransactions @join__field(graph: LND_MODULE)
   me: Me @join__field(graph: ACCOUNT_MODULE)
 }
 type Register {

@@ -1,8 +1,9 @@
-import { Resolver, Query, UseMiddleware } from 'type-graphql';
+import { Resolver, Query, UseMiddleware, Arg } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { User } from '../../../entity';
 import { ApiArrayResponse } from '../../../../../common/shared';
+import { PaginationInputType } from '../../../../../common/shared/Pagination';
 
 export const ApiUsersResponse = ApiArrayResponse<User>(
 	'GetUsers',
@@ -19,13 +20,19 @@ class GetUsersResolver {
 
 	@UseMiddleware()
 	@Query(() => ApiUsersResponse, { nullable: true })
-	async getUsers(): Promise<ApiUsersResponseType> {
+	async getUsers(
+		@Arg('Pagination', { nullable: true })
+		Pagination?: PaginationInputType,
+	): Promise<ApiUsersResponseType> {
 		const users = await this.userRepository.find({
 			relations: ['contacts'],
 		});
 		return {
 			success: true,
-			data: users,
+			data: users.slice(
+				Pagination?.skip,
+				Pagination?.limit === 0 ? users.length : Pagination?.limit,
+			),
 		};
 	}
 }

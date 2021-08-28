@@ -20,7 +20,7 @@ type UserSchema @key(fields: "id") {
 type Query {
   me: Me
   getUser(data: GetUserDto!): GetUser
-  getUsers: GetUsers
+  getUsers(Pagination: PaginationInputType): GetUsers
 }
 type Me {
   success: Boolean!
@@ -43,6 +43,10 @@ type GetUsers {
   success: Boolean!
   errors: [ApiError!]
   data: [UserSchema!]!
+}
+input PaginationInputType {
+  limit: Int
+  skip: Int
 }
 type Mutation {
   login(data: LoginDto!): Login

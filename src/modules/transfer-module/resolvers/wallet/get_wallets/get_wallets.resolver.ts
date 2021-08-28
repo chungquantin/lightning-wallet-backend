@@ -1,8 +1,9 @@
-import { Resolver, Query, UseMiddleware } from 'type-graphql';
+import { Resolver, Query, UseMiddleware, Arg } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { WalletRepository } from '../../../repository/WalletRepository';
 import { ApiArrayResponse } from '../../../../../common/shared';
 import { Wallet } from '../../../entity';
+import { PaginationInputType } from '../../../../../common/shared/Pagination';
 
 export const ApiGetWallets = ApiArrayResponse<Wallet>(
 	'GetWallets',
@@ -17,13 +18,19 @@ class GetWalletsResolver {
 
 	@UseMiddleware()
 	@Query(() => ApiGetWallets, { nullable: true })
-	async getWallets(): Promise<ApiGetWalletType> {
+	async getWallets(
+		@Arg('Pagination', { nullable: true })
+		Pagination?: PaginationInputType,
+	): Promise<ApiGetWalletType> {
 		const wallets = await this.walletRepository.find({
 			relations: ['transactions'],
 		});
 		return {
 			success: true,
-			data: wallets,
+			data: wallets.slice(
+				Pagination?.skip,
+				Pagination?.limit === 0 ? wallets.length : Pagination?.limit,
+			),
 		};
 	}
 }

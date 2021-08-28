@@ -45,7 +45,7 @@ enum TransactionMethod {
 type Query {
   getWallet(data: GetWalletDto!): GetWallet
   getMeWallet: GetMeWallet
-  getWallets: GetWallets
+  getWallets(Pagination: PaginationInputType): GetWallets
 }
 type GetWallet {
   success: Boolean!
@@ -68,6 +68,10 @@ type GetWallets {
   success: Boolean!
   errors: [ApiError!]
   data: [WalletSchema!]!
+}
+input PaginationInputType {
+  limit: Int
+  skip: Int
 }
 type Mutation {
   sendTransaction(data: SendTransactionDto!): SendTransaction
