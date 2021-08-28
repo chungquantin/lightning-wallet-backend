@@ -21,6 +21,7 @@ import * as jwt from 'jsonwebtoken';
 import {
 	AccountCreationModule,
 	BankModule,
+	LndModule,
 	TransferModule,
 } from './modules';
 import { printSchemaWithDirectives } from 'graphql-tools';
@@ -43,6 +44,10 @@ export const buildGateway = async () => {
 		{
 			name: 'bank-module',
 			url: await BankModule.listen(3003),
+		},
+		{
+			name: 'lnd-module',
+			url: await LndModule.listen(3004),
 		},
 	];
 

@@ -16,7 +16,8 @@ import {
 } from '../../../../../common/shared';
 import { isAuth } from '../../../../../common/middleware';
 import * as _ from 'lodash';
-import { mqProduce, Queue } from '../../../queue';
+import { mqProduce } from '../../../queue';
+import { Queue } from '../../../../../common/constants/queue';
 
 export const ApiAddNewContactResponse = ApiResponse<String>(
 	'AddNewContact',

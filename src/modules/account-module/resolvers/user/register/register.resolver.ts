@@ -14,7 +14,8 @@ import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
 import { YUP_REGISTER } from './register.validate';
 import { GQLContext } from '../../../../../common/utils/graphql-utils';
 import { ApiResponse } from '../../../../../common/shared';
-import { mqProduce, Queue } from '../../../queue';
+import { mqProduce } from '../../../queue';
+import { Queue } from '../../../../../common/constants/queue';
 
 export const ApiRegisterResponse = ApiResponse<User>(
 	'Register',
@@ -68,7 +69,7 @@ class RegisterResolver {
 
 			mqProduce<'new_account_created'>(
 				channel,
-				Queue.ACCOUNT_TRANSFER_QUEUE,
+				Queue.TRANSFER_QUEUE,
 				{
 					data: {
 						userId: user.id,

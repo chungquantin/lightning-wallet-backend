@@ -1,11 +1,6 @@
 import { Channel } from 'amqplib';
 import { Connection } from 'typeorm';
-import { CustomMessage, FiatCurrency } from '../../common/shared';
-
-export enum Queue {
-	ACCOUNT_TRANSFER_QUEUE = 'ACCOUNT_TRANSFER_QUEUE',
-	BANK_TRANSFER_QUEUE = 'BANK_TRANSFER_QUEUE',
-}
+import { Queue } from '../../common/constants/queue';
 
 interface OutgoingMessageDataMap {}
 
@@ -61,7 +56,7 @@ export const queueHandler = async (
 		});
 	};
 
-	channel.assertQueue(Queue.ACCOUNT_TRANSFER_QUEUE, {
+	channel.assertQueue(Queue.BANK_QUEUE, {
 		durable: false,
 		arguments: {
 			'x-message-ttl': 0,

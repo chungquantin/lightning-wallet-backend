@@ -1,0 +1,15 @@
+schema {
+  query: Query
+}
+type Query {
+  helloWorldLnd: HelloWorldLnd
+}
+type HelloWorldLnd {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+type ApiError {
+  path: String!
+  message: String!
+}

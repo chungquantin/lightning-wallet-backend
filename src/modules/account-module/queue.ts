@@ -1,10 +1,6 @@
 import { Channel } from 'amqplib';
 import { Connection } from 'typeorm';
-
-export enum Queue {
-	ACCOUNT_TRANSFER_QUEUE = 'ACCOUNT_TRANSFER_QUEUE',
-	NOTIFICATION_QUEUE = 'NOTIFICATION_QUEUE',
-}
+import { Queue } from '../../common/constants/queue';
 
 interface OutgoingMessageDataMap {
 	new_account_created: {
@@ -68,12 +64,12 @@ export const queueHandler = async (
 		});
 	};
 
-	channel.assertQueue(Queue.ACCOUNT_TRANSFER_QUEUE, {
+	channel.assertQueue(Queue.ACCOUNT_QUEUE, {
 		durable: false,
 		arguments: {
 			'x-message-ttl': 0,
 		},
 	});
 
-	mqConsume(Queue.ACCOUNT_TRANSFER_QUEUE);
+	mqConsume(Queue.ACCOUNT_QUEUE);
 };

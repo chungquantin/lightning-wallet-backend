@@ -11,6 +11,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { FiatCurrency } from '../../../common/shared';
 import { TransactionMethod } from '../../../common/shared/TransactionMethod.enum';
+import { TransactionStatus } from '../../../common/shared/TransactionStatus.enum';
 import { Wallet } from './Wallet';
 
 @Directive('@key(fields: "id")')
@@ -32,6 +33,25 @@ export class Transaction extends BaseEntity {
 	@Field(() => Number!)
 	@Column('float', { nullable: false })
 	amount: number;
+
+	@Field(() => Number!)
+	@Column('float', { nullable: false, default: 0 })
+	networkFee: number;
+
+	@Field(() => Number!)
+	@Column('float', { nullable: false, default: 0 })
+	transactionFee: number;
+
+	@Field(() => TransactionStatus!)
+	@Column('text', {
+		nullable: false,
+		default: TransactionStatus.UNKNOWN,
+	})
+	status: TransactionStatus;
+
+	@Field(() => String!)
+	@Column('text', { nullable: false, default: '' })
+	description: String;
 
 	@Field(() => TransactionMethod!)
 	@Column('text', { nullable: false })

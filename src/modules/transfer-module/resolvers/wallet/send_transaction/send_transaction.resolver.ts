@@ -23,7 +23,9 @@ import { SendTransactionDto } from './send_transaction.dto';
 import { Transaction } from '../../../entity/Transaction';
 import { WalletGQLContext } from '../../..';
 import { bitcoinUtil } from '../../../utils';
-import { mqProduce, Queue } from '../../../queue';
+import { mqProduce } from '../../../queue';
+import { TransactionStatus } from '../../../../../common/shared/TransactionStatus.enum';
+import { Queue } from '../../../../../common/constants/queue';
 
 @ObjectType()
 class TransactionResponse {
@@ -51,7 +53,13 @@ class SendTransactionResolver {
 	@Mutation(() => ApiSendResponse, { nullable: true })
 	async sendTransaction(
 		@Arg('data')
-		{ amount, currency, walletId, method }: SendTransactionDto,
+		{
+			amount,
+			currency,
+			walletId,
+			method,
+			description,
+		}: SendTransactionDto,
 		@Ctx() { currentUser, dataSources, channel }: WalletGQLContext,
 	): Promise<ApiSendResponseType> {
 		// Validate withdrawable amount
@@ -167,6 +175,11 @@ class SendTransactionResolver {
 				currency,
 				fromWalletId: userWallet.id,
 				toWalletId: toWallet.id,
+				description,
+				networkFee: 0,
+				transactionFee: 0,
+				status: TransactionStatus.PENDING,
+				wallet: [userWallet, toWallet],
 				method,
 			})
 			.save();
@@ -198,13 +211,10 @@ class SendTransactionResolver {
 
 		mqProduce<'transaction_sended'>(
 			channel,
-			Queue.ACCOUNT_TRANSFER_QUEUE,
+			Queue.NOTIFICATION_QUEUE,
 			{
 				data: {
-					amount: transaction.amount,
-					currency: transaction.currency,
-					fromWallet: transaction.fromWalletId,
-					toWallet: transaction.toWalletId,
+					transaction,
 				},
 				operation: 'transaction_sended',
 			},

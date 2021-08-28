@@ -20,11 +20,22 @@ type TransactionSchema @key(fields: "id") {
   fromWalletId: String!
   toWalletId: String!
   amount: Float!
+  networkFee: Float!
+  transactionFee: Float!
+  status: TransactionStatus!
+  description: String!
   method: TransactionMethod!
   currency: FiatCurrency!
   btcExchangeRate: Float!
   btcAmount: Float!
   createdAt: String!
+}
+"""Transaction status"""
+enum TransactionStatus {
+  UNKNOWN
+  PENDING
+  DONE
+  EXPIRED
 }
 """Transaction method"""
 enum TransactionMethod {
@@ -74,4 +85,5 @@ input SendTransactionDto {
   amount: Float!
   currency: String!
   method: String!
+  description: String!
 }

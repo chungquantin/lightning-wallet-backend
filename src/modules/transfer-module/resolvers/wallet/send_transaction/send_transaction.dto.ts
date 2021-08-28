@@ -14,4 +14,7 @@ export class SendTransactionDto {
 
 	@Field()
 	method: TransactionMethod;
+
+	@Field()
+	description: string;
 }

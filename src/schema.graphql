@@ -65,6 +65,11 @@ type HelloWorld {
   errors: [ApiError!]
   success: Boolean!
 }
+type HelloWorldLnd {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
 type Login {
   data: TokenResponse
   errors: [ApiError!]
@@ -100,6 +105,7 @@ type Query {
   getWallet(data: GetWalletDto!): GetWallet @join__field(graph: TRANSFER_MODULE)
   getWallets: GetWallets @join__field(graph: TRANSFER_MODULE)
   helloWorld: HelloWorld @join__field(graph: BANK_MODULE)
+  helloWorldLnd: HelloWorldLnd @join__field(graph: LND_MODULE)
   me: Me @join__field(graph: ACCOUNT_MODULE)
 }
 type Register {
@@ -131,6 +137,7 @@ type SendTransaction {
 input SendTransactionDto {
   amount: Float!
   currency: String!
+  description: String!
   method: String!
   walletId: String!
 }
@@ -152,10 +159,21 @@ type TransactionSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: T
   btcExchangeRate: Float! @join__field(graph: TRANSFER_MODULE)
   createdAt: String! @join__field(graph: TRANSFER_MODULE)
   currency: FiatCurrency! @join__field(graph: TRANSFER_MODULE)
+  description: String! @join__field(graph: TRANSFER_MODULE)
   fromWalletId: String! @join__field(graph: TRANSFER_MODULE)
   id: ID! @join__field(graph: TRANSFER_MODULE)
   method: TransactionMethod! @join__field(graph: TRANSFER_MODULE)
+  networkFee: Float! @join__field(graph: TRANSFER_MODULE)
+  status: TransactionStatus! @join__field(graph: TRANSFER_MODULE)
   toWalletId: String! @join__field(graph: TRANSFER_MODULE)
+  transactionFee: Float! @join__field(graph: TRANSFER_MODULE)
+}
+"""Transaction status"""
+enum TransactionStatus {
+  DONE
+  EXPIRED
+  PENDING
+  UNKNOWN
 }
 type UserSchema @join__owner(graph: ACCOUNT_MODULE) @join__type(graph: ACCOUNT_MODULE, key: "id") {
   avatar: String! @join__field(graph: ACCOUNT_MODULE)

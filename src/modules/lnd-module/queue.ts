@@ -1,21 +1,15 @@
 import { Channel } from 'amqplib';
 import { Connection } from 'typeorm';
 import { Queue } from '../../common/constants/queue';
-import { CustomMessage } from '../../common/shared';
-import { Wallet } from './entity';
-import { Transaction } from './entity/Transaction';
-interface OutgoingMessageDataMap {
-	transaction_sended: {
-		transaction: Transaction;
-	};
-}
+
+interface OutgoingMessageDataMap {}
 
 type OutgoingMessage<Key extends keyof OutgoingMessageDataMap> = {
 	operation: Key;
 	data: OutgoingMessageDataMap[Key];
 };
 interface IncomingMessageDataMap {
-	new_account_created: {
+	hello_world: {
 		userId: string;
 	};
 }
@@ -32,24 +26,7 @@ type HandlerMap = {
 };
 
 const handlerMap: HandlerMap = {
-	new_account_created: async ({ userId }, conn: Connection) => {
-		const walletRepository = await conn.getRepository(Wallet);
-		if (
-			!!(await walletRepository.findOne({
-				where: {
-					userId,
-				},
-			}))
-		) {
-			throw new Error(CustomMessage.walletIsCreatedAlready);
-		}
-		await walletRepository
-			.create({
-				userId,
-				balance: 100000,
-			})
-			.save();
-	},
+	hello_world: () => {},
 };
 
 export const mqProduce = <Key extends keyof OutgoingMessageDataMap>(
@@ -79,12 +56,10 @@ export const queueHandler = async (
 		});
 	};
 
-	channel.assertQueue(Queue.TRANSFER_QUEUE, {
+	channel.assertQueue(Queue.LND_QUEUE, {
 		durable: false,
 		arguments: {
 			'x-message-ttl': 0,
 		},
 	});
-
-	mqConsume<'new_account_created'>(Queue.TRANSFER_QUEUE);
 };
