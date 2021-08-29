@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"build": "rimraf ./dist & tsc",
 		"gen-gql": "rimraf ./graphql & gqlg --schemaFilePath ./schema.graphql --destDirPath ./graphql --depthLimit 5",
 		"start": "SET NODE_ENV=development& ts-node index.ts",
 		"dev": "SET NODE_ENV=development& ts-node-dev index.ts",

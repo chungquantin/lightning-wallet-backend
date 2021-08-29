@@ -4,10 +4,11 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"build": "sh scripts/build-protos.sh",
+		"proto-build": "sh scripts/build-protos.sh",
 		"gen-gql": "rimraf ./graphql & gqlg --schemaFilePath ./schema.graphql --destDirPath ./graphql --depthLimit 5",
 		"start": "SET NODE_ENV=development& ts-node index.ts",
 		"dev": "SET NODE_ENV=development& ts-node-dev index.ts",
+		"build": "rimraf ./dist & tsc",
 		"start:dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development&  ts-node-dev --respawn index.ts --no-autorestart \" "
 	},
 	"keywords": [],
