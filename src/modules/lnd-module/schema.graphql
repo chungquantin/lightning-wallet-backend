@@ -1,9 +1,10 @@
 schema {
   query: Query
+  mutation: Mutation
 }
 type Query {
   _service: _Service!
-  lndGetTransactions(Pagination: PaginationInputType): LndGetTransactions
+  lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions
 }
 type _Service {
   """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
@@ -28,6 +29,17 @@ type LightningTransaction {
 input PaginationInputType {
   limit: Int
   skip: Int
+}
+type Mutation {
+  lightningSendPayment(data: LndSendPaymentDto!): LndSendPayment
+}
+type LndSendPayment {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input LndSendPaymentDto {
+  paymentRequest: String!
 }
 directive @key(fields: String!) on OBJECT | INTERFACE
 directive @extends on OBJECT | INTERFACE

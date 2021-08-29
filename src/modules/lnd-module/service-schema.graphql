@@ -1,8 +1,9 @@
 schema {
   query: Query
+  mutation: Mutation
 }
 type Query {
-  lndGetTransactions(Pagination: PaginationInputType): LndGetTransactions
+  lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions
 }
 type LndGetTransactions {
   success: Boolean!
@@ -23,4 +24,15 @@ type LightningTransaction {
 input PaginationInputType {
   limit: Int
   skip: Int
+}
+type Mutation {
+  lightningSendPayment(data: LndSendPaymentDto!): LndSendPayment
+}
+type LndSendPayment {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input LndSendPaymentDto {
+  paymentRequest: String!
 }

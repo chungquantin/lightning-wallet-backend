@@ -1,5 +1,5 @@
-mutation register($data: RegisterDto!){
-    register(data: $data){
+query getCurrentUser{
+    getCurrentUser{
         success
         errors{
             path

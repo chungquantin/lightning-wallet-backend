@@ -1,5 +1,5 @@
-mutation register($data: RegisterDto!){
-    register(data: $data){
+mutation lightningSendPayment($data: LndSendPaymentDto!){
+    lightningSendPayment(data: $data){
         success
         errors{
             path

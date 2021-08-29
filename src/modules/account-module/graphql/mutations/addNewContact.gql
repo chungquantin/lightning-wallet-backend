@@ -1,0 +1,10 @@
+mutation addNewContact($data: AddNewContactDto!){
+    addNewContact(data: $data){
+        success
+        errors{
+            path
+            message
+        }
+        data
+    }
+}

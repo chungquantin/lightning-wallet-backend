@@ -6,14 +6,40 @@ query _entities($representations: [_Any!]!){
             avatar
             emailVerified
             twoFactorVerified
-            balance
             phoneNumberVerified
             phoneNumber
-            password
             firstName
             lastName
-            defaultCurrency
             forgotPasswordLock
+            contacts{
+                id
+                email
+                avatar
+                emailVerified
+                twoFactorVerified
+                phoneNumberVerified
+                phoneNumber
+                firstName
+                lastName
+                forgotPasswordLock
+                contacts{
+                    id
+                    email
+                    avatar
+                    emailVerified
+                    twoFactorVerified
+                    phoneNumberVerified
+                    phoneNumber
+                    firstName
+                    lastName
+                    forgotPasswordLock
+                    createdAt
+                    name
+                }
+                createdAt
+                name
+            }
+            createdAt
             name
         }
     }

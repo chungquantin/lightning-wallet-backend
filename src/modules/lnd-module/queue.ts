@@ -1,8 +1,11 @@
 import { Channel } from 'amqplib';
 import { Connection } from 'typeorm';
 import { Queue } from '../../common/constants/queue';
+import { SendResponse } from './proto/lnd_pb';
 
-interface OutgoingMessageDataMap {}
+interface OutgoingMessageDataMap {
+	lightning_payment_sended: SendResponse.AsObject;
+}
 
 type OutgoingMessage<Key extends keyof OutgoingMessageDataMap> = {
 	operation: Key;

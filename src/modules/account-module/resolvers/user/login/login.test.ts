@@ -141,7 +141,7 @@ testFrame(() => {
 		});
 
 		test('get user before login', async () => {
-			const me = await client1?.user.me();
+			const me = await client1?.user.getCurrentUser();
 			expect(yupErrorResponse(me)).toEqual({
 				message: 'Not authenticated',
 				path: 'me',

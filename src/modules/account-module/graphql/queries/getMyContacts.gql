@@ -1,5 +1,5 @@
-mutation register($data: RegisterDto!){
-    register(data: $data){
+query getMyContacts($Pagination: PaginationInputType){
+    getMyContacts(Pagination: $Pagination){
         success
         errors{
             path

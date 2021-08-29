@@ -34,6 +34,29 @@ type GetMeWallet {
   errors: [ApiError!]
   success: Boolean!
 }
+type GetMyContacts {
+  data: [UserSchema!]!
+  errors: [ApiError!]
+  success: Boolean!
+}
+type GetMyWalletTransactions {
+  data: [TransactionSchema!]!
+  errors: [ApiError!]
+  success: Boolean!
+}
+type GetTransaction {
+  data: TransactionSchema
+  errors: [ApiError!]
+  success: Boolean!
+}
+input GetTransactionDto {
+  transactionId: String!
+}
+type GetTransactions {
+  data: [TransactionSchema!]!
+  errors: [ApiError!]
+  success: Boolean!
+}
 type GetUser {
   data: UserSchema
   errors: [ApiError!]
@@ -53,7 +76,8 @@ type GetWallet {
   success: Boolean!
 }
 input GetWalletDto {
-  userId: String!
+  userId: String
+  walletId: String
 }
 type GetWallets {
   data: [WalletSchema!]!
@@ -77,6 +101,14 @@ type LndGetTransactions {
   errors: [ApiError!]
   success: Boolean!
 }
+type LndSendPayment {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
+input LndSendPaymentDto {
+  paymentRequest: String!
+}
 type Login {
   data: TokenResponse
   errors: [ApiError!]
@@ -99,25 +131,34 @@ type Me {
 type Mutation {
   addNewContact(data: AddNewContactDto!): AddNewContact @join__field(graph: ACCOUNT_MODULE)
   forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword @join__field(graph: ACCOUNT_MODULE)
+  lightningSendPayment(data: LndSendPaymentDto!): LndSendPayment @join__field(graph: LND_MODULE)
   login(data: LoginDto!): Login @join__field(graph: ACCOUNT_MODULE)
   logout: Logout @join__field(graph: ACCOUNT_MODULE)
   register(data: RegisterDto!): Register @join__field(graph: ACCOUNT_MODULE)
+  requestPayment(data: RequestPaymentDto!): RequestTransaction @join__field(graph: TRANSFER_MODULE)
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword @join__field(graph: ACCOUNT_MODULE)
-  sendTransaction(data: SendTransactionDto!): SendTransaction @join__field(graph: TRANSFER_MODULE)
+  sendPayment(data: SendPaymentDto!): SendTransaction @join__field(graph: TRANSFER_MODULE)
 }
 input PaginationInputType {
   limit: Int
   skip: Int
 }
+type PaymentResponse {
+  transaction: TransactionSchema!
+}
 type Query {
-  getMeWallet: GetMeWallet @join__field(graph: TRANSFER_MODULE)
+  getCurrentUser: Me @join__field(graph: ACCOUNT_MODULE)
+  getMyContacts(Pagination: PaginationInputType): GetMyContacts @join__field(graph: ACCOUNT_MODULE)
+  getMyWallet: GetMeWallet @join__field(graph: TRANSFER_MODULE)
+  getMyWalletTransactions(Pagination: PaginationInputType): GetMyWalletTransactions @join__field(graph: TRANSFER_MODULE)
+  getTransaction(data: GetTransactionDto!): GetTransaction @join__field(graph: TRANSFER_MODULE)
+  getTransactions(Pagination: PaginationInputType): GetTransactions @join__field(graph: TRANSFER_MODULE)
   getUser(data: GetUserDto!): GetUser @join__field(graph: ACCOUNT_MODULE)
   getUsers(Pagination: PaginationInputType): GetUsers @join__field(graph: ACCOUNT_MODULE)
   getWallet(data: GetWalletDto!): GetWallet @join__field(graph: TRANSFER_MODULE)
   getWallets(Pagination: PaginationInputType): GetWallets @join__field(graph: TRANSFER_MODULE)
   helloWorld: HelloWorld @join__field(graph: BANK_MODULE)
-  lndGetTransactions(Pagination: PaginationInputType): LndGetTransactions @join__field(graph: LND_MODULE)
-  me: Me @join__field(graph: ACCOUNT_MODULE)
+  lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions @join__field(graph: LND_MODULE)
 }
 type Register {
   data: UserSchema
@@ -132,6 +173,18 @@ input RegisterDto {
   password: String!
   phoneNumber: String!
 }
+input RequestPaymentDto {
+  amount: Float!
+  currency: String!
+  description: String!
+  method: String!
+  walletId: String!
+}
+type RequestTransaction {
+  data: TransactionRequestSchema
+  errors: [ApiError!]
+  success: Boolean!
+}
 type SendForgotPassword {
   data: String
   errors: [ApiError!]
@@ -140,17 +193,17 @@ type SendForgotPassword {
 input SendForgotPasswordDto {
   email: String!
 }
-type SendTransaction {
-  data: TransactionResponse
-  errors: [ApiError!]
-  success: Boolean!
-}
-input SendTransactionDto {
+input SendPaymentDto {
   amount: Float!
   currency: String!
   description: String!
   method: String!
   walletId: String!
+}
+type SendTransaction {
+  data: PaymentResponse
+  errors: [ApiError!]
+  success: Boolean!
 }
 type TokenResponse {
   accessToken: String!
@@ -161,8 +214,11 @@ enum TransactionMethod {
   LIGHTNING
   ON_CHAIN
 }
-type TransactionResponse {
-  transaction: TransactionSchema!
+type TransactionRequestSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
+  id: ID! @join__field(graph: TRANSFER_MODULE)
+  requestFrom: String! @join__field(graph: TRANSFER_MODULE)
+  requestTo: String! @join__field(graph: TRANSFER_MODULE)
+  transaction: TransactionSchema! @join__field(graph: TRANSFER_MODULE)
 }
 type TransactionSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
   amount: Float! @join__field(graph: TRANSFER_MODULE)
@@ -207,4 +263,5 @@ type WalletSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSF
   defaultCurrency: FiatCurrency! @join__field(graph: TRANSFER_MODULE)
   id: ID! @join__field(graph: TRANSFER_MODULE)
   transactions: [TransactionSchema!]! @join__field(graph: TRANSFER_MODULE)
+  userId: ID! @join__field(graph: TRANSFER_MODULE)
 }

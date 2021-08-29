@@ -41,10 +41,10 @@ export type ApiGetTransactionsType = InstanceType<
 >;
 
 @Resolver((of) => String)
-class LndGetTransactionsResolver {
+class LightningGetTransactionsResolver {
 	@UseMiddleware()
 	@Query(() => ApiGetTransactions, { nullable: true })
-	async lndGetTransactions(
+	async lightningGetTransactions(
 		@Arg('Pagination', { nullable: true })
 		Pagination?: PaginationInputType,
 	): Promise<ApiGetTransactionsType> {
@@ -75,7 +75,7 @@ class LndGetTransactionsResolver {
 				errors: [
 					{
 						message: err.message,
-						path: 'lndSendPayment',
+						path: 'lightningSendPayment',
 					},
 				],
 			};
@@ -83,4 +83,4 @@ class LndGetTransactionsResolver {
 	}
 }
 
-export default LndGetTransactionsResolver;
+export default LightningGetTransactionsResolver;

@@ -4,25 +4,33 @@ import { UserRepository } from '../../../repository/user/UserRepository';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { GQLContext } from '../../../../../common/utils/graphql-utils';
 import { isAuth } from '../../../../../common/middleware/isAuth';
-import { ApiResponse, CustomMessage } from '../../../../../common/shared';
+import {
+	ApiResponse,
+	CustomMessage,
+} from '../../../../../common/shared';
 
-export const ApiMeResponse = ApiResponse<User>('Me', User);
-export type ApiMeResponseType = InstanceType<typeof ApiMeResponse>;
+export const ApiGetCurrentUserResponse = ApiResponse<User>(
+	'Me',
+	User,
+);
+export type ApiGetCurrentUserResponseType = InstanceType<
+	typeof ApiGetCurrentUserResponse
+>;
 
 @Resolver((of) => User)
-class MeResolver {
+class GetCurrentUserResolver {
 	@InjectRepository(UserRepository)
 	private readonly userRepository: UserRepository;
 
 	@UseMiddleware(isAuth)
-	@Query(() => ApiMeResponse!, { nullable: true })
-	async me(
+	@Query(() => ApiGetCurrentUserResponse!, { nullable: true })
+	async getCurrentUser(
 		@Ctx() { currentUser }: GQLContext,
-	): Promise<ApiMeResponseType> {
+	): Promise<ApiGetCurrentUserResponseType> {
 		const user = await this.userRepository.findOne({
 			where: { id: currentUser?.userId },
 		});
-		
+
 		if (!user) {
 			return {
 				success: false,
@@ -41,4 +49,4 @@ class MeResolver {
 	}
 }
 
-export default MeResolver;
+export default GetCurrentUserResolver;

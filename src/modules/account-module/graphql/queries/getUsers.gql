@@ -1,5 +1,5 @@
-query getUsers{
-    getUsers{
+query getUsers($Pagination: PaginationInputType){
+    getUsers(Pagination: $Pagination){
         success
         errors{
             path
@@ -11,14 +11,40 @@ query getUsers{
             avatar
             emailVerified
             twoFactorVerified
-            balance
             phoneNumberVerified
             phoneNumber
-            password
             firstName
             lastName
-            defaultCurrency
             forgotPasswordLock
+            contacts{
+                id
+                email
+                avatar
+                emailVerified
+                twoFactorVerified
+                phoneNumberVerified
+                phoneNumber
+                firstName
+                lastName
+                forgotPasswordLock
+                contacts{
+                    id
+                    email
+                    avatar
+                    emailVerified
+                    twoFactorVerified
+                    phoneNumberVerified
+                    phoneNumber
+                    firstName
+                    lastName
+                    forgotPasswordLock
+                    createdAt
+                    name
+                }
+                createdAt
+                name
+            }
+            createdAt
             name
         }
     }

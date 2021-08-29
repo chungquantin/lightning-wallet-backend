@@ -10,7 +10,7 @@ import { ApiLoginResponseType } from '../resolvers/user/login/login.resolver';
 import { ApiRegisterResponseType } from '../resolvers/user/register/register.resolver';
 import { ApiUsersResponseType } from '../resolvers/user/get_users/get_users.resolver';
 import { ApiUserResponseType } from '../resolvers/user/get_user/get_user.resolver';
-import { ApiMeResponseType } from '../resolvers/user/me/me.resolver';
+import { ApiGetCurrentUserResponseType } from '../resolvers/user/get_current_user/get_current_user.resolver';
 import { ApiLogoutResponseType } from '../resolvers/user/logout/logout.resolver';
 interface GQL {
 	mutations: any;
@@ -72,10 +72,10 @@ export class TestClient {
 	}
 
 	user = {
-		me: async (
+		getCurrentUser: async (
 			headers?: RequestHeader,
-		): Promise<{ me: ApiMeResponseType }> =>
-			await this.query('me', headers),
+		): Promise<{ getCurrentUser: ApiGetCurrentUserResponseType }> =>
+			await this.query('getCurrentUser', headers),
 
 		getUser: async (
 			args: GetUserDto,

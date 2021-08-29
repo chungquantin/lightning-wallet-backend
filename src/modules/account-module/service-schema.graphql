@@ -18,7 +18,8 @@ type UserSchema @key(fields: "id") {
   name: String!
 }
 type Query {
-  me: Me
+  getCurrentUser: Me
+  getMyContacts(Pagination: PaginationInputType): GetMyContacts
   getUser(data: GetUserDto!): GetUser
   getUsers(Pagination: PaginationInputType): GetUsers
 }
@@ -30,6 +31,15 @@ type Me {
 type ApiError {
   path: String!
   message: String!
+}
+type GetMyContacts {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [UserSchema!]!
+}
+input PaginationInputType {
+  limit: Int
+  skip: Int
 }
 type GetUser {
   success: Boolean!
@@ -43,10 +53,6 @@ type GetUsers {
   success: Boolean!
   errors: [ApiError!]
   data: [UserSchema!]!
-}
-input PaginationInputType {
-  limit: Int
-  skip: Int
 }
 type Mutation {
   login(data: LoginDto!): Login

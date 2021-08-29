@@ -24,9 +24,7 @@ class GetUsersResolver {
 		@Arg('Pagination', { nullable: true })
 		Pagination?: PaginationInputType,
 	): Promise<ApiUsersResponseType> {
-		const users = await this.userRepository.find({
-			relations: ['contacts'],
-		});
+		const users = await this.userRepository.find();
 		return {
 			success: true,
 			data: users.slice(

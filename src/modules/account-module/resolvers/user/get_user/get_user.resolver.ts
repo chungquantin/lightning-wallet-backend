@@ -5,10 +5,15 @@ import { UserRepository } from '../../../repository/user/UserRepository';
 import { GetUserDto } from './get_user.dto';
 import { User } from '../../../entity/User';
 import { YUP_USER_READ } from './get_user.validate';
-import { ApiResponse, CustomMessage } from '../../../../../common/shared';
+import {
+	ApiResponse,
+	CustomMessage,
+} from '../../../../../common/shared';
 
 export const ApiUserResponse = ApiResponse<User>('GetUser', User);
-export type ApiUserResponseType = InstanceType<typeof ApiUserResponse>;
+export type ApiUserResponseType = InstanceType<
+	typeof ApiUserResponse
+>;
 
 @Resolver((of) => User)
 class GetUserResolver {
@@ -20,11 +25,7 @@ class GetUserResolver {
 	async getUser(
 		@Arg('data') { userId }: GetUserDto,
 	): Promise<ApiUserResponseType> {
-		const user = await this.userRepository.findOne({
-			where: {
-				id: userId,
-			},
-		});
+		const user = await this.userRepository.findOne();
 
 		if (!user) {
 			return {

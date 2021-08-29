@@ -55,7 +55,7 @@ testFrame(() => {
 				.logout()
 				.then((res) => expect(res.logout).toBeNull);
 
-			await client?.user.me().then((res) =>
+			await client?.user.getCurrentUser().then((res) =>
 				expect(yupErrorResponse(res)).toMatchObject({
 					message: 'Not authenticated',
 					path: 'me',
