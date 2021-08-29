@@ -1,20 +1,61 @@
 query _entities($representations: [_Any!]!){
     _entities(representations: $representations){
-        ... on UserSchema {
+        ... on WalletSchema {
             id
-            email
-            avatar
-            emailVerified
-            twoFactorVerified
+            userId
             balance
-            phoneNumberVerified
-            phoneNumber
-            password
-            firstName
-            lastName
             defaultCurrency
-            forgotPasswordLock
-            name
+            transactions{
+                id
+                fromWalletId
+                toWalletId
+                amount
+                networkFee
+                transactionFee
+                status
+                description
+                method
+                currency
+                btcExchangeRate
+                btcAmount
+                createdAt
+            }
+            createdAt
+        }
+        ... on TransactionSchema {
+            id
+            fromWalletId
+            toWalletId
+            amount
+            networkFee
+            transactionFee
+            status
+            description
+            method
+            currency
+            btcExchangeRate
+            btcAmount
+            createdAt
+        }
+        ... on TransactionRequestSchema {
+            id
+            transaction{
+                id
+                fromWalletId
+                toWalletId
+                amount
+                networkFee
+                transactionFee
+                status
+                description
+                method
+                currency
+                btcExchangeRate
+                btcAmount
+                createdAt
+            }
+            requestFrom
+            requestTo
         }
     }
 }

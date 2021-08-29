@@ -1,0 +1,24 @@
+query getTransaction($data: GetTransactionDto!){
+    getTransaction(data: $data){
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            id
+            fromWalletId
+            toWalletId
+            amount
+            networkFee
+            transactionFee
+            status
+            description
+            method
+            currency
+            btcExchangeRate
+            btcAmount
+            createdAt
+        }
+    }
+}

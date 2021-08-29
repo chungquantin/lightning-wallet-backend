@@ -1,0 +1,24 @@
+query getMyWalletTransactions($Pagination: PaginationInputType){
+    getMyWalletTransactions(Pagination: $Pagination){
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            id
+            fromWalletId
+            toWalletId
+            amount
+            networkFee
+            transactionFee
+            status
+            description
+            method
+            currency
+            btcExchangeRate
+            btcAmount
+            createdAt
+        }
+    }
+}

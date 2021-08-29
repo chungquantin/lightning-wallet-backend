@@ -8,27 +8,26 @@ import {
 import { GQLContext } from '../../../../../common/utils/graphql-utils';
 import { Wallet } from '../../../entity';
 
-export const ApiGetMeWallet = ApiResponse<Wallet>(
+export const ApiGetMyWallet = ApiResponse<Wallet>(
 	'GetMeWallet',
 	Wallet,
 );
-export type ApiGetMeWalletType = InstanceType<typeof ApiGetMeWallet>;
+export type ApiGetMyWalletType = InstanceType<typeof ApiGetMyWallet>;
 
 @Resolver((of) => Wallet)
-class GetMeWalletResolver {
+class GetMyWalletResolver {
 	@InjectRepository(WalletRepository)
 	private readonly walletRepository: WalletRepository;
 
 	@UseMiddleware()
-	@Query(() => ApiGetMeWallet, { nullable: true })
-	async getMeWallet(
+	@Query(() => ApiGetMyWallet, { nullable: true })
+	async getMyWallet(
 		@Ctx() { currentUser }: GQLContext,
-	): Promise<ApiGetMeWalletType> {
+	): Promise<ApiGetMyWalletType> {
 		const wallet = await this.walletRepository.findOne({
 			where: {
 				userId: currentUser?.userId,
 			},
-			relations: ['transactions'],
 		});
 		if (!wallet) {
 			return {
@@ -48,4 +47,4 @@ class GetMeWalletResolver {
 	}
 }
 
-export default GetMeWalletResolver;
+export default GetMyWalletResolver;

@@ -4,9 +4,13 @@ import { Queue } from '../../common/constants/queue';
 import { CustomMessage } from '../../common/shared';
 import { Wallet } from './entity';
 import { Transaction } from './entity/Transaction';
+import { TransactionRequest } from './entity/TransactionRequest';
 interface OutgoingMessageDataMap {
 	transaction_sended: {
 		transaction: Transaction;
+	};
+	transaction_requested: {
+		transactionRequest: TransactionRequest;
 	};
 }
 

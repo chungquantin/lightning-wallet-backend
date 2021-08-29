@@ -22,9 +22,7 @@ class GetWalletsResolver {
 		@Arg('Pagination', { nullable: true })
 		Pagination?: PaginationInputType,
 	): Promise<ApiGetWalletType> {
-		const wallets = await this.walletRepository.find({
-			relations: ['transactions'],
-		});
+		const wallets = await this.walletRepository.find();
 		return {
 			success: true,
 			data: wallets.slice(

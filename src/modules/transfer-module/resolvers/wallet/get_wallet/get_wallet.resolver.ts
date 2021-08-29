@@ -19,12 +19,16 @@ class GetWalletResolver {
 	@UseMiddleware()
 	@Query(() => ApiGetWallet, { nullable: true })
 	async getWallet(
-		@Arg('data') { userId }: GetWalletDto,
+		@Arg('data') { userId, walletId }: GetWalletDto,
 	): Promise<ApiGetWalletType> {
 		const wallet = await this.walletRepository.findOne({
-			where: {
-				userId: userId,
-			},
+			where: userId
+				? {
+						userId: userId,
+				  }
+				: {
+						id: walletId,
+				  },
 			relations: ['transactions'],
 		});
 		if (!wallet) {

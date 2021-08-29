@@ -20,7 +20,8 @@ export class Wallet extends BaseEntity {
 	@PrimaryColumn('uuid')
 	id: string;
 
-	@PrimaryColumn('uuid')
+	@Field(() => ID)
+	@Column('uuid')
 	userId: string;
 
 	@Field(() => Number!)

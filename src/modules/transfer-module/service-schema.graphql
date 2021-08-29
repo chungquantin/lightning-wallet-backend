@@ -4,6 +4,7 @@ schema {
 }
 type WalletSchema @key(fields: "id") {
   id: ID!
+  userId: ID!
   balance: Float!
   defaultCurrency: FiatCurrency!
   transactions: [TransactionSchema!]!
@@ -44,8 +45,11 @@ enum TransactionMethod {
 }
 type Query {
   getWallet(data: GetWalletDto!): GetWallet
-  getMeWallet: GetMeWallet
+  getMyWallet: GetMeWallet
   getWallets(Pagination: PaginationInputType): GetWallets
+  getMyWalletTransactions(Pagination: PaginationInputType): GetMyWalletTransactions
+  getTransactions(Pagination: PaginationInputType): GetTransactions
+  getTransaction(data: GetTransactionDto!): GetTransaction
 }
 type GetWallet {
   success: Boolean!
@@ -57,7 +61,8 @@ type ApiError {
   message: String!
 }
 input GetWalletDto {
-  userId: String!
+  walletId: String
+  userId: String
 }
 type GetMeWallet {
   success: Boolean!
@@ -73,18 +78,55 @@ input PaginationInputType {
   limit: Int
   skip: Int
 }
+type GetMyWalletTransactions {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [TransactionSchema!]!
+}
+type GetTransactions {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [TransactionSchema!]!
+}
+type GetTransaction {
+  success: Boolean!
+  errors: [ApiError!]
+  data: TransactionSchema
+}
+input GetTransactionDto {
+  transactionId: String!
+}
 type Mutation {
-  sendTransaction(data: SendTransactionDto!): SendTransaction
+  sendPayment(data: SendPaymentDto!): SendTransaction
+  requestPayment(data: RequestPaymentDto!): RequestTransaction
 }
 type SendTransaction {
   success: Boolean!
   errors: [ApiError!]
-  data: TransactionResponse
+  data: PaymentResponse
 }
-type TransactionResponse {
+type PaymentResponse {
   transaction: TransactionSchema!
 }
-input SendTransactionDto {
+input SendPaymentDto {
+  walletId: String!
+  amount: Float!
+  currency: String!
+  method: String!
+  description: String!
+}
+type RequestTransaction {
+  success: Boolean!
+  errors: [ApiError!]
+  data: TransactionRequestSchema
+}
+type TransactionRequestSchema @key(fields: "id") {
+  id: ID!
+  transaction: TransactionSchema!
+  requestFrom: String!
+  requestTo: String!
+}
+input RequestPaymentDto {
   walletId: String!
   amount: Float!
   currency: String!

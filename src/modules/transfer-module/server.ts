@@ -17,6 +17,7 @@ import { Connection, getConnection } from 'typeorm';
 import { genORMConnection } from '../../common/helpers/orm.config';
 import { queueHandler } from './queue';
 import * as WalletResolver from './resolvers/wallet';
+import * as PaymentResolver from './resolvers/payment';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
 import { dataSource } from './utils';
@@ -52,10 +53,14 @@ export async function listen(
 			const schema = await buildFederatedSchema(
 				{
 					resolvers: [
-						WalletResolver.GetMeWalletResolver,
+						WalletResolver.GetMyWalletResolver,
 						WalletResolver.GetWalletResolver,
 						WalletResolver.GetWalletsResolver,
-						WalletResolver.SendTransactionResolver,
+						WalletResolver.GetMyWalletTransactionsResolver,
+						WalletResolver.GetTransactions,
+						WalletResolver.GetTransaction,
+						PaymentResolver.RequestPayment,
+						PaymentResolver.SendPayment,
 					],
 					orphanedTypes: [Wallet],
 					container: Container,
