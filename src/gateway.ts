@@ -35,19 +35,23 @@ export const buildGateway = async () => {
 	const serviceList: ServiceEndpointDefinition[] = [
 		{
 			name: 'account-module',
-			url: await AccountCreationModule.listen(3001),
+			url:
+				'http://localhost:3001' ||
+				(await AccountCreationModule.listen(3001)),
 		},
 		{
 			name: 'transfer-module',
-			url: await TransferModule.listen(3002),
+			url:
+				'http://localhost:3002' ||
+				(await TransferModule.listen(3002)),
 		},
 		{
 			name: 'bank-module',
-			url: await BankModule.listen(3003),
+			url: 'http://localhost:3003' || (await BankModule.listen(3003)),
 		},
 		{
 			name: 'lnd-module',
-			url: await LndModule.listen(3004),
+			url: 'http://localhost:3004' || (await LndModule.listen(3004)),
 		},
 	];
 

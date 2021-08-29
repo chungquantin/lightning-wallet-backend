@@ -131,13 +131,13 @@ type Me {
 type Mutation {
   addNewContact(data: AddNewContactDto!): AddNewContact @join__field(graph: ACCOUNT_MODULE)
   forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword @join__field(graph: ACCOUNT_MODULE)
-  lightningSendPayment(data: LndSendPaymentDto!): LndSendPayment @join__field(graph: LND_MODULE)
+  lightningSendPayment(data: LndSendPaymentDto!): LndSendPayment @join__field(graph: BANK_MODULE)
   login(data: LoginDto!): Login @join__field(graph: ACCOUNT_MODULE)
   logout: Logout @join__field(graph: ACCOUNT_MODULE)
   register(data: RegisterDto!): Register @join__field(graph: ACCOUNT_MODULE)
-  requestPayment(data: RequestPaymentDto!): RequestTransaction @join__field(graph: TRANSFER_MODULE)
+  requestPayment(data: RequestPaymentDto!): RequestTransaction @join__field(graph: LND_MODULE)
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword @join__field(graph: ACCOUNT_MODULE)
-  sendPayment(data: SendPaymentDto!): SendTransaction @join__field(graph: TRANSFER_MODULE)
+  sendPayment(data: SendPaymentDto!): SendTransaction @join__field(graph: LND_MODULE)
 }
 input PaginationInputType {
   limit: Int
@@ -149,16 +149,16 @@ type PaymentResponse {
 type Query {
   getCurrentUser: Me @join__field(graph: ACCOUNT_MODULE)
   getMyContacts(Pagination: PaginationInputType): GetMyContacts @join__field(graph: ACCOUNT_MODULE)
-  getMyWallet: GetMeWallet @join__field(graph: TRANSFER_MODULE)
-  getMyWalletTransactions(Pagination: PaginationInputType): GetMyWalletTransactions @join__field(graph: TRANSFER_MODULE)
-  getTransaction(data: GetTransactionDto!): GetTransaction @join__field(graph: TRANSFER_MODULE)
-  getTransactions(Pagination: PaginationInputType): GetTransactions @join__field(graph: TRANSFER_MODULE)
+  getMyWallet: GetMeWallet @join__field(graph: LND_MODULE)
+  getMyWalletTransactions(Pagination: PaginationInputType): GetMyWalletTransactions @join__field(graph: LND_MODULE)
+  getTransaction(data: GetTransactionDto!): GetTransaction @join__field(graph: LND_MODULE)
+  getTransactions(Pagination: PaginationInputType): GetTransactions @join__field(graph: LND_MODULE)
   getUser(data: GetUserDto!): GetUser @join__field(graph: ACCOUNT_MODULE)
   getUsers(Pagination: PaginationInputType): GetUsers @join__field(graph: ACCOUNT_MODULE)
-  getWallet(data: GetWalletDto!): GetWallet @join__field(graph: TRANSFER_MODULE)
-  getWallets(Pagination: PaginationInputType): GetWallets @join__field(graph: TRANSFER_MODULE)
-  helloWorld: HelloWorld @join__field(graph: BANK_MODULE)
-  lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions @join__field(graph: LND_MODULE)
+  getWallet(data: GetWalletDto!): GetWallet @join__field(graph: LND_MODULE)
+  getWallets(Pagination: PaginationInputType): GetWallets @join__field(graph: LND_MODULE)
+  helloWorld: HelloWorld @join__field(graph: TRANSFER_MODULE)
+  lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions @join__field(graph: BANK_MODULE)
 }
 type Register {
   data: UserSchema
@@ -214,26 +214,26 @@ enum TransactionMethod {
   LIGHTNING
   ON_CHAIN
 }
-type TransactionRequestSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
-  id: ID! @join__field(graph: TRANSFER_MODULE)
-  requestFrom: String! @join__field(graph: TRANSFER_MODULE)
-  requestTo: String! @join__field(graph: TRANSFER_MODULE)
-  transaction: TransactionSchema! @join__field(graph: TRANSFER_MODULE)
+type TransactionRequestSchema @join__owner(graph: LND_MODULE) @join__type(graph: LND_MODULE, key: "id") {
+  id: ID! @join__field(graph: LND_MODULE)
+  requestFrom: String! @join__field(graph: LND_MODULE)
+  requestTo: String! @join__field(graph: LND_MODULE)
+  transaction: TransactionSchema! @join__field(graph: LND_MODULE)
 }
-type TransactionSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
-  amount: Float! @join__field(graph: TRANSFER_MODULE)
-  btcAmount: Float! @join__field(graph: TRANSFER_MODULE)
-  btcExchangeRate: Float! @join__field(graph: TRANSFER_MODULE)
-  createdAt: String! @join__field(graph: TRANSFER_MODULE)
-  currency: FiatCurrency! @join__field(graph: TRANSFER_MODULE)
-  description: String! @join__field(graph: TRANSFER_MODULE)
-  fromWalletId: String! @join__field(graph: TRANSFER_MODULE)
-  id: ID! @join__field(graph: TRANSFER_MODULE)
-  method: TransactionMethod! @join__field(graph: TRANSFER_MODULE)
-  networkFee: Float! @join__field(graph: TRANSFER_MODULE)
-  status: TransactionStatus! @join__field(graph: TRANSFER_MODULE)
-  toWalletId: String! @join__field(graph: TRANSFER_MODULE)
-  transactionFee: Float! @join__field(graph: TRANSFER_MODULE)
+type TransactionSchema @join__owner(graph: LND_MODULE) @join__type(graph: LND_MODULE, key: "id") {
+  amount: Float! @join__field(graph: LND_MODULE)
+  btcAmount: Float! @join__field(graph: LND_MODULE)
+  btcExchangeRate: Float! @join__field(graph: LND_MODULE)
+  createdAt: String! @join__field(graph: LND_MODULE)
+  currency: FiatCurrency! @join__field(graph: LND_MODULE)
+  description: String! @join__field(graph: LND_MODULE)
+  fromWalletId: String! @join__field(graph: LND_MODULE)
+  id: ID! @join__field(graph: LND_MODULE)
+  method: TransactionMethod! @join__field(graph: LND_MODULE)
+  networkFee: Float! @join__field(graph: LND_MODULE)
+  status: TransactionStatus! @join__field(graph: LND_MODULE)
+  toWalletId: String! @join__field(graph: LND_MODULE)
+  transactionFee: Float! @join__field(graph: LND_MODULE)
 }
 """Transaction status"""
 enum TransactionStatus {
@@ -257,11 +257,11 @@ type UserSchema @join__owner(graph: ACCOUNT_MODULE) @join__type(graph: ACCOUNT_M
   phoneNumberVerified: Boolean! @join__field(graph: ACCOUNT_MODULE)
   twoFactorVerified: Boolean! @join__field(graph: ACCOUNT_MODULE)
 }
-type WalletSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
-  balance: Float! @join__field(graph: TRANSFER_MODULE)
-  createdAt: String! @join__field(graph: TRANSFER_MODULE)
-  defaultCurrency: FiatCurrency! @join__field(graph: TRANSFER_MODULE)
-  id: ID! @join__field(graph: TRANSFER_MODULE)
-  transactions: [TransactionSchema!]! @join__field(graph: TRANSFER_MODULE)
-  userId: ID! @join__field(graph: TRANSFER_MODULE)
+type WalletSchema @join__owner(graph: LND_MODULE) @join__type(graph: LND_MODULE, key: "id") {
+  balance: Float! @join__field(graph: LND_MODULE)
+  createdAt: String! @join__field(graph: LND_MODULE)
+  defaultCurrency: FiatCurrency! @join__field(graph: LND_MODULE)
+  id: ID! @join__field(graph: LND_MODULE)
+  transactions: [TransactionSchema!]! @join__field(graph: LND_MODULE)
+  userId: ID! @join__field(graph: LND_MODULE)
 }

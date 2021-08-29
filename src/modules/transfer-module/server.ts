@@ -43,8 +43,8 @@ export async function listen(
 				conn = await getConnection('default');
 			} catch (error) {
 				conn = await genORMConnection({
-					databaseName: 'transfer',
 					connection: 'default',
+					service: 'TRANSFER',
 				});
 			}
 			if (channel) {

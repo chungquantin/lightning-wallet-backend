@@ -31,6 +31,7 @@ export async function listen(
 				conn = await getConnection('default');
 			} catch (error) {
 				conn = await genORMConnection({
+					service: 'ACCOUNT',
 					connection: 'default',
 				});
 			}
