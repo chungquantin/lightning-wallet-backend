@@ -13,7 +13,6 @@ import { yupValidateMiddleware } from '../../../../../common/middleware';
 import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
 import { forgotPasswordLockAccount } from '../../../utils/forgotPasswordLock';
 import { GQLContext } from '../../../../../common/utils/graphql-utils';
-import NodeMailerService from '../../../../../common/helpers/email';
 import { YUP_SEND_FORGOT_PASSWORD_EMAIL } from './send_forgot_password_email.validate';
 import { ForgotPasswordChangeDto } from './forgot_password_change.dto';
 import { YUP_CHANGE_PASSWORD } from './forgot_password_change.validate';

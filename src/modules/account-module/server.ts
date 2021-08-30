@@ -89,12 +89,12 @@ export async function listen(
 								token,
 								process.env.TOKEN_KEY,
 							);
-							req.user = decoded;
+							(req as any).user = decoded;
 							return {
 								request: req,
 								redis,
 								channel,
-								currentUser: req.user || undefined,
+								currentUser: (req as any).user || undefined,
 								url: req?.protocol + '://' + req?.get('host'),
 							};
 						}
@@ -102,7 +102,9 @@ export async function listen(
 							request: req,
 							redis,
 							channel,
-							currentUser: JSON.parse(req.headers.currentuser),
+							currentUser: JSON.parse(
+								req.headers.currentuser as string,
+							),
 							url: req?.protocol + '://' + req?.get('host'),
 						};
 					} catch (error) {

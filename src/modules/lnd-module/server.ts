@@ -95,13 +95,15 @@ export async function listen(
 								token,
 								process.env.TOKEN_KEY,
 							);
-							req.user = decoded;
+							(req as any).user = decoded;
 							return Object.assign(contextResponse, {
-								currentUser: req.user || undefined,
+								currentUser: (req as any).user || undefined,
 							});
 						}
 						return Object.assign(contextResponse, {
-							currentUser: JSON.parse(req.headers.currentuser),
+							currentUser: JSON.parse(
+								req.headers.currentuser as string,
+							),
 						});
 					} catch (error) {
 						return Object.assign(contextResponse, {

@@ -107,11 +107,11 @@ export const buildGateway = async () => {
 			try {
 				if (token !== '') {
 					const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-					req.user = decoded;
+					(req as any).user = decoded;
 				}
 				return {
 					request: req,
-					currentUser: req.user || undefined,
+					currentUser: (req as any).user || undefined,
 					redis: new REDIS().server,
 					url: req?.protocol + '://' + req?.get('host'),
 				};
@@ -128,7 +128,7 @@ export const buildGateway = async () => {
 
 	await server.start();
 
-	server.applyMiddleware({ app });
+	server.applyMiddleware({ app: app as any });
 
 	app.use(
 		expressJwt({

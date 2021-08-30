@@ -30,7 +30,7 @@ testFrame(() => {
 
 	describe('Me test suite', () => {
 		test('get current user before login', async () => {
-			await client?.user.me().then((res) =>
+			await client?.user.getCurrentUser().then((res) =>
 				expect(yupErrorResponse(res)).toMatchObject({
 					message: 'Not authenticated',
 					path: 'me',
@@ -50,7 +50,7 @@ testFrame(() => {
 			});
 
 			await client?.user
-				.me({
+				.getCurrentUser({
 					accessToken: response?.login.data?.accessToken as any,
 					refreshToken: response?.login.data?.refreshToken as any,
 				})
