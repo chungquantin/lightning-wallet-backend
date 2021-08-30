@@ -13,11 +13,11 @@
 		"noImplicitThis": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-		"allowSyntheticDefaultImports": false,
+		"allowSyntheticDefaultImports": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		// "esModuleInterop": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
 	},
 	"exclude": ["node_modules", "./swagger.json"],
 	"include": ["./src/**/*.tsx", "./src/**/*.ts"]

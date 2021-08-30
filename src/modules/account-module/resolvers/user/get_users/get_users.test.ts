@@ -1,9 +1,8 @@
-import { testFrame } from '../../../../../common/test-utils/testFrame';
+import { testFrame } from 'neutronpay-wallet-common/dist/test-utils/testFrame';
 import { TestClient } from '../../../utils/TestClient';
 import * as faker from 'faker';
 import { User } from '../../../entity/User';
 import { RegisterDto } from '../register/register.dto';
-import { lorem } from 'faker';
 
 let client: TestClient | null = null;
 

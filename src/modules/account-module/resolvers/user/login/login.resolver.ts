@@ -12,22 +12,22 @@ import { LoginDto } from './login.dto';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import * as bcrypt from 'bcrypt';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import {
 	REDIS_ACCESS_TOKEN_PREFIX,
 	REDIS_REFRESH_TOKEN_PREFIX,
-} from '../../../../../common/constants/global-variables';
-import { yupValidateMiddleware } from '../../../../../common/middleware/yupValidate';
+} from 'neutronpay-wallet-common/dist/constants/global-variables';
+import { yupValidateMiddleware } from 'neutronpay-wallet-common/dist/middleware/yupValidate';
 import {
 	ApiResponse,
 	CustomMessage,
-} from '../../../../../common/shared';
+} from 'neutronpay-wallet-common/dist/shared';
 import { YUP_LOGIN } from './login.validate';
-import { createTokens } from '../../../../../common/utils/auth';
+import { createTokens } from 'neutronpay-wallet-common/dist/utils/auth';
 import {
 	env,
 	EnvironmentType,
-} from '../../../../../common/utils/environmentType';
+} from 'neutronpay-wallet-common/dist/utils/environmentType';
 
 @ObjectType()
 class TokenResponse {

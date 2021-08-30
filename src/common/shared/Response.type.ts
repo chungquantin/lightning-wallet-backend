@@ -34,7 +34,9 @@ export function ApiResponse<MType>(
 		data?: MType;
 	}
 
-	return ApiResponseClass;
+	return ApiResponseClass as new () => {
+		[key in keyof ApiResponseClass]: ApiResponseClass[key];
+	};
 }
 
 export function ApiArrayResponse<MType>(
@@ -52,5 +54,7 @@ export function ApiArrayResponse<MType>(
 		data: MType[];
 	}
 
-	return ApiArrayResponseClass;
+	return ApiArrayResponseClass as new () => {
+		[key in keyof ApiArrayResponseClass]: ApiArrayResponseClass[key];
+	};
 }

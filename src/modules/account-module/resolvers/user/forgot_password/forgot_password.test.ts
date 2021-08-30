@@ -1,8 +1,8 @@
 import * as faker from 'faker';
 import { User } from '../../../entity/User';
-import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
+import { CustomMessage } from 'neutronpay-wallet-common/dist/shared/CustomMessage.enum';
 import { TestClient } from '../../../utils/TestClient';
-import { testFrame } from '../../../../../common/test-utils/testFrame';
+import { testFrame } from 'neutronpay-wallet-common/dist/test-utils/testFrame';
 import { RegisterDto } from '../register/register.dto';
 
 let client: TestClient | null = null;

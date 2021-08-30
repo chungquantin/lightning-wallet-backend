@@ -1,6 +1,6 @@
-import { testFrame } from '../../../../../common/test-utils/testFrame';
+import { testFrame } from 'neutronpay-wallet-common/dist/test-utils/testFrame';
 import { TestClient } from '../../../utils/TestClient';
-import { yupErrorResponse } from '../../../../../common/test-utils/yupErrorResponse';
+import { yupErrorResponse } from 'neutronpay-wallet-common/dist/test-utils/yupErrorResponse';
 import * as faker from 'faker';
 import { RegisterDto } from '../register/register.dto';
 import { getRepository } from 'typeorm';

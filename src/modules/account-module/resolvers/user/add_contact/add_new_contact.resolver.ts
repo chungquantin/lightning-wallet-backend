@@ -9,15 +9,15 @@ import { User } from '../../../entity';
 import { AddNewContactDto } from './add_new_contact.dto';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import {
 	ApiResponse,
 	CustomMessage,
-} from '../../../../../common/shared';
-import { isAuth } from '../../../../../common/middleware';
+} from 'neutronpay-wallet-common/dist/shared';
+import { isAuth } from 'neutronpay-wallet-common/dist/middleware';
 import * as _ from 'lodash';
 import { mqProduce } from '../../../queue';
-import { Queue } from '../../../../../common/constants/queue';
+import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 
 export const ApiAddNewContactResponse = ApiResponse<String>(
 	'AddNewContact',

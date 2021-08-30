@@ -5,12 +5,12 @@ import {
 	Arg,
 	Ctx,
 } from 'type-graphql';
-import { Queue } from '../../../../../common/constants/queue';
+import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 import {
 	ApiResponse,
 	CustomMessage,
-} from '../../../../../common/shared';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
+} from 'neutronpay-wallet-common/dist/shared';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import { SendPayment } from '../../../node';
 import { mqProduce } from '../../../queue';
 import { LndSendPaymentDto } from './send_payment.dto';

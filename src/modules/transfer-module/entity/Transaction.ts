@@ -9,9 +9,11 @@ import {
 	JoinTable,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { FiatCurrency } from '../../../common/shared';
-import { TransactionMethod } from '../../../common/shared/TransactionMethod.enum';
-import { TransactionStatus } from '../../../common/shared/TransactionStatus.enum';
+import {
+	FiatCurrency,
+	TransactionMethod,
+	TransactionStatus,
+} from '../constants';
 import { Wallet } from './Wallet';
 
 @Directive('@key(fields: "id")')

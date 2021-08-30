@@ -6,11 +6,8 @@ import {
 	Query,
 	Arg,
 } from 'type-graphql';
-import { ApiArrayResponse } from '../../../../../common/shared';
-import {
-	OrderByInputType,
-	PaginationInputType,
-} from '../../../../../common/shared/Pagination';
+import { ApiArrayResponse } from 'neutronpay-wallet-common/dist/shared';
+import { PaginationInputType } from 'neutronpay-wallet-common/dist/shared/Pagination';
 import { GetTransactions } from '../../../node';
 
 @ObjectType()

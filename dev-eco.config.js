@@ -2,7 +2,7 @@ module.exports = {
 	apps: [
 		{
 			name: 'NeutronPay Wallet',
-			script: './src/index.ts',
+			script: './dist/index.js',
 			instances: '3',
 			autorestart: false,
 			watch: false,

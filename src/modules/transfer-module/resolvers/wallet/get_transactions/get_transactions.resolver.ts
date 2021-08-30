@@ -1,7 +1,9 @@
 import { Resolver, Query, Arg } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { ApiArrayResponse } from '../../../../../common/shared';
-import { PaginationInputType } from '../../../../../common/shared/Pagination';
+import {
+	ApiArrayResponse,
+	PaginationInputType,
+} from 'neutronpay-wallet-common/dist/shared';
 import { TransactionRepository } from '../../../repository';
 import { Transaction } from '../../../entity/Transaction';
 

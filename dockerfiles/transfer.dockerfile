@@ -1,10 +1,10 @@
 
-FROM node:latest
+FROM node as build
 
 RUN mkdir transfer
 COPY package.json ./package.json
-COPY src/modules/transfer-module ./src/modules/transfer-module
+COPY package-lock.json ./package-lock.json
+COPY dist/modules/transfer-module ./dist/modules/transfer-module
 RUN npm i
-RUN npm run build
 
-CMD cd src/modules/transfer-module && node dist/index.js
+CMD cd dist/modules/transfer-module && node index.js

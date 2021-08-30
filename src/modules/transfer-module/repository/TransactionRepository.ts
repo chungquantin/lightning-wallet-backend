@@ -1,6 +1,9 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { CustomMessage, FiatCurrency } from '../../../common/shared';
-import { TransactionStatus } from '../../../common/shared/TransactionStatus.enum';
+import {
+	TransactionStatus,
+	CustomMessage,
+	FiatCurrency,
+} from '../constants';
 import { Wallet } from '../entity';
 import { Transaction } from '../entity/Transaction';
 import { bitcoinUtil } from '../utils';

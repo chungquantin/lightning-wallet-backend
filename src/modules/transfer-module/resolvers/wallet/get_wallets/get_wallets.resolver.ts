@@ -1,9 +1,11 @@
 import { Resolver, Query, UseMiddleware, Arg } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { WalletRepository } from '../../../repository/WalletRepository';
-import { ApiArrayResponse } from '../../../../../common/shared';
 import { Wallet } from '../../../entity';
-import { PaginationInputType } from '../../../../../common/shared/Pagination';
+import {
+	ApiArrayResponse,
+	PaginationInputType,
+} from 'neutronpay-wallet-common/dist/shared';
 
 export const ApiGetWallets = ApiArrayResponse<Wallet>(
 	'GetWallets',

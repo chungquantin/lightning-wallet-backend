@@ -2,7 +2,6 @@ import { AuthChecker } from 'type-graphql';
 import { GQLContext } from './graphql-utils';
 import * as jwt from 'jsonwebtoken';
 import * as _ from 'lodash';
-import { UserRepository } from '../../modules/account-module/repository';
 
 export const customAuthChecker: AuthChecker<GQLContext> = (
 	{ root, args, context: { currentUser }, info },
@@ -39,47 +38,4 @@ export const createTokens = async (user, secret, secret2) => {
 	);
 
 	return Promise.all([createToken, createRefreshToken]);
-};
-
-export const refreshTokens = async (
-	token,
-	refreshToken,
-	SECRET,
-	SECRET_2,
-) => {
-	try {
-		const { userId } = jwt.decode(refreshToken);
-		if (!userId) {
-			return {};
-		}
-
-		const user = await new UserRepository().findOne({
-			where: { id: userId },
-		});
-
-		if (!user) {
-			return {};
-		}
-
-		const refreshSecret = SECRET_2 + user.password;
-
-		try {
-			jwt.verify(refreshToken, refreshSecret);
-		} catch (err) {
-			return {};
-		}
-
-		const [newToken, newRefreshToken] = await createTokens(
-			user,
-			SECRET,
-			refreshSecret,
-		);
-		return {
-			token: newToken,
-			refreshToken: newRefreshToken,
-			user,
-		};
-	} catch (err) {
-		return {};
-	}
 };

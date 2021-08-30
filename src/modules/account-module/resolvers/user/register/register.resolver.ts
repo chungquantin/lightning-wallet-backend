@@ -9,13 +9,15 @@ import { User } from '../../../entity/User';
 import { RegisterDto } from './register.dto';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { yupValidateMiddleware } from '../../../../../common/middleware/yupValidate';
-import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
+import { yupValidateMiddleware } from 'neutronpay-wallet-common/dist/middleware/yupValidate';
 import { YUP_REGISTER } from './register.validate';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
-import { ApiResponse } from '../../../../../common/shared';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
+import {
+	ApiResponse,
+	CustomMessage,
+} from 'neutronpay-wallet-common/dist/shared';
 import { mqProduce } from '../../../queue';
-import { Queue } from '../../../../../common/constants/queue';
+import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 
 export const ApiRegisterResponse = ApiResponse<User>(
 	'Register',

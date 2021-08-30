@@ -4,7 +4,7 @@ import { WalletRepository } from '../../../repository/WalletRepository';
 import {
 	ApiResponse,
 	CustomMessage,
-} from '../../../../../common/shared';
+} from 'neutronpay-wallet-common/dist/shared';
 import { Wallet } from '../../../entity';
 import { GetWalletDto } from './get_wallet.dto';
 

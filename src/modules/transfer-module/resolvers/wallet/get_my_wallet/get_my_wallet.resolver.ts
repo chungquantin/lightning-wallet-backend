@@ -4,7 +4,7 @@ import { WalletRepository } from '../../../repository/WalletRepository';
 import {
 	ApiResponse,
 	CustomMessage,
-} from '../../../../../common/shared';
+} from 'neutronpay-wallet-common/dist/shared';
 import { GQLContext } from '../../../../../common/utils/graphql-utils';
 import { Wallet } from '../../../entity';
 

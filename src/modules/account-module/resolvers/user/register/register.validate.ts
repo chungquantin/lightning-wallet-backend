@@ -1,5 +1,5 @@
-import * as yup from "yup";
-import { sharedSchema } from "../../../../../common/shared/yupSchema";
+import * as yup from 'yup';
+import { sharedSchema } from 'neutronpay-wallet-common/dist/shared/yupSchema';
 
 export const YUP_REGISTER = yup.object().shape({
 	firstName: yup.string().min(3).max(255),
@@ -8,5 +8,5 @@ export const YUP_REGISTER = yup.object().shape({
 	password: sharedSchema.password,
 	username: yup.string().min(4).max(20),
 	phoneNumber: yup.string().max(20),
-	bio: yup.string().max(150)
+	bio: yup.string().max(150),
 });

@@ -8,13 +8,13 @@ import {
 import { User } from '../../../entity/User';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
-import { isAuth } from '../../../../../common/middleware/isAuth';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
+import { isAuth } from 'neutronpay-wallet-common/dist/middleware/isAuth';
 import {
 	ApiArrayResponse,
+	PaginationInputType,
 	CustomMessage,
-} from '../../../../../common/shared';
-import { PaginationInputType } from '../../../../../common/shared/Pagination';
+} from 'neutronpay-wallet-common/dist/shared';
 
 export const ApiGetMyContactsResponse = ApiArrayResponse<User>(
 	'GetMyContacts',

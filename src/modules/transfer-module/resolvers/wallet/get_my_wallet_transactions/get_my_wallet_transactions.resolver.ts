@@ -11,8 +11,8 @@ import { isAuth } from '../../../../../common/middleware/isAuth';
 import {
 	ApiArrayResponse,
 	CustomMessage,
-} from '../../../../../common/shared';
-import { PaginationInputType } from '../../../../../common/shared/Pagination';
+	PaginationInputType,
+} from 'neutronpay-wallet-common/dist/shared';
 import { WalletRepository } from '../../../repository';
 import { Transaction } from '../../../entity/Transaction';
 

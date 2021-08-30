@@ -11,9 +11,8 @@ import { InjectRepository } from 'typeorm-typedi-extensions';
 import {
 	ApiResponse,
 	CustomMessage,
-	FiatCurrency,
-} from '../../../../../common/shared';
-import { isAuth } from '../../../../../common/middleware';
+} from 'neutronpay-wallet-common/dist/shared';
+import { isAuth } from 'neutronpay-wallet-common/dist/middleware';
 import {
 	TransactionRepository,
 	WalletRepository,
@@ -22,10 +21,9 @@ import { Wallet } from '../../../entity';
 import { SendPaymentDto } from './send_payment.dto';
 import { Transaction } from '../../../entity/Transaction';
 import { WalletGQLContext } from '../../../server';
-import { bitcoinUtil } from '../../../utils';
 import { mqProduce } from '../../../queue';
-import { TransactionStatus } from '../../../../../common/shared/TransactionStatus.enum';
-import { Queue } from '../../../../../common/constants/queue';
+import { TransactionStatus } from '../../../constants';
+import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 
 @ObjectType()
 class PaymentResponse {

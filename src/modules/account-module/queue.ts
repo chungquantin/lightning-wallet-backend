@@ -1,6 +1,6 @@
 import { Channel } from 'amqplib';
 import { Connection } from 'typeorm';
-import { Queue } from '../../common/constants/queue';
+import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 
 interface OutgoingMessageDataMap {
 	new_account_created: {

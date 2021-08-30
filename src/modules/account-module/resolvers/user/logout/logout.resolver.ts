@@ -1,14 +1,16 @@
 import { Resolver, Mutation, Ctx, UseMiddleware } from 'type-graphql';
 import { User } from '../../../entity';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
-import { isAuth } from '../../../../../common/middleware/isAuth';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
+import { isAuth } from 'neutronpay-wallet-common/dist/middleware/isAuth';
 import {
 	REDIS_ACCESS_TOKEN_PREFIX,
 	REDIS_REFRESH_TOKEN_PREFIX,
 	USER_TOKEN_ID_PREFIX,
-} from '../../../../../common/constants/global-variables';
-import { ApiResponse } from '../../../../../common/shared/Response.type';
-import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
+} from 'neutronpay-wallet-common/dist/constants/global-variables';
+import {
+	ApiResponse,
+	CustomMessage,
+} from 'neutronpay-wallet-common/dist/shared';
 
 export const ApiLogoutResponse = ApiResponse<String>(
 	'Logout',

@@ -1,6 +1,5 @@
 import { Field, InputType } from 'type-graphql';
-import { FiatCurrency } from '../../../../../common/shared';
-import { TransactionMethod } from '../../../../../common/shared/TransactionMethod.enum';
+import { FiatCurrency, TransactionMethod } from '../../../constants';
 @InputType()
 export class SendPaymentDto {
 	@Field()

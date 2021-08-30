@@ -1,7 +1,7 @@
-import { testFrame } from '../../../../../common/test-utils/testFrame';
+import { testFrame } from 'neutronpay-wallet-common/dist/test-utils/testFrame';
 import { TestClient } from '../../../utils/TestClient';
 import * as faker from 'faker';
-import { yupErrorResponse } from '../../../../../common/test-utils/yupErrorResponse';
+import { yupErrorResponse } from 'neutronpay-wallet-common/dist/test-utils/yupErrorResponse';
 import { User } from '../../../entity/User';
 import { v4 as uuidV4 } from 'uuid';
 import { RegisterDto } from '../register/register.dto';
@@ -29,12 +29,10 @@ testFrame(() => {
 					userId: '123',
 				})
 				.then((res) => {
-					expect(yupErrorResponse(res)).toEqual(
-						{
-							message: 'userId must be a valid UUID',
-							path: 'getUser',
-						},
-					);
+					expect(yupErrorResponse(res)).toEqual({
+						message: 'userId must be a valid UUID',
+						path: 'getUser',
+					});
 				});
 		});
 

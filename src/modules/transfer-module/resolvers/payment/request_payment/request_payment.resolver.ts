@@ -9,8 +9,8 @@ import { InjectRepository } from 'typeorm-typedi-extensions';
 import {
 	ApiResponse,
 	CustomMessage,
-} from '../../../../../common/shared';
-import { isAuth } from '../../../../../common/middleware';
+} from 'neutronpay-wallet-common/dist/shared';
+import { isAuth } from 'neutronpay-wallet-common/dist/middleware';
 import {
 	TransactionRepository,
 	WalletRepository,
@@ -19,7 +19,7 @@ import { Wallet } from '../../../entity';
 import { RequestPaymentDto } from './request_payment.dto';
 import { WalletGQLContext } from '../../../server';
 import { mqProduce } from '../../../queue';
-import { Queue } from '../../../../../common/constants/queue';
+import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 import { TransactionRequest } from '../../../entity/TransactionRequest';
 import { TransactionRequestRepository } from '../../../repository/TransactionRequestRepository';
 

@@ -9,7 +9,7 @@ import {
 	ManyToMany,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { FiatCurrency } from '../../../common/shared';
+import { FiatCurrency } from '../constants';
 import { Transaction } from './Transaction';
 
 @Directive('@key(fields: "id")')

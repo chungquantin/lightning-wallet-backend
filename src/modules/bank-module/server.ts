@@ -1,19 +1,22 @@
 import { ApolloServer } from 'apollo-server';
 import Container from 'typedi';
-import { buildFederatedSchema } from '../../common/helpers/buildFederatedSchema';
-import { REDIS, redisPubSub } from '../../common/helpers/redis';
-import { ResolveTime } from '../../common/middleware';
-import { customAuthChecker } from '../../common/utils/authChecker';
+import { buildFederatedSchema } from 'neutronpay-wallet-common/dist/helpers/buildFederatedSchema';
+import {
+	REDIS,
+	redisPubSub,
+} from 'neutronpay-wallet-common/dist/helpers/redis';
+import { ResolveTime } from 'neutronpay-wallet-common/dist/middleware';
+import { customAuthChecker } from 'neutronpay-wallet-common/dist/utils';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
-import { GQLContext } from '../../common/utils/graphql-utils';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import { printSchemaWithDirectives } from 'graphql-tools';
-import withRabbitMQConnect from '../../common/helpers/withRabbitMqConnect';
+import withRabbitMQConnect from 'neutronpay-wallet-common/dist/helpers/withRabbitMqConnect';
 import {
 	env,
 	EnvironmentType,
-} from '../../common/utils/environmentType';
+} from 'neutronpay-wallet-common/dist/utils/environmentType';
 import { Connection, getConnection } from 'typeorm';
-import { genORMConnection } from '../../common/helpers/orm.config';
+import { genORMConnection } from 'neutronpay-wallet-common/dist/helpers/orm.config';
 import { queueHandler } from './queue';
 import * as BankResolver from './resolvers/bank';
 import * as fs from 'fs';

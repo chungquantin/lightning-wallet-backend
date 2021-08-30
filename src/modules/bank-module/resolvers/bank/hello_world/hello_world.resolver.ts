@@ -1,5 +1,5 @@
 import { Resolver, Query, UseMiddleware } from 'type-graphql';
-import { ApiResponse } from '../../../../../common/shared';
+import { ApiResponse } from 'neutronpay-wallet-common/dist/shared';
 
 export const ApiHelloWorld = ApiResponse<String>(
 	'HelloWorld',

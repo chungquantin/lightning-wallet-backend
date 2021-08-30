@@ -9,21 +9,19 @@ import { InjectRepository } from 'typeorm-typedi-extensions';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { User } from '../../../entity/User';
 import { SendForgotPasswordDto } from './send_forgot_password_email.dto';
-import { yupValidateMiddleware } from '../../../../../common/middleware';
-import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
+import { yupValidateMiddleware } from 'neutronpay-wallet-common/dist/middleware';
+import {
+	ApiResponse,
+	CustomMessage,
+} from 'neutronpay-wallet-common/dist/shared';
 import { forgotPasswordLockAccount } from '../../../utils/forgotPasswordLock';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import { YUP_SEND_FORGOT_PASSWORD_EMAIL } from './send_forgot_password_email.validate';
 import { ForgotPasswordChangeDto } from './forgot_password_change.dto';
 import { YUP_CHANGE_PASSWORD } from './forgot_password_change.validate';
-import { FORGOT_PASSWORD_PREFIX } from '../../../../../common/constants/global-variables';
+import { FORGOT_PASSWORD_PREFIX } from 'neutronpay-wallet-common/dist/constants/global-variables';
 import * as bcrypt from 'bcrypt';
 import 'dotenv/config';
-import {
-	env,
-	EnvironmentType,
-} from '../../../../../common/utils/environmentType';
-import { ApiResponse } from '../../../../../common/shared';
 
 export const ApiForgotPasswordResponse = ApiResponse<String>(
 	'ForgotPassword',
@@ -68,7 +66,7 @@ class ForgotPasswordResolver {
 				],
 			};
 		}
-		
+
 		await forgotPasswordLockAccount(user.id);
 		// TODO Replace with Mailgun
 		// Send reset password link to email

@@ -2,8 +2,10 @@ import { Resolver, Query, UseMiddleware, Arg } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { UserRepository } from '../../../repository/user/UserRepository';
 import { User } from '../../../entity';
-import { ApiArrayResponse } from '../../../../../common/shared';
-import { PaginationInputType } from '../../../../../common/shared/Pagination';
+import {
+	ApiArrayResponse,
+	PaginationInputType,
+} from 'neutronpay-wallet-common/dist/shared';
 
 export const ApiUsersResponse = ApiArrayResponse<User>(
 	'GetUsers',

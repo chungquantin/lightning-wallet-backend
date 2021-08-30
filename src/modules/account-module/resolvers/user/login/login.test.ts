@@ -1,7 +1,7 @@
-import { testFrame } from '../../../../../common/test-utils/testFrame';
+import { testFrame } from 'neutronpay-wallet-common/dist/test-utils/testFrame';
 import { TestClient } from '../../../utils/TestClient';
-import { CustomMessage } from '../../../../../common/shared/CustomMessage.enum';
-import { yupErrorResponse } from '../../../../../common/test-utils/yupErrorResponse';
+import { CustomMessage } from 'neutronpay-wallet-common/dist/shared/CustomMessage.enum';
+import { yupErrorResponse } from 'neutronpay-wallet-common/dist/test-utils/yupErrorResponse';
 import * as faker from 'faker';
 import { RegisterDto } from '../register/register.dto';
 import { getRepository } from 'typeorm';

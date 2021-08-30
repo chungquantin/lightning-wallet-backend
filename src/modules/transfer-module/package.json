@@ -14,6 +14,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"neutronpay-wallet-common": "^1.0.1",
 		"rimraf": "^3.0.2",
 		"ts-node-dev": "^1.1.8"
 	}

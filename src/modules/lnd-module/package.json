@@ -21,6 +21,7 @@
 		"grpc_tools_node_protoc_ts": "^5.3.2",
 		"module": "^1.2.5",
 		"moment": "^2.29.1",
+		"neutronpay-wallet-common": "^1.0.1",
 		"rimraf": "^3.0.2",
 		"ts-node-dev": "^1.1.8",
 		"ts-proto": "^1.82.5"

@@ -1,0 +1,31 @@
+{
+	"name": "neutronpay-wallet-common",
+	"version": "1.0.1",
+	"description": "Neutronpay Wallet common package for microservice",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "rimraf ./dist & tsc",
+		"prepublish": "rimraf ./dist & tsc"
+	},
+	"keywords": [],
+	"author": "NeutronPay Dev Team",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/chungquantin/neutronpay-wallet-common.git"
+	},
+	"bugs": {
+		"url": "https://github.com/chungquantin/neutronpay-wallet-common/issues"
+	},
+	"homepage": "https://github.com/chungquantin/neutronpay-wallet-common#readme",
+	"dependencies": {
+		"rimraf": "^3.0.2"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/"
+	},
+	"devDependencies": {
+		"typescript": "^4.4.2"
+	}
+}

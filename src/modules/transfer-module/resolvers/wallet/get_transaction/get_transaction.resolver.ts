@@ -3,7 +3,7 @@ import { InjectRepository } from 'typeorm-typedi-extensions';
 import {
 	ApiResponse,
 	CustomMessage,
-} from '../../../../../common/shared';
+} from 'neutronpay-wallet-common/dist/shared';
 import { TransactionRepository } from '../../../repository';
 import { Transaction } from '../../../entity/Transaction';
 import { GetTransactionDto } from './get_transaction.dto';
