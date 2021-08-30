@@ -1,7 +1,7 @@
 import { Channel } from 'amqplib';
 import { Connection } from 'typeorm';
-import { Queue } from '../../common/constants/queue';
-import { CustomMessage } from '../../common/shared';
+import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
+import { CustomMessage } from 'neutronpay-wallet-common/dist/shared';
 import { Wallet } from './entity';
 import { Transaction } from './entity/Transaction';
 import { TransactionRequest } from './entity/TransactionRequest';

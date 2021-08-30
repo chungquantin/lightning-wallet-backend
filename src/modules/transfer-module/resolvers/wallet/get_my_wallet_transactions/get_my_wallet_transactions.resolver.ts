@@ -6,8 +6,8 @@ import {
 	Arg,
 } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
-import { isAuth } from '../../../../../common/middleware/isAuth';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
+import { isAuth } from 'neutronpay-wallet-common/dist/middleware/isAuth';
 import {
 	ApiArrayResponse,
 	CustomMessage,

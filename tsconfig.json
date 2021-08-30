@@ -17,8 +17,8 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		// "esModuleInterop": true,
-		"resolveJsonModule": true,
+		"resolveJsonModule": true
 	},
-	"exclude": ["node_modules", "./swagger.json"],
+	"exclude": ["node_modules", "./swagger.json", "./dist"],
 	"include": ["./src/**/*.tsx", "./src/**/*.ts"]
 }

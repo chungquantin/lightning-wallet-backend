@@ -20,6 +20,6 @@
 		// "esModuleInterop": true,
 		"resolveJsonModule": true
 	},
-	"exclude": ["node_modules", "./swagger.json"],
+	"exclude": ["node_modules", "./swagger.json", "./dist"],
 	"include": ["./**/*.tsx", "./**/*.ts"]
 }

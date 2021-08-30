@@ -5,7 +5,7 @@ import {
 	ApiResponse,
 	CustomMessage,
 } from 'neutronpay-wallet-common/dist/shared';
-import { GQLContext } from '../../../../../common/utils/graphql-utils';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import { Wallet } from '../../../entity';
 
 export const ApiGetMyWallet = ApiResponse<Wallet>(

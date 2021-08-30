@@ -1,6 +1,6 @@
 import { Field, InputType } from 'type-graphql';
-import { FiatCurrency } from '../../../../../common/shared';
-import { TransactionMethod } from '../../../../../common/shared/TransactionMethod.enum';
+import { FiatCurrency } from 'neutronpay-wallet-common/dist/shared';
+import { TransactionMethod } from 'neutronpay-wallet-common/dist/shared/TransactionMethod.enum';
 @InputType()
 export class RequestPaymentDto {
 	@Field()
