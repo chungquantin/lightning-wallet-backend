@@ -14,7 +14,7 @@ import { printSchemaWithDirectives } from 'graphql-tools';
 import * as UserResolver from './resolvers/user';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
-import withRabbitMQConnect from 'neutronpay-wallet-common/dist/helpers/withRabbitMqConnect';
+import { withRabbitMQConnect } from './rabbit';
 import {
 	env,
 	EnvironmentType,
@@ -94,7 +94,7 @@ export async function listen(
 							);
 							(req as any).user = decoded;
 							return {
-								request: req,
+								request: req as any,
 								redis,
 								channel,
 								currentUser: (req as any).user || undefined,
@@ -102,7 +102,7 @@ export async function listen(
 							};
 						}
 						return {
-							request: req,
+							request: req as any,
 							redis,
 							channel,
 							currentUser: JSON.parse(
@@ -112,7 +112,7 @@ export async function listen(
 						};
 					} catch (error) {
 						return {
-							request: req,
+							request: req as any,
 							redis,
 							channel,
 							currentUser: undefined,

@@ -1,5 +1,5 @@
 {
-	"name": "@neutronpay/wallet-bank-module",
+	"name": "@neutronpay/wallet-account-module",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
@@ -16,6 +16,6 @@
 	"dependencies": {
 		"neutronpay-wallet-common": "^1.0.1",
 		"rimraf": "^3.0.2",
-		"ts-node-dev": "^1.1.8"
+		"typescript": "^4.4.2"
 	}
 }

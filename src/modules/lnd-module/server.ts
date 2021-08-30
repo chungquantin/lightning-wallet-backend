@@ -10,7 +10,7 @@ import { customAuthChecker } from 'neutronpay-wallet-common/dist/utils';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import { printSchemaWithDirectives } from 'graphql-tools';
-import withRabbitMQConnect from 'neutronpay-wallet-common/dist/helpers/withRabbitMqConnect';
+import { withRabbitMQConnect } from './rabbit';
 import {
 	env,
 	EnvironmentType,
@@ -81,7 +81,7 @@ export async function listen(
 					const redis = new REDIS().server;
 
 					const contextResponse = {
-						request: req,
+						request: req as any,
 						redis,
 						channel,
 						dataSources: {},
@@ -101,17 +101,17 @@ export async function listen(
 							(req as any).user = decoded;
 							return Object.assign(contextResponse, {
 								currentUser: (req as any).user || undefined,
-							});
+							} as any);
 						}
 						return Object.assign(contextResponse, {
 							currentUser: JSON.parse(
 								req.headers.currentuser as string,
 							),
-						});
+						} as any);
 					} catch (error) {
 						return Object.assign(contextResponse, {
 							currentUser: undefined,
-						});
+						}) as any;
 					}
 				},
 			});

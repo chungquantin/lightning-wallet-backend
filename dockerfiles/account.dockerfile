@@ -1,10 +1,10 @@
 
 FROM node as build
-RUN mkdir account
+RUN mkdir bank
 
 COPY package.json ./package.json
 COPY tsconfig.json ./tsconfig.json
 COPY src/modules/account-module ./src/modules/account-module
-RUN npm i
+RUN npm i --legacy-peer-deps
 
-CMD cd src/modules/account-module && node index.js
+CMD cd dist/modules/account-module && node index.js

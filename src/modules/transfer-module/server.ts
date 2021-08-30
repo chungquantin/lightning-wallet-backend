@@ -11,7 +11,7 @@ import { Wallet } from './entity';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
 import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import { printSchemaWithDirectives } from 'graphql-tools';
-import withRabbitMQConnect from 'neutronpay-wallet-common/dist/helpers/withRabbitMqConnect';
+import { withRabbitMQConnect } from './rabbit';
 import {
 	env,
 	EnvironmentType,
