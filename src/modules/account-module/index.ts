@@ -1,6 +1,7 @@
 import Container from 'typedi';
 import { useContainer } from 'typeorm';
 import * as Server from './server';
+import 'dotenv/config';
 
 useContainer(Container);
 
