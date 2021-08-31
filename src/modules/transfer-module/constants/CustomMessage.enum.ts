@@ -8,6 +8,7 @@ export enum CustomMessage {
 	thisRequestIsNotForYou = 'This request is not for you',
 	cannotCreateTransaction = "Can't creat a transaction",
 	transactionIsExpired = 'Transaction is expired',
+	transactionRequestIsConfirmedOrRejected = 'Transaction request is confirmed or rejected already',
 
 	stopBeingNaughty = 'Stop being naughty',
 	somethingWentWrong = 'Something went wrong',

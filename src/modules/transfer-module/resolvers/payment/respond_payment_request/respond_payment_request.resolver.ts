@@ -16,7 +16,7 @@ import { CustomMessage, TransactionStatus } from '../../../constants';
 import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 import { RespondPaymentRequestDto } from './respond_payment_request.dto';
 import { TransactionRequestRepository } from '../../../repository/TransactionRequestRepository';
-import moment from 'moment';
+import * as moment from 'moment';
 import { TransactionRequestStatus } from '../../../constants/TransactionRequestStatus.enum';
 
 export const ApiRespondPaymentRequest = ApiResponse<Boolean>(
@@ -66,6 +66,7 @@ class RespondPaymentRequestResolver {
 					where: {
 						id: paymentRequestId,
 					},
+					relations: ['transaction'],
 				});
 
 			if (!transactionRequest) {
@@ -80,6 +81,23 @@ class RespondPaymentRequestResolver {
 				};
 			}
 
+			if (
+				transactionRequest.status ===
+					TransactionRequestStatus.CONFIRMED ||
+				transactionRequest.status ===
+					TransactionRequestStatus.REJECTED
+			) {
+				return {
+					success: false,
+					errors: [
+						{
+							path: 'transactionRequestStatus',
+							message:
+								CustomMessage.transactionRequestIsConfirmedOrRejected,
+						},
+					],
+				};
+			}
 			if (moment().unix() > parseInt(transactionRequest.expiredAt)) {
 				return {
 					success: false,
@@ -104,18 +122,18 @@ class RespondPaymentRequestResolver {
 				};
 			}
 
-			const toWallet = await this.walletRepository.findOne({
+			const fromWallet = await this.walletRepository.findOne({
 				where: {
-					userId: transactionRequest.requestFrom,
+					id: transactionRequest.requestFrom,
 				},
 			});
 
-			if (!toWallet) {
+			if (!fromWallet) {
 				return {
 					success: false,
 					errors: [
 						{
-							path: 'toWallet',
+							path: 'fromWallet',
 							message: CustomMessage.walletIsNotFound,
 						},
 					],
@@ -149,17 +167,17 @@ class RespondPaymentRequestResolver {
 					}
 					userWallet.save();
 					// Adding and subtracting money from destination balance
-					this.walletRepository.addPayment(toWallet, transaction);
-					if (currency !== toWallet.defaultCurrency) {
+					this.walletRepository.addPayment(fromWallet, transaction);
+					if (currency !== fromWallet.defaultCurrency) {
 						const exchangeRate =
 							await dataSources.exchangeRateApi.exchangeRate[
-								`${toWallet.defaultCurrency.toLowerCase()}${currency}`
+								`${fromWallet.defaultCurrency.toLowerCase()}${currency}`
 							]();
-						toWallet.balance += exchangeRate * amount;
+						fromWallet.balance += exchangeRate * amount;
 					} else {
-						toWallet.balance += amount;
+						fromWallet.balance += amount;
 					}
-					toWallet.save();
+					fromWallet.save();
 				})();
 				transactionRequest.save();
 

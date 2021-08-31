@@ -7,10 +7,10 @@ import {
 	BaseEntity,
 	ManyToMany,
 	JoinTable,
-	CreateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
+import * as moment from 'moment';
 
 @Directive('@key(fields: "id")')
 @ObjectType('UserSchema')
@@ -66,7 +66,7 @@ export class User extends BaseEntity {
 	contacts: User[];
 
 	@Field(() => String!)
-	@CreateDateColumn({ type: 'timestamp' })
+	@Column('text', { default: moment().unix().toString() })
 	createdAt: string;
 
 	// External

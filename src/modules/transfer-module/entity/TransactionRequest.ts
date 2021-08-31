@@ -7,12 +7,11 @@ import {
 	OneToOne,
 	JoinColumn,
 	Column,
-	CreateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { TransactionMethod } from '../constants';
 import { Transaction } from './Transaction';
-import moment from 'moment';
+import * as moment from 'moment';
 import { TransactionRequestStatus } from '../constants/TransactionRequestStatus.enum';
 
 @Directive('@key(fields: "id")')
@@ -24,7 +23,9 @@ export class TransactionRequest extends BaseEntity {
 	id: string;
 
 	@Field(() => Transaction)
-	@OneToOne(() => Transaction)
+	@OneToOne(() => Transaction, {
+		onUpdate: 'CASCADE',
+	})
 	@JoinColumn()
 	transaction: Transaction;
 
@@ -44,7 +45,7 @@ export class TransactionRequest extends BaseEntity {
 	requestTo: string;
 
 	@Field(() => String!)
-	@CreateDateColumn({ type: 'timestamp' })
+	@Column('text', { default: moment().unix().toString() })
 	createdAt: string;
 
 	@Field(() => String!)

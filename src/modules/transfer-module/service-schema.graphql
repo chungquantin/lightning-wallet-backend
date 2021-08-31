@@ -51,7 +51,7 @@ type Query {
   getTransactions(Pagination: PaginationInputType): GetTransactions
   getTransaction(data: GetTransactionDto!): GetTransaction
   getPaymentRequest(data: GetPaymentRequestDto!): GetPaymentRequest
-  getPaymentRequests: GetPaymentRequests
+  getPaymentRequests(Pagination: PaginationInputType): GetPaymentRequests
 }
 type GetWallet {
   success: Boolean!

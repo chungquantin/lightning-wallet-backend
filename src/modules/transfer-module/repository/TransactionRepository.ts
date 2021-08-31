@@ -131,7 +131,6 @@ export class TransactionRepository extends Repository<Transaction> {
 			networkFee: 0,
 			transactionFee: 0,
 			status: TransactionStatus.PENDING,
-			wallet: [userWallet, toWallet],
 			method,
 		}).save();
 

@@ -7,7 +7,6 @@ import {
 	Column,
 	ManyToMany,
 	JoinTable,
-	CreateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -16,6 +15,7 @@ import {
 	TransactionStatus,
 } from '../constants';
 import { Wallet } from './Wallet';
+import * as moment from 'moment';
 
 @Directive('@key(fields: "id")')
 @ObjectType('TransactionSchema')
@@ -79,7 +79,7 @@ export class Transaction extends BaseEntity {
 	wallet: Wallet[];
 
 	@Field(() => String!)
-	@CreateDateColumn({ type: 'timestamp' })
+	@Column('text', { default: moment().unix().toString() })
 	createdAt: string;
 
 	@BeforeInsert()

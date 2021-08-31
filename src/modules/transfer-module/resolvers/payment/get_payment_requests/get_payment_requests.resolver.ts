@@ -1,6 +1,9 @@
-import { Resolver, Query } from 'type-graphql';
+import { Resolver, Query, Arg } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { ApiArrayResponse } from 'neutronpay-wallet-common/dist/shared';
+import {
+	ApiArrayResponse,
+	PaginationInputType,
+} from 'neutronpay-wallet-common/dist/shared';
 import { Wallet } from '../../../entity';
 import { TransactionRequest } from '../../../entity/TransactionRequest';
 import { TransactionRequestRepository } from '../../../repository/TransactionRequestRepository';
@@ -20,7 +23,10 @@ class GetPaymentRequestsResolver {
 	private readonly transactionRequestRepository: TransactionRequestRepository;
 
 	@Query(() => ApiGetPaymentRequestsResponse, { nullable: true })
-	async getPaymentRequests(): Promise<ApiGetPaymentRequestsResponseType> {
+	async getPaymentRequests(
+		@Arg('Pagination', { nullable: true })
+		Pagination?: PaginationInputType,
+	): Promise<ApiGetPaymentRequestsResponseType> {
 		const transactionRequests =
 			await this.transactionRequestRepository.find({
 				relations: ['transaction'],
@@ -28,7 +34,12 @@ class GetPaymentRequestsResolver {
 
 		return {
 			success: true,
-			data: transactionRequests,
+			data: transactionRequests.slice(
+				Pagination?.skip,
+				Pagination?.limit === 0
+					? transactionRequests.length
+					: Pagination?.limit,
+			),
 		};
 	}
 }
