@@ -84,31 +84,33 @@ class SendPaymentResolver {
 				],
 			};
 		}
-
-		// Adding and subtracting money from user balance
-		this.walletRepository.addPayment(userWallet, transaction);
-		if (currency !== userWallet?.defaultCurrency) {
-			const exchangeRate =
-				await dataSources.exchangeRateApi.exchangeRate[
-					`${userWallet.defaultCurrency.toLowerCase()}${currency}`
-				]();
-			userWallet.balance -= exchangeRate * amount;
-		} else {
-			userWallet.balance -= amount;
-		}
-		userWallet.save();
-		// Adding and subtracting money from destination balance
-		this.walletRepository.addPayment(toWallet, transaction);
-		if (currency !== toWallet.defaultCurrency) {
-			const exchangeRate =
-				await dataSources.exchangeRateApi.exchangeRate[
-					`${toWallet.defaultCurrency.toLowerCase()}${currency}`
-				]();
-			toWallet.balance += exchangeRate * amount;
-		} else {
-			toWallet.balance += amount;
-		}
-		toWallet.save();
+		// Handle balance wallet
+		(async () => {
+			// Adding and subtracting money from user balance
+			this.walletRepository.addPayment(userWallet, transaction);
+			if (currency !== userWallet?.defaultCurrency) {
+				const exchangeRate =
+					await dataSources.exchangeRateApi.exchangeRate[
+						`${userWallet.defaultCurrency.toLowerCase()}${currency}`
+					]();
+				userWallet.balance -= exchangeRate * amount;
+			} else {
+				userWallet.balance -= amount;
+			}
+			userWallet.save();
+			// Adding and subtracting money from destination balance
+			this.walletRepository.addPayment(toWallet, transaction);
+			if (currency !== toWallet.defaultCurrency) {
+				const exchangeRate =
+					await dataSources.exchangeRateApi.exchangeRate[
+						`${toWallet.defaultCurrency.toLowerCase()}${currency}`
+					]();
+				toWallet.balance += exchangeRate * amount;
+			} else {
+				toWallet.balance += amount;
+			}
+			toWallet.save();
+		})();
 
 		// Update transaction status
 		transaction.status = TransactionStatus.DONE;

@@ -28,23 +28,23 @@ class LightningTransaction {
 	timeStamp: number;
 }
 
-export const ApiGetTransactions =
+export const ApiGetLightningTransactions =
 	ApiArrayResponse<LightningTransaction>(
 		'LndGetTransactions',
 		LightningTransaction,
 	);
-export type ApiGetTransactionsType = InstanceType<
-	typeof ApiGetTransactions
+export type ApiGetLightningTransactionsType = InstanceType<
+	typeof ApiGetLightningTransactions
 >;
 
 @Resolver((of) => String)
 class LightningGetTransactionsResolver {
 	@UseMiddleware()
-	@Query(() => ApiGetTransactions, { nullable: true })
+	@Query(() => ApiGetLightningTransactions, { nullable: true })
 	async lightningGetTransactions(
 		@Arg('Pagination', { nullable: true })
 		Pagination?: PaginationInputType,
-	): Promise<ApiGetTransactionsType> {
+	): Promise<ApiGetLightningTransactionsType> {
 		try {
 			const response = await GetTransactions();
 			return {

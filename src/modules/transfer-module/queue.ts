@@ -12,6 +12,12 @@ interface OutgoingMessageDataMap {
 	transaction_requested: {
 		transactionRequest: TransactionRequest;
 	};
+	transaction_request_confirmed: {
+		transactionRequest: TransactionRequest;
+	};
+	transaction_request_rejected: {
+		transactionRequest: TransactionRequest;
+	};
 }
 
 type OutgoingMessage<Key extends keyof OutgoingMessageDataMap> = {

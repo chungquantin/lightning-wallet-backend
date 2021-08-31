@@ -7,6 +7,7 @@ import {
 	Column,
 	ManyToMany,
 	JoinTable,
+	CreateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -78,10 +79,7 @@ export class Transaction extends BaseEntity {
 	wallet: Wallet[];
 
 	@Field(() => String!)
-	@Column('text', {
-		nullable: false,
-		default: new Date().toISOString(),
-	})
+	@CreateDateColumn({ type: 'timestamp' })
 	createdAt: string;
 
 	@BeforeInsert()

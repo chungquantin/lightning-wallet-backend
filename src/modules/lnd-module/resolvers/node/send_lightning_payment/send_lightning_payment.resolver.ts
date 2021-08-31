@@ -13,22 +13,24 @@ import {
 import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
 import { SendPayment } from '../../../node';
 import { mqProduce } from '../../../queue';
-import { LndSendPaymentDto } from './send_payment.dto';
+import { SendLightningPaymentDto } from './send_lightning_payment.dto';
 
-export const ApiSendPayment = ApiResponse<String>(
-	'LndSendPayment',
+export const ApiSendLightningPayment = ApiResponse<String>(
+	'SendLightningPayment',
 	String,
 );
-export type ApiSendPaymentType = InstanceType<typeof ApiSendPayment>;
+export type ApiSendLightningPaymentType = InstanceType<
+	typeof ApiSendLightningPayment
+>;
 
 @Resolver((of) => String)
-class LightningSendPaymentResolver {
+class SendLightningPaymentResolver {
 	@UseMiddleware()
-	@Mutation(() => ApiSendPayment, { nullable: true })
-	async lightningSendPayment(
-		@Arg('data') { paymentRequest }: LndSendPaymentDto,
+	@Mutation(() => ApiSendLightningPayment, { nullable: true })
+	async sendLightningPayment(
+		@Arg('data') { paymentRequest }: SendLightningPaymentDto,
 		@Ctx() { channel }: GQLContext,
-	): Promise<ApiSendPaymentType> {
+	): Promise<ApiSendLightningPaymentType> {
 		try {
 			const response = await SendPayment({
 				payment_request: paymentRequest,
@@ -40,7 +42,7 @@ class LightningSendPaymentResolver {
 					errors: [
 						{
 							message: CustomMessage.somethingWentWrong,
-							path: 'lightningSendPayment',
+							path: 'sendLightningPayment',
 						},
 					],
 				};
@@ -64,7 +66,7 @@ class LightningSendPaymentResolver {
 				errors: [
 					{
 						message: err.message,
-						path: 'lightningSendPayment',
+						path: 'sendLightningPayment',
 					},
 				],
 			};
@@ -72,4 +74,4 @@ class LightningSendPaymentResolver {
 	}
 }
 
-export default LightningSendPaymentResolver;
+export default SendLightningPaymentResolver;

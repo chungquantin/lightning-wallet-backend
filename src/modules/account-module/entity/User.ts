@@ -7,6 +7,7 @@ import {
 	BaseEntity,
 	ManyToMany,
 	JoinTable,
+	CreateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
@@ -65,10 +66,7 @@ export class User extends BaseEntity {
 	contacts: User[];
 
 	@Field(() => String!)
-	@Column('text', {
-		nullable: false,
-		default: new Date().toISOString(),
-	})
+	@CreateDateColumn({ type: 'timestamp' })
 	createdAt: string;
 
 	// External

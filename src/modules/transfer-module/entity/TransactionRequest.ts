@@ -6,9 +6,14 @@ import {
 	BaseEntity,
 	OneToOne,
 	JoinColumn,
+	Column,
+	CreateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { TransactionMethod } from '../constants';
 import { Transaction } from './Transaction';
+import moment from 'moment';
+import { TransactionRequestStatus } from '../constants/TransactionRequestStatus.enum';
 
 @Directive('@key(fields: "id")')
 @ObjectType('TransactionRequestSchema')
@@ -23,16 +28,45 @@ export class TransactionRequest extends BaseEntity {
 	@JoinColumn()
 	transaction: Transaction;
 
+	@Field(() => TransactionRequestStatus!)
+	@Column('text', {
+		nullable: false,
+		default: TransactionRequestStatus.UNKNOWN,
+	})
+	status: TransactionRequestStatus;
+
 	@Field(() => String!)
-	@PrimaryColumn('uuid')
+	@Column('uuid')
 	requestFrom: string;
 
 	@Field(() => String!)
-	@PrimaryColumn('uuid')
+	@Column('uuid')
 	requestTo: string;
+
+	@Field(() => String!)
+	@CreateDateColumn({ type: 'timestamp' })
+	createdAt: string;
+
+	@Field(() => String!)
+	@Column('text')
+	expiredAt: string;
 
 	@BeforeInsert()
 	async addId() {
 		this.id = uuidv4();
+	}
+
+	@BeforeInsert()
+	async addExpiredAt() {
+		switch (this.transaction.method) {
+			case TransactionMethod.LIGHTNING:
+				this.expiredAt = moment().add(5, 'hours').unix().toString();
+				break;
+			case TransactionMethod.ON_CHAIN:
+				this.expiredAt = moment().add(12, 'hours').unix().toString();
+				break;
+			default:
+				break;
+		}
 	}
 }

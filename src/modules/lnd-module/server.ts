@@ -48,8 +48,8 @@ export async function listen(
 			const schema = await buildFederatedSchema(
 				{
 					resolvers: [
-						LndResolver.LightningGetTransactions,
-						LndResolver.LightningSendPayment,
+						LndResolver.GetLightningTransactions,
+						LndResolver.SendLightningPayment,
 					],
 					orphanedTypes: [],
 					container: Container,

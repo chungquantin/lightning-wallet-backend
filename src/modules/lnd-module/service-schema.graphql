@@ -26,13 +26,13 @@ input PaginationInputType {
   skip: Int
 }
 type Mutation {
-  lightningSendPayment(data: LndSendPaymentDto!): LndSendPayment
+  sendLightningPayment(data: SendLightningPaymentDto!): SendLightningPayment
 }
-type LndSendPayment {
+type SendLightningPayment {
   success: Boolean!
   errors: [ApiError!]
   data: String
 }
-input LndSendPaymentDto {
+input SendLightningPaymentDto {
   paymentRequest: String!
 }

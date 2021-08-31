@@ -16,36 +16,35 @@ import {
 	WalletRepository,
 } from '../../../repository';
 import { Wallet } from '../../../entity';
-import { RequestPaymentDto } from './request_payment.dto';
+import { SendRequestPaymentDto } from './send_payment_request.dto';
 import { WalletGQLContext } from '../../../server';
 import { mqProduce } from '../../../queue';
 import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 import { TransactionRequest } from '../../../entity/TransactionRequest';
 import { TransactionRequestRepository } from '../../../repository/TransactionRequestRepository';
+import { TransactionRequestStatus } from '../../../constants/TransactionRequestStatus.enum';
 
-export const ApiRequestPaymentResponse =
+export const ApiSendRequestPaymentResponse =
 	ApiResponse<TransactionRequest>(
-		'RequestTransaction',
+		'SendPaymentRequest',
 		TransactionRequest,
 	);
-export type ApiRequestPaymentResponseType = InstanceType<
-	typeof ApiRequestPaymentResponse
+export type ApiSendRequestPaymentResponseType = InstanceType<
+	typeof ApiSendRequestPaymentResponse
 >;
 
 @Resolver((of) => Wallet)
-class RequestPaymentResolver {
+class SendPaymentRequestResolver {
 	@InjectRepository(WalletRepository)
 	private readonly walletRepository: WalletRepository;
-
 	@InjectRepository(TransactionRequestRepository)
 	private readonly transactionRequestRepository: TransactionRequestRepository;
-
 	@InjectRepository(WalletRepository)
 	private readonly transactionRepository: TransactionRepository;
 
 	@UseMiddleware(isAuth)
-	@Mutation(() => ApiRequestPaymentResponse, { nullable: true })
-	async requestPayment(
+	@Mutation(() => ApiSendRequestPaymentResponse, { nullable: true })
+	async sendPaymentRequest(
 		@Arg('data')
 		{
 			amount,
@@ -53,9 +52,9 @@ class RequestPaymentResolver {
 			walletId,
 			method,
 			description,
-		}: RequestPaymentDto,
+		}: SendRequestPaymentDto,
 		@Ctx() { currentUser, dataSources, channel }: WalletGQLContext,
-	): Promise<ApiRequestPaymentResponseType> {
+	): Promise<ApiSendRequestPaymentResponseType> {
 		const { transaction, userWallet, toWallet } =
 			await this.transactionRepository.createTransaction(
 				{
@@ -81,11 +80,23 @@ class RequestPaymentResolver {
 			};
 		}
 
+		if (userWallet.id === toWallet.id) {
+			return {
+				success: false,
+				errors: [
+					{
+						message: CustomMessage.stopBeingNaughty,
+					},
+				],
+			};
+		}
+
 		const transactionRequest = await this.transactionRequestRepository
 			.create({
 				requestFrom: userWallet?.id,
 				requestTo: toWallet?.id,
 				transaction,
+				status: TransactionRequestStatus.PENDING,
 			})
 			.save();
 
@@ -107,4 +118,4 @@ class RequestPaymentResolver {
 	}
 }
 
-export default RequestPaymentResolver;
+export default SendPaymentRequestResolver;

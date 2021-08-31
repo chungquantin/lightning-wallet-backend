@@ -1,2 +1,2 @@
-export { default as LightningSendPayment } from './send_payment/send_payment.resolver';
-export { default as LightningGetTransactions } from './get_transactions/get_transactions.resolver';
+export { default as SendLightningPayment } from './send_lightning_payment/send_lightning_payment.resolver';
+export { default as GetLightningTransactions } from './get_lightning_transactions/get_transactions.resolver';

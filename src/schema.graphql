@@ -136,6 +136,7 @@ type Mutation {
   logout: Logout @join__field(graph: ACCOUNT_MODULE)
   register(data: RegisterDto!): Register @join__field(graph: ACCOUNT_MODULE)
   requestPayment(data: RequestPaymentDto!): RequestTransaction @join__field(graph: LND_MODULE)
+  respondPaymentRequest(data: RespondPaymentRequestDto!): RespondPaymentRequest @join__field(graph: LND_MODULE)
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword @join__field(graph: ACCOUNT_MODULE)
   sendPayment(data: SendPaymentDto!): SendTransaction @join__field(graph: LND_MODULE)
 }
@@ -185,6 +186,15 @@ type RequestTransaction {
   errors: [ApiError!]
   success: Boolean!
 }
+type RespondPaymentRequest {
+  data: Boolean
+  errors: [ApiError!]
+  success: Boolean!
+}
+input RespondPaymentRequestDto {
+  confirmed: Boolean!
+  paymentRequestId: String!
+}
 type SendForgotPassword {
   data: String
   errors: [ApiError!]
@@ -215,10 +225,20 @@ enum TransactionMethod {
   ON_CHAIN
 }
 type TransactionRequestSchema @join__owner(graph: LND_MODULE) @join__type(graph: LND_MODULE, key: "id") {
+  createdAt: String! @join__field(graph: LND_MODULE)
+  expiredAt: String! @join__field(graph: LND_MODULE)
   id: ID! @join__field(graph: LND_MODULE)
   requestFrom: String! @join__field(graph: LND_MODULE)
   requestTo: String! @join__field(graph: LND_MODULE)
+  status: TransactionRequestStatus! @join__field(graph: LND_MODULE)
   transaction: TransactionSchema! @join__field(graph: LND_MODULE)
+}
+"""Transaction request status"""
+enum TransactionRequestStatus {
+  CONFIRMED
+  PENDING
+  REJECTED
+  UNKNOWN
 }
 type TransactionSchema @join__owner(graph: LND_MODULE) @join__type(graph: LND_MODULE, key: "id") {
   amount: Float! @join__field(graph: LND_MODULE)

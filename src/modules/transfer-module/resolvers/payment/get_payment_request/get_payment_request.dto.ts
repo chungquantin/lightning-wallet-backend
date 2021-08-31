@@ -1,7 +1,6 @@
 import { Field, InputType } from 'type-graphql';
-
 @InputType()
-export class LndSendPaymentDto {
+export class GetPaymentRequestDto {
 	@Field()
-	paymentRequest: string;
+	paymentRequestId: string;
 }

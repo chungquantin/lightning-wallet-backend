@@ -50,6 +50,8 @@ type Query {
   getMyWalletTransactions(Pagination: PaginationInputType): GetMyWalletTransactions
   getTransactions(Pagination: PaginationInputType): GetTransactions
   getTransaction(data: GetTransactionDto!): GetTransaction
+  getPaymentRequest(data: GetPaymentRequestDto!): GetPaymentRequest
+  getPaymentRequests: GetPaymentRequests
 }
 type GetWallet {
   success: Boolean!
@@ -96,9 +98,39 @@ type GetTransaction {
 input GetTransactionDto {
   transactionId: String!
 }
+type GetPaymentRequest {
+  success: Boolean!
+  errors: [ApiError!]
+  data: TransactionRequestSchema
+}
+type TransactionRequestSchema @key(fields: "id") {
+  id: ID!
+  transaction: TransactionSchema!
+  status: TransactionRequestStatus!
+  requestFrom: String!
+  requestTo: String!
+  createdAt: String!
+  expiredAt: String!
+}
+"""Transaction request status"""
+enum TransactionRequestStatus {
+  UNKNOWN
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+input GetPaymentRequestDto {
+  paymentRequestId: String!
+}
+type GetPaymentRequests {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [TransactionRequestSchema!]!
+}
 type Mutation {
   sendPayment(data: SendPaymentDto!): SendTransaction
-  requestPayment(data: RequestPaymentDto!): RequestTransaction
+  sendPaymentRequest(data: SendRequestPaymentDto!): SendPaymentRequest
+  respondPaymentRequest(data: RespondPaymentRequestDto!): RespondPaymentRequest
 }
 type SendTransaction {
   success: Boolean!
@@ -115,21 +147,24 @@ input SendPaymentDto {
   method: String!
   description: String!
 }
-type RequestTransaction {
+type SendPaymentRequest {
   success: Boolean!
   errors: [ApiError!]
   data: TransactionRequestSchema
 }
-type TransactionRequestSchema @key(fields: "id") {
-  id: ID!
-  transaction: TransactionSchema!
-  requestFrom: String!
-  requestTo: String!
-}
-input RequestPaymentDto {
+input SendRequestPaymentDto {
   walletId: String!
   amount: Float!
   currency: String!
   method: String!
   description: String!
+}
+type RespondPaymentRequest {
+  success: Boolean!
+  errors: [ApiError!]
+  data: Boolean
+}
+input RespondPaymentRequestDto {
+  paymentRequestId: String!
+  confirmed: Boolean!
 }
