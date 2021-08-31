@@ -1,10 +1,6 @@
 import { ApolloServer } from 'apollo-server';
 import Container from 'typedi';
 import { buildFederatedSchema } from 'neutronpay-wallet-common/dist/helpers/buildFederatedSchema';
-import {
-	REDIS,
-	redisPubSub,
-} from 'neutronpay-wallet-common/dist/helpers/redis';
 import { ResolveTime } from 'neutronpay-wallet-common/dist/middleware';
 import { customAuthChecker } from 'neutronpay-wallet-common/dist/utils';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
@@ -18,6 +14,7 @@ import {
 import { Connection, getConnection } from 'typeorm';
 import { genORMConnection } from 'neutronpay-wallet-common/dist/helpers/orm.config';
 import { queueHandler } from './queue';
+import { REDIS, redisPubSub } from './cache';
 import * as LndResolver from './resolvers/node';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';

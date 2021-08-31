@@ -1,10 +1,7 @@
 import { ApolloServer } from 'apollo-server';
 import Container from 'typedi';
 import { buildFederatedSchema } from 'neutronpay-wallet-common/dist/helpers/buildFederatedSchema';
-import {
-	REDIS,
-	redisPubSub,
-} from 'neutronpay-wallet-common/dist/helpers/redis';
+import { REDIS, redisPubSub } from './cache';
 import { ResolveTime } from 'neutronpay-wallet-common/dist/middleware';
 import { customAuthChecker } from 'neutronpay-wallet-common/dist/utils';
 import { Wallet } from './entity';

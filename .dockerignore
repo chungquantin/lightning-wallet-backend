@@ -7,3 +7,6 @@ temp/
 .dist
 dist/
 config..
+manifests/
+dockerfiles/
+.git

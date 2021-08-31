@@ -1,6 +1,11 @@
-![boilerplate_logo](https://user-images.githubusercontent.com/56880684/110272816-a95f9880-7ffd-11eb-88fe-d0c397cbba45.png)
+# NeutronPay Wallet Microservice Bankend with Apollo Federation
 
-# A backend boilerplate for GraphQL Server using TypeGraphQL 
+**Required installation for:**
+
+- Account
+- Bank
+- Transfer
+- Lightning Daemon
 
 **Required installation for:**
 
@@ -39,9 +44,9 @@ ____________________________
 
 In package.json, we have several scripts which do specific things: 
 
-`npm run start` : Run a production environment, for deployment
+`npm run start-services` : Run multiple services
 
-`npm run start:dev` : Run a development environment, hosted with `ts-node-dev` for hot-reloading
+`npm run start-gateway` : Run an apollo gateway
 
 `npm run start:test` : Run a testing environment, the same as `start:dev`. However, the database drops its schemas on restart
 
@@ -50,6 +55,16 @@ In package.json, we have several scripts which do specific things:
 `npm run gen-gql` : Generate `graphql` schemas based on TypegraphQL resolver, this uses `gql-generators`
 
 `npm run gen-env` : Generate environment type which is stored in `src/types`
+
+____________________________
+
+**How to dockerize?**
+
+```
+docker run build -f <path/to/file> -t <tagname> .
+```
+
+For example: docker run build -f dockerfiles/bank.dockerfile -t dockerfile .
 
 __________________________
 

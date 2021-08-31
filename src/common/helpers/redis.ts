@@ -1,23 +1,11 @@
 import * as Redis from 'ioredis';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
-import { EnvironmentType } from '../utils/environmentType';
-import 'dotenv/config';
 
 export class REDIS {
-	isProduction = process.env.NODE_ENV?.trim() == EnvironmentType.PROD;
-	isStaging = process.env.NODE_ENV?.trim() == EnvironmentType.STAGE;
 	private readonly config: Redis.RedisOptions = {
-		port: this.isProduction
-			? parseInt(process.env.REDIS_PORT as string)
-			: 6379, // Redis port
-		host: this.isProduction
-			? process.env.REDIS_HOST
-			: this.isStaging
-			? process.env.REDIS_HOST
-			: '127.0.0.1', // Redis host,
-		password: this.isProduction
-			? (process.env.REDIS_PASSWORD as string)
-			: '',
+		port: parseInt(process.env.REDIS_PORT as string) || 6379, // Redis port
+		host: process.env.REDIS_HOST || '127.0.0.1', // Redis host,
+		password: (process.env.REDIS_PASSWORD as string) || '',
 	};
 	public server = new Redis(this.config);
 	public client = new Redis(this.config);

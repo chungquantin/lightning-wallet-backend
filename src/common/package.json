@@ -1,6 +1,6 @@
 {
 	"name": "neutronpay-wallet-common",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Neutronpay Wallet common package for microservice",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",

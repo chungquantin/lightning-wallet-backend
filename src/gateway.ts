@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import 'dotenv/config';
-import { REDIS } from './common/helpers/redis';
-import { env, EnvironmentType } from './common/utils/environmentType';
-import { formatValidationError } from './common/utils/formatValidationError';
-import { GQLContext } from './common/utils/graphql-utils';
-import { DEV_BASE_URL } from './common/constants/global-variables';
+import { REDIS } from 'neutronpay-wallet-common/dist/helpers/redis';
+import { env, EnvironmentType } from 'neutronpay-wallet-common/dist/utils/environmentType';
+import { formatValidationError } from 'neutronpay-wallet-common/dist/utils/formatValidationError';
+import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
+import { DEV_BASE_URL } from 'neutronpay-wallet-common/dist/constants/global-variables';
 import { register } from 'prom-client';
 import { ApolloServer } from 'apollo-server-express';
 import { MemcachedCache } from 'apollo-server-cache-memcached';
