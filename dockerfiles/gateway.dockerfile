@@ -1,8 +1,12 @@
-FROM node:latest
+FROM node:10-alpine
 
 RUN mkdir gateway
 COPY package.json ./package.json
-COPY dist/gateway.js ./dist/gateway.js
-RUN npm i
+COPY tsconfig.json ./tsconfig.json
+COPY ormconfig.json ./ormconfig.json
+COPY .env ./.env
+COPY src/gateway.js ./src/gateway.js
+RUN npm i --legacy-peer-deps
+RUN npm run build
 
-CMD cd dist & node index.js
+CMD node dist/index.js
