@@ -18,6 +18,7 @@ import { RespondPaymentRequestDto } from './respond_payment_request.dto';
 import { TransactionRequestRepository } from '../../../repository/TransactionRequestRepository';
 import * as moment from 'moment';
 import { TransactionRequestStatus } from '../../../constants/TransactionRequestStatus.enum';
+import { REDIS_PAYMENT_SENT_PREFIX } from '../../../constants/globalConstants';
 
 export const ApiRespondPaymentRequest = ApiResponse<Boolean>(
 	'RespondPaymentRequest',
@@ -40,7 +41,8 @@ class RespondPaymentRequestResolver {
 	async respondPaymentRequest(
 		@Arg('data')
 		{ confirmed, paymentRequestId }: RespondPaymentRequestDto,
-		@Ctx() { currentUser, dataSources, channel }: WalletGQLContext,
+		@Ctx()
+		{ currentUser, dataSources, channel, redis }: WalletGQLContext,
 	): Promise<ApiRespondPaymentRequestType> {
 		try {
 			const userWallet = await this.walletRepository.findOne({
@@ -207,6 +209,13 @@ class RespondPaymentRequestResolver {
 						data: { transactionRequest },
 						operation: 'transaction_request_rejected',
 					},
+				);
+
+				await redis.set(
+					`${REDIS_PAYMENT_SENT_PREFIX}${currentUser?.userId}${fromWallet.id}`,
+					'FALSE',
+					'ex',
+					60 * 60 * 24 * 7,
 				);
 
 				return {

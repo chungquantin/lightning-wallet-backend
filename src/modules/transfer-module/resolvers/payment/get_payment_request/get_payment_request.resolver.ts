@@ -1,7 +1,6 @@
 import { Resolver, Arg, Query } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { ApiResponse } from 'neutronpay-wallet-common/dist/shared';
-import { Wallet } from '../../../entity';
 import { TransactionRequest } from '../../../entity/TransactionRequest';
 import { TransactionRequestRepository } from '../../../repository/TransactionRequestRepository';
 import { GetPaymentRequestDto } from './get_payment_request.dto';
@@ -16,7 +15,7 @@ export type ApiGetPaymentRequestResponseType = InstanceType<
 	typeof ApiGetPaymentRequestResponse
 >;
 
-@Resolver((of) => Wallet)
+@Resolver((of) => TransactionRequest)
 class GetPaymentRequestResolver {
 	@InjectRepository(TransactionRequestRepository)
 	private readonly transactionRequestRepository: TransactionRequestRepository;

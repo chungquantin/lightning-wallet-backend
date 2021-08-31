@@ -3,6 +3,7 @@ import { registerEnumType } from 'type-graphql';
 export enum TransactionRequestStatus {
 	UNKNOWN = 'UNKNOWN',
 	PENDING = 'PENDING',
+	CANCELED = 'CANCELED',
 	CONFIRMED = 'CONFIRMED',
 	REJECTED = 'REJECTED',
 }

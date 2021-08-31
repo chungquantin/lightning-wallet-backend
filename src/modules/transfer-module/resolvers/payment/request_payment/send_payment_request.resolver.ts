@@ -6,16 +6,12 @@ import {
 	UseMiddleware,
 } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import {
-	ApiResponse,
-	CustomMessage,
-} from 'neutronpay-wallet-common/dist/shared';
+import { ApiResponse } from 'neutronpay-wallet-common/dist/shared';
 import { isAuth } from 'neutronpay-wallet-common/dist/middleware';
 import {
 	TransactionRepository,
 	WalletRepository,
 } from '../../../repository';
-import { Wallet } from '../../../entity';
 import { SendRequestPaymentDto } from './send_payment_request.dto';
 import { WalletGQLContext } from '../../../server';
 import { mqProduce } from '../../../queue';
@@ -23,6 +19,8 @@ import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
 import { TransactionRequest } from '../../../entity/TransactionRequest';
 import { TransactionRequestRepository } from '../../../repository/TransactionRequestRepository';
 import { TransactionRequestStatus } from '../../../constants/TransactionRequestStatus.enum';
+import { REDIS_PAYMENT_SENT_PREFIX } from '../../../constants/globalConstants';
+import { CustomMessage } from '../../../constants';
 
 export const ApiSendRequestPaymentResponse =
 	ApiResponse<TransactionRequest>(
@@ -33,7 +31,7 @@ export type ApiSendRequestPaymentResponseType = InstanceType<
 	typeof ApiSendRequestPaymentResponse
 >;
 
-@Resolver((of) => Wallet)
+@Resolver((of) => TransactionRequest)
 class SendPaymentRequestResolver {
 	@InjectRepository(WalletRepository)
 	private readonly walletRepository: WalletRepository;
@@ -53,8 +51,24 @@ class SendPaymentRequestResolver {
 			method,
 			description,
 		}: SendRequestPaymentDto,
-		@Ctx() { currentUser, dataSources, channel }: WalletGQLContext,
+		@Ctx()
+		{ currentUser, dataSources, channel, redis }: WalletGQLContext,
 	): Promise<ApiSendRequestPaymentResponseType> {
+		if (
+			(await redis.get(
+				`${REDIS_PAYMENT_SENT_PREFIX}${currentUser?.userId}${walletId}`,
+			)) === 'TRUE'
+		) {
+			return {
+				success: false,
+				errors: [
+					{
+						path: 'sendPaymentRequest',
+						message: CustomMessage.transactionRequestIsSent,
+					},
+				],
+			};
+		}
 		const { transaction, userWallet, toWallet } =
 			await this.transactionRepository.createTransaction(
 				{
@@ -99,6 +113,13 @@ class SendPaymentRequestResolver {
 				status: TransactionRequestStatus.PENDING,
 			})
 			.save();
+
+		await redis.set(
+			`${REDIS_PAYMENT_SENT_PREFIX}${currentUser?.userId}${walletId}`,
+			'TRUE',
+			'ex',
+			60 * 60 * 24 * 7,
+		);
 
 		await mqProduce<'transaction_requested'>(
 			channel,

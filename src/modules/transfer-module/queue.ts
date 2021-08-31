@@ -18,6 +18,9 @@ interface OutgoingMessageDataMap {
 	transaction_request_rejected: {
 		transactionRequest: TransactionRequest;
 	};
+	transaction_request_canceled: {
+		transactionRequest: TransactionRequest;
+	};
 }
 
 type OutgoingMessage<Key extends keyof OutgoingMessageDataMap> = {

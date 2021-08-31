@@ -52,6 +52,7 @@ type Query {
   getTransaction(data: GetTransactionDto!): GetTransaction
   getPaymentRequest(data: GetPaymentRequestDto!): GetPaymentRequest
   getPaymentRequests(Pagination: PaginationInputType): GetPaymentRequests
+  getMyPaymentRequests(Pagination: PaginationInputType): GetMyPaymentRequests
 }
 type GetWallet {
   success: Boolean!
@@ -116,6 +117,7 @@ type TransactionRequestSchema @key(fields: "id") {
 enum TransactionRequestStatus {
   UNKNOWN
   PENDING
+  CANCELED
   CONFIRMED
   REJECTED
 }
@@ -127,10 +129,16 @@ type GetPaymentRequests {
   errors: [ApiError!]
   data: [TransactionRequestSchema!]!
 }
+type GetMyPaymentRequests {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [TransactionRequestSchema!]!
+}
 type Mutation {
   sendPayment(data: SendPaymentDto!): SendTransaction
   sendPaymentRequest(data: SendRequestPaymentDto!): SendPaymentRequest
   respondPaymentRequest(data: RespondPaymentRequestDto!): RespondPaymentRequest
+  cancelPaymentRequest(data: CancelPaymentRequestDto!): CancelPaymentRequest
 }
 type SendTransaction {
   success: Boolean!
@@ -167,4 +175,12 @@ type RespondPaymentRequest {
 input RespondPaymentRequestDto {
   paymentRequestId: String!
   confirmed: Boolean!
+}
+type CancelPaymentRequest {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input CancelPaymentRequestDto {
+  paymentRequestId: String!
 }

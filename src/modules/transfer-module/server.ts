@@ -53,17 +53,21 @@ export async function listen(
 			const schema = await buildFederatedSchema(
 				{
 					resolvers: [
+						// Wallet Resolver
 						WalletResolver.GetMyWalletResolver,
 						WalletResolver.GetWalletResolver,
 						WalletResolver.GetWalletsResolver,
 						WalletResolver.GetMyWalletTransactionsResolver,
 						WalletResolver.GetTransactions,
 						WalletResolver.GetTransaction,
+						// Payment Request Resolver
 						PaymentResolver.SendPayment,
 						PaymentResolver.SendPaymentRequest,
 						PaymentResolver.RespondPaymentRequest,
 						PaymentResolver.GetPaymentRequest,
 						PaymentResolver.GetPaymentRequests,
+						PaymentResolver.GetMyPaymentRequests,
+						PaymentResolver.CancelMyPaymentRequest,
 					],
 					orphanedTypes: [Wallet],
 					container: Container,

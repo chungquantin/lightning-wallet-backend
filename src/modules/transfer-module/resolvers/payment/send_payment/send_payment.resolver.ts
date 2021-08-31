@@ -24,7 +24,6 @@ import { WalletGQLContext } from '../../../server';
 import { mqProduce } from '../../../queue';
 import { TransactionStatus } from '../../../constants';
 import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
-
 @ObjectType()
 class PaymentResponse {
 	@Field()
@@ -58,7 +57,8 @@ class SendPaymentResolver {
 			method,
 			description,
 		}: SendPaymentDto,
-		@Ctx() { currentUser, dataSources, channel }: WalletGQLContext,
+		@Ctx()
+		{ currentUser, dataSources, channel }: WalletGQLContext,
 	): Promise<ApiSendResponseType> {
 		const { transaction, userWallet, toWallet } =
 			await this.transactionRepository.createTransaction(
