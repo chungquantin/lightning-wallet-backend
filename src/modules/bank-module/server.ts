@@ -15,12 +15,17 @@ import {
 import { Connection, getConnection } from 'typeorm';
 import { genORMConnection } from 'neutronpay-wallet-common/dist/helpers/orm.config';
 import { queueHandler } from './queue';
+import { PlaidApi } from 'plaid';
 import * as BankResolver from './resolvers/bank';
+import * as PlaidResolver from './resolvers/plaid';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
+import { plaidConfiguration } from './config/plaid';
 
-export interface WalletGQLContext extends GQLContext {
-	dataSources: {};
+export interface BankGQLContext extends GQLContext {
+	dataSources: {
+		plaidClient: PlaidApi;
+	};
 }
 
 export async function listen(
@@ -28,11 +33,16 @@ export async function listen(
 ): Promise<string | undefined> {
 	return withRabbitMQConnect({
 		name: 'BANK',
-		url: 'amqps://glsybgql:k-oBlQmxYuFpOboPLTqItT_XS6fSJdbu@gerbil.rmq.cloudamqp.com/glsybgql',
+		url: 'amqps://lvbzzlva:Elg4XFIZ99gS1Cp2EN2_0__zp_FFdHXt@mustang.rmq.cloudamqp.com/lvbzzlva',
 		callback: async ({ channel }) => {
 			if (!env(EnvironmentType.PROD)) {
 				await new REDIS().server.flushall();
 			}
+
+			// Connect to Plaid
+			const plaidClient = new PlaidApi(plaidConfiguration);
+
+			// Connect to Database
 			let conn: Connection;
 			try {
 				conn = await getConnection('default');
@@ -47,7 +57,16 @@ export async function listen(
 			}
 			const schema = await buildFederatedSchema(
 				{
-					resolvers: [BankResolver.HelloWorldResolver],
+					resolvers: [
+						PlaidResolver.CreateLinkToken,
+						PlaidResolver.ExchangePublicToken,
+						BankResolver.ConnectBankAccount,
+						BankResolver.ConnectDebitCard,
+						BankResolver.DeleteBankAccount,
+						BankResolver.GetBankAccount,
+						BankResolver.GetBankAccounts,
+						BankResolver.GetMyBankAccounts,
+					],
 					orphanedTypes: [],
 					container: Container,
 					pubSub: redisPubSub,
@@ -71,14 +90,16 @@ export async function listen(
 					],
 					{ retries: 10, retry: 10000 }, // Options
 				),
-				context: ({ req }): Partial<WalletGQLContext> => {
+				context: ({ req }): Partial<BankGQLContext> => {
 					const redis = new REDIS().server;
 
 					const contextResponse = {
 						request: req,
 						redis,
 						channel,
-						dataSources: {},
+						dataSources: {
+							plaidClient,
+						},
 						url: req?.protocol + '://' + req?.get('host'),
 					};
 

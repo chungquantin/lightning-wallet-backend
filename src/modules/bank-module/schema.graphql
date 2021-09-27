@@ -1,22 +1,128 @@
 schema {
   query: Query
+  mutation: Mutation
 }
 type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
-  helloWorld: HelloWorld
+  getBankAccount(data: GetBankAccountDto!): GetBankAccount
+  getBankAccounts: GetBankAccounts
+  getMyBankAccounts: GetMyBankAccounts
+  exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken
 }
+union _Entity = BankAccountSchema | BankAccountBalanceSchema | BankAccountAchSchema
+scalar _Any
 type _Service {
   """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
   sdl: String
 }
-type HelloWorld {
+type GetBankAccount {
   success: Boolean!
   errors: [ApiError!]
-  data: String
+  data: BankAccountSchema
 }
 type ApiError {
   path: String!
   message: String!
+}
+type BankAccountSchema @key(fields: "id") {
+  id: ID!
+  userId: String!
+  accountId: String!
+  institutionId: String!
+  institutionName: String!
+  balance: BankAccountBalanceSchema!
+  ach: BankAccountAchSchema!
+  name: String!
+  officialName: String
+  subType: String
+  type: BankAccountType!
+  addedAt: String!
+}
+type BankAccountBalanceSchema @key(fields: "id") {
+  id: ID!
+  availableBalance: Float
+  currentBalance: Float
+  limitBalance: Float!
+  isoCurrencyCode: String!
+  unofficialCurrencyCode: String!
+}
+type BankAccountAchSchema @key(fields: "id") {
+  id: ID!
+  routingNumber: String!
+  account: String!
+  wire_routing: String!
+}
+"""Values of the Bank Account Type field"""
+enum BankAccountType {
+  Investment
+  Credit
+  Depository
+  Loan
+  Brokerage
+  Other
+}
+input GetBankAccountDto {
+  bankAccountId: String!
+}
+type GetBankAccounts {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [BankAccountSchema!]!
+}
+type GetMyBankAccounts {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [BankAccountSchema!]!
+}
+type PlaidExchangePublicToken {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input ExchangeTokenDto {
+  publicToken: String!
+}
+type Mutation {
+  connectBankAccount(data: ConnectBankAccountDto!): ConnectBankAccount
+  connectDebitCard: ConnectDebitCard
+  deleteBankAccount(data: DeleteBankAccountDto!): DeleteBankAccount
+  createLinkToken: PlaidCreateLinkToken
+}
+type ConnectBankAccount {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input ConnectBankAccountDto {
+  """account id [Plaid]"""
+  accountId: String!
+  publicToken: String!
+  institutionId: String!
+  institutionName: String!
+}
+type ConnectDebitCard {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+type DeleteBankAccount {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input DeleteBankAccountDto {
+  bankAccountId: String!
+}
+type PlaidCreateLinkToken {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LinkTokenCreateResponseImpl
+}
+type LinkTokenCreateResponseImpl {
+  link_token: String!
+  request_id: String!
+  expiration: String!
 }
 directive @key(fields: String!) on OBJECT | INTERFACE
 directive @extends on OBJECT | INTERFACE

@@ -14,6 +14,79 @@ type ApiError {
   message: String!
   path: String!
 }
+type BankAccountAchSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
+  account: String! @join__field(graph: TRANSFER_MODULE)
+  id: ID! @join__field(graph: TRANSFER_MODULE)
+  routingNumber: String! @join__field(graph: TRANSFER_MODULE)
+  wire_routing: String! @join__field(graph: TRANSFER_MODULE)
+}
+type BankAccountBalanceSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
+  availableBalance: Float @join__field(graph: TRANSFER_MODULE)
+  currentBalance: Float @join__field(graph: TRANSFER_MODULE)
+  id: ID! @join__field(graph: TRANSFER_MODULE)
+  isoCurrencyCode: String! @join__field(graph: TRANSFER_MODULE)
+  limitBalance: Float! @join__field(graph: TRANSFER_MODULE)
+  unofficialCurrencyCode: String! @join__field(graph: TRANSFER_MODULE)
+}
+type BankAccountSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "id") {
+  accountId: String! @join__field(graph: TRANSFER_MODULE)
+  ach: BankAccountAchSchema! @join__field(graph: TRANSFER_MODULE)
+  addedAt: String! @join__field(graph: TRANSFER_MODULE)
+  balance: BankAccountBalanceSchema! @join__field(graph: TRANSFER_MODULE)
+  id: ID! @join__field(graph: TRANSFER_MODULE)
+  institutionId: String! @join__field(graph: TRANSFER_MODULE)
+  institutionName: String! @join__field(graph: TRANSFER_MODULE)
+  name: String! @join__field(graph: TRANSFER_MODULE)
+  officialName: String @join__field(graph: TRANSFER_MODULE)
+  subType: String @join__field(graph: TRANSFER_MODULE)
+  type: BankAccountType! @join__field(graph: TRANSFER_MODULE)
+  userId: String! @join__field(graph: TRANSFER_MODULE)
+}
+"""Values of the Bank Account Type field"""
+enum BankAccountType {
+  Brokerage
+  Credit
+  Depository
+  Investment
+  Loan
+  Other
+}
+type CancelPaymentRequest {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
+input CancelPaymentRequestDto {
+  paymentRequestId: String!
+}
+type ConnectBankAccount {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
+input ConnectBankAccountDto {
+  """account id [Plaid]"""
+  accountId: String!
+  institutionId: String!
+  institutionName: String!
+  publicToken: String!
+}
+type ConnectDebitCard {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
+type DeleteBankAccount {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
+input DeleteBankAccountDto {
+  bankAccountId: String!
+}
+input ExchangeTokenDto {
+  publicToken: String!
+}
 """Fiat currency"""
 enum FiatCurrency {
   CAD
@@ -29,8 +102,26 @@ input ForgotPasswordChangeDto {
   key: String!
   newPassword: String!
 }
+type GetBankAccount {
+  data: BankAccountSchema
+  errors: [ApiError!]
+  success: Boolean!
+}
+input GetBankAccountDto {
+  bankAccountId: String!
+}
+type GetBankAccounts {
+  data: [BankAccountSchema!]!
+  errors: [ApiError!]
+  success: Boolean!
+}
 type GetMeWallet {
   data: WalletSchema
+  errors: [ApiError!]
+  success: Boolean!
+}
+type GetMyBankAccounts {
+  data: [BankAccountSchema!]!
   errors: [ApiError!]
   success: Boolean!
 }
@@ -39,8 +130,26 @@ type GetMyContacts {
   errors: [ApiError!]
   success: Boolean!
 }
+type GetMyPaymentRequests {
+  data: [TransactionRequestSchema!]!
+  errors: [ApiError!]
+  success: Boolean!
+}
 type GetMyWalletTransactions {
   data: [TransactionSchema!]!
+  errors: [ApiError!]
+  success: Boolean!
+}
+type GetPaymentRequest {
+  data: TransactionRequestSchema
+  errors: [ApiError!]
+  success: Boolean!
+}
+input GetPaymentRequestDto {
+  paymentRequestId: String!
+}
+type GetPaymentRequests {
+  data: [TransactionRequestSchema!]!
   errors: [ApiError!]
   success: Boolean!
 }
@@ -84,11 +193,6 @@ type GetWallets {
   errors: [ApiError!]
   success: Boolean!
 }
-type HelloWorld {
-  data: String
-  errors: [ApiError!]
-  success: Boolean!
-}
 type LightningTransaction {
   amount: Float!
   blockHash: String!
@@ -96,18 +200,15 @@ type LightningTransaction {
   hash: String!
   timeStamp: Float!
 }
+type LinkTokenCreateResponseImpl {
+  expiration: String!
+  link_token: String!
+  request_id: String!
+}
 type LndGetTransactions {
   data: [LightningTransaction!]!
   errors: [ApiError!]
   success: Boolean!
-}
-type LndSendPayment {
-  data: String
-  errors: [ApiError!]
-  success: Boolean!
-}
-input LndSendPaymentDto {
-  paymentRequest: String!
 }
 type Login {
   data: TokenResponse
@@ -130,15 +231,20 @@ type Me {
 }
 type Mutation {
   addNewContact(data: AddNewContactDto!): AddNewContact @join__field(graph: ACCOUNT_MODULE)
+  cancelPaymentRequest(data: CancelPaymentRequestDto!): CancelPaymentRequest @join__field(graph: LND_MODULE)
+  connectBankAccount(data: ConnectBankAccountDto!): ConnectBankAccount @join__field(graph: TRANSFER_MODULE)
+  connectDebitCard: ConnectDebitCard @join__field(graph: TRANSFER_MODULE)
+  createLinkToken: PlaidCreateLinkToken @join__field(graph: TRANSFER_MODULE)
+  deleteBankAccount(data: DeleteBankAccountDto!): DeleteBankAccount @join__field(graph: TRANSFER_MODULE)
   forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword @join__field(graph: ACCOUNT_MODULE)
-  lightningSendPayment(data: LndSendPaymentDto!): LndSendPayment @join__field(graph: BANK_MODULE)
   login(data: LoginDto!): Login @join__field(graph: ACCOUNT_MODULE)
   logout: Logout @join__field(graph: ACCOUNT_MODULE)
   register(data: RegisterDto!): Register @join__field(graph: ACCOUNT_MODULE)
-  requestPayment(data: RequestPaymentDto!): RequestTransaction @join__field(graph: LND_MODULE)
   respondPaymentRequest(data: RespondPaymentRequestDto!): RespondPaymentRequest @join__field(graph: LND_MODULE)
   sendForgotPasswordEmail(data: SendForgotPasswordDto!): ForgotPassword @join__field(graph: ACCOUNT_MODULE)
+  sendLightningPayment(data: SendLightningPaymentDto!): SendLightningPayment @join__field(graph: BANK_MODULE)
   sendPayment(data: SendPaymentDto!): SendTransaction @join__field(graph: LND_MODULE)
+  sendPaymentRequest(data: SendRequestPaymentDto!): SendPaymentRequest @join__field(graph: LND_MODULE)
 }
 input PaginationInputType {
   limit: Int
@@ -147,18 +253,34 @@ input PaginationInputType {
 type PaymentResponse {
   transaction: TransactionSchema!
 }
+type PlaidCreateLinkToken {
+  data: LinkTokenCreateResponseImpl
+  errors: [ApiError!]
+  success: Boolean!
+}
+type PlaidExchangePublicToken {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
 type Query {
+  exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken @join__field(graph: TRANSFER_MODULE)
+  getBankAccount(data: GetBankAccountDto!): GetBankAccount @join__field(graph: TRANSFER_MODULE)
+  getBankAccounts: GetBankAccounts @join__field(graph: TRANSFER_MODULE)
   getCurrentUser: Me @join__field(graph: ACCOUNT_MODULE)
+  getMyBankAccounts: GetMyBankAccounts @join__field(graph: TRANSFER_MODULE)
   getMyContacts(Pagination: PaginationInputType): GetMyContacts @join__field(graph: ACCOUNT_MODULE)
+  getMyPaymentRequests(Pagination: PaginationInputType): GetMyPaymentRequests @join__field(graph: LND_MODULE)
   getMyWallet: GetMeWallet @join__field(graph: LND_MODULE)
   getMyWalletTransactions(Pagination: PaginationInputType): GetMyWalletTransactions @join__field(graph: LND_MODULE)
+  getPaymentRequest(data: GetPaymentRequestDto!): GetPaymentRequest @join__field(graph: LND_MODULE)
+  getPaymentRequests(Pagination: PaginationInputType): GetPaymentRequests @join__field(graph: LND_MODULE)
   getTransaction(data: GetTransactionDto!): GetTransaction @join__field(graph: LND_MODULE)
   getTransactions(Pagination: PaginationInputType): GetTransactions @join__field(graph: LND_MODULE)
   getUser(data: GetUserDto!): GetUser @join__field(graph: ACCOUNT_MODULE)
   getUsers(Pagination: PaginationInputType): GetUsers @join__field(graph: ACCOUNT_MODULE)
   getWallet(data: GetWalletDto!): GetWallet @join__field(graph: LND_MODULE)
   getWallets(Pagination: PaginationInputType): GetWallets @join__field(graph: LND_MODULE)
-  helloWorld: HelloWorld @join__field(graph: TRANSFER_MODULE)
   lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions @join__field(graph: BANK_MODULE)
 }
 type Register {
@@ -173,18 +295,6 @@ input RegisterDto {
   lastName: String!
   password: String!
   phoneNumber: String!
-}
-input RequestPaymentDto {
-  amount: Float!
-  currency: String!
-  description: String!
-  method: String!
-  walletId: String!
-}
-type RequestTransaction {
-  data: TransactionRequestSchema
-  errors: [ApiError!]
-  success: Boolean!
 }
 type RespondPaymentRequest {
   data: Boolean
@@ -203,7 +313,27 @@ type SendForgotPassword {
 input SendForgotPasswordDto {
   email: String!
 }
+type SendLightningPayment {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
+input SendLightningPaymentDto {
+  paymentRequest: String!
+}
 input SendPaymentDto {
+  amount: Float!
+  currency: String!
+  description: String!
+  method: String!
+  walletId: String!
+}
+type SendPaymentRequest {
+  data: TransactionRequestSchema
+  errors: [ApiError!]
+  success: Boolean!
+}
+input SendRequestPaymentDto {
   amount: Float!
   currency: String!
   description: String!
@@ -235,6 +365,7 @@ type TransactionRequestSchema @join__owner(graph: LND_MODULE) @join__type(graph:
 }
 """Transaction request status"""
 enum TransactionRequestStatus {
+  CANCELED
   CONFIRMED
   PENDING
   REJECTED

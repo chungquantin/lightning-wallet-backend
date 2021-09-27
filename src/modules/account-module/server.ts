@@ -24,7 +24,7 @@ export async function listen(
 ): Promise<string | undefined> {
 	return withRabbitMQConnect({
 		name: 'ACCOUNT',
-		url: 'amqps://glsybgql:k-oBlQmxYuFpOboPLTqItT_XS6fSJdbu@gerbil.rmq.cloudamqp.com/glsybgql',
+		url: 'amqps://lvbzzlva:Elg4XFIZ99gS1Cp2EN2_0__zp_FFdHXt@mustang.rmq.cloudamqp.com/lvbzzlva',
 		callback: async ({ channel }) => {
 			let conn: Connection;
 			try {

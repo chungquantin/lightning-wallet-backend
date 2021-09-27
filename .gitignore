@@ -9,3 +9,4 @@ temp/
 dist/
 config..
 dump.rdb
+**.rdb

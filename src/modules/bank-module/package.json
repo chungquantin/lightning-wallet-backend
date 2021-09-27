@@ -8,14 +8,15 @@
 		"start": "SET NODE_ENV=development& ts-node index.ts",
 		"dev": "SET NODE_ENV=development& ts-node-dev index.ts",
 		"build": "rimraf ./dist & tsc",
-		"start:dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development&  ts-node-dev --respawn index.ts --no-autorestart \" "
+		"start:dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development& ts-node-dev --respawn index.ts --no-autorestart \" "
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
 		"neutronpay-wallet-common": "^1.0.1",
+		"plaid": "^9.3.0",
 		"rimraf": "^3.0.2",
-		"typescript": "^4.4.2"
+		"typescript": "^4.4.3"
 	}
 }
