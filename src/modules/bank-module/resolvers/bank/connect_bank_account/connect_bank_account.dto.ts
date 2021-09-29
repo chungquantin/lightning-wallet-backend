@@ -10,7 +10,4 @@ export class ConnectBankAccountDto {
 
 	@Field()
 	institutionId: string;
-
-	@Field()
-	institutionName: string;
 }

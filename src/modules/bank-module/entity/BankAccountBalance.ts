@@ -26,11 +26,11 @@ export class BankAccountBalance extends BaseEntity {
 
 	@Field(() => Number)
 	@Column('float', { nullable: true })
-	limitBalance: number | undefined;
+	limitBalance: number | null | undefined;
 
 	@Field(() => String)
 	@Column('text', { nullable: true })
-	isoCurrencyCode: string | undefined;
+	isoCurrencyCode: string | null | undefined;
 
 	@Field(() => String)
 	@Column('text', { nullable: true })

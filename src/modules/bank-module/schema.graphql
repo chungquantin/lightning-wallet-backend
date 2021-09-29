@@ -10,7 +10,7 @@ type Query {
   getMyBankAccounts: GetMyBankAccounts
   exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken
 }
-union _Entity = BankAccountSchema | BankAccountBalanceSchema | BankAccountAchSchema
+union _Entity = BankAccountSchema | InstitutionSchema | BankAccountBalanceSchema | BankAccountAchSchema
 scalar _Any
 type _Service {
   """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
@@ -29,8 +29,7 @@ type BankAccountSchema @key(fields: "id") {
   id: ID!
   userId: String!
   accountId: String!
-  institutionId: String!
-  institutionName: String!
+  institution: InstitutionSchema!
   balance: BankAccountBalanceSchema!
   ach: BankAccountAchSchema!
   name: String!
@@ -38,6 +37,13 @@ type BankAccountSchema @key(fields: "id") {
   subType: String
   type: BankAccountType!
   addedAt: String!
+}
+type InstitutionSchema @key(fields: "institutionId") {
+  institutionId: String!
+  institutionName: String!
+  institutionLogo: String
+  primaryColor: String
+  websiteUrl: String
 }
 type BankAccountBalanceSchema @key(fields: "id") {
   id: ID!
@@ -99,7 +105,6 @@ input ConnectBankAccountDto {
   accountId: String!
   publicToken: String!
   institutionId: String!
-  institutionName: String!
 }
 type ConnectDebitCard {
   success: Boolean!

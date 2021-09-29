@@ -10,14 +10,19 @@ import { BankGQLContext } from '../../../server';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { ConnectBankAccountDto } from './connect_bank_account.dto';
 import { isAuth } from 'neutronpay-wallet-common/dist/middleware';
-import { BankAccountRepository } from '../../../repository/BankAccountRepository';
-import { BankAccountBalanceRepository } from '../../../repository/BankAccountBalance';
-import { BankAccountAchRepository } from '../../../repository/BankAccountAchRepository';
 import {
 	BankAccount,
 	BankAccountAch,
 	BankAccountBalance,
+	Institution,
 } from '../../../entity';
+import { CountryCode } from 'plaid';
+import {
+	BankAccountAchRepository,
+	BankAccountBalanceRepository,
+	BankAccountRepository,
+	InstitutionRepository,
+} from '../../../repository';
 
 export const ApiConnectBankAccount = ApiResponse<String>(
 	'ConnectBankAccount',
@@ -35,6 +40,8 @@ class ConnectBankAccountResolver {
 	private readonly bankAccountBalanceRepository: BankAccountBalanceRepository;
 	@InjectRepository(BankAccountAchRepository)
 	private readonly bankAccountAchRepository: BankAccountAchRepository;
+	@InjectRepository(InstitutionRepository)
+	private readonly institutionRepository: InstitutionRepository;
 
 	@UseMiddleware(isAuth)
 	@Mutation(() => ApiConnectBankAccount, { nullable: true })
@@ -42,16 +49,17 @@ class ConnectBankAccountResolver {
 		@Ctx()
 		{ dataSources: { plaidClient }, currentUser }: BankGQLContext,
 		@Arg('data')
-		{
-			accountId,
-			publicToken,
-			institutionId,
-			institutionName,
-		}: ConnectBankAccountDto,
+		{ accountId, publicToken, institutionId }: ConnectBankAccountDto,
 	): Promise<ApiConnectBankAccountType> {
 		try {
-			let scopedAch: BankAccountAch;
-			let scopedBalance: BankAccountBalance;
+			let scopedAch: BankAccountAch,
+				scopedBalance: BankAccountBalance,
+				scopedInstitution: Institution;
+
+			const createdBankAccount =
+				await this.bankAccountRepository.create({
+					accountId: accountId,
+				});
 			const {
 				data: { access_token },
 			} = await plaidClient.itemPublicTokenExchange({
@@ -60,12 +68,31 @@ class ConnectBankAccountResolver {
 			const authResponse = await plaidClient.authGet({
 				access_token,
 			});
-
-			const createdBankAccount =
-				await this.bankAccountRepository.create({
-					accountId: accountId,
+			// Handle institution
+			const institutionInDatabase =
+				await this.institutionRepository.findOne({
+					where: {
+						institutionId,
+					},
 				});
+			if (!institutionInDatabase) {
+				const {
+					data: { institution },
+				} = await plaidClient.institutionsGetById({
+					institution_id: institutionId,
+					country_codes: [CountryCode.Ca, CountryCode.Es],
+				});
+				scopedInstitution = await this.institutionRepository.create({
+					institutionId: institution.institution_id,
+					institutionLogo: institution.logo,
+					institutionName: institution.name,
+					primaryColor: institution.primary_color,
+					websiteUrl: institution.url,
+				});
+			}
+			scopedInstitution = institutionInDatabase as Institution;
 
+			// Handle ACH
 			const achList = authResponse.data.numbers.ach;
 			achList.forEach(async (ach) => {
 				if (ach.account_id === accountId) {
@@ -93,6 +120,7 @@ class ConnectBankAccountResolver {
 								balance.unofficial_currency_code as string,
 							isoCurrencyCode: balance.iso_currency_code as string,
 						});
+
 					createdBankAccount.balance = scopedBalance;
 					createdBankAccount.accountId = accountId;
 					createdBankAccount.userId = currentUser?.userId as string;
@@ -102,14 +130,15 @@ class ConnectBankAccountResolver {
 					createdBankAccount.officialName =
 						account?.official_name?.toString() as string;
 					createdBankAccount.type = account.type as any;
-					createdBankAccount.institutionId = institutionId;
-					createdBankAccount.institutionName = institutionName;
+					// institution
+					createdBankAccount.institution = scopedInstitution;
 				}
 			});
 
 			createdBankAccount.save().then(() => {
 				scopedBalance.save();
 				scopedBalance.save();
+				scopedInstitution.save();
 			});
 			return {
 				data: 'Bank connected!',

@@ -1,7 +1,7 @@
 import { Resolver, Query, Ctx, UseMiddleware } from 'type-graphql';
 import { ApiArrayResponse } from 'neutronpay-wallet-common/dist/shared';
 import { BankAccount } from '../../../entity';
-import { BankAccountRepository } from '../../../repository/BankAccountRepository';
+import { BankAccountRepository } from '../../../repository';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { BankGQLContext } from '../../../server';
 import { isAuth } from 'neutronpay-wallet-common/dist/middleware';
@@ -28,7 +28,7 @@ class GetMyBankAccountsResolver {
 			where: {
 				userId: currentUser?.userId,
 			},
-			relations: ['balance', 'ach'],
+			relations: ['balance', 'ach', 'institution'],
 		});
 		return {
 			success: true,

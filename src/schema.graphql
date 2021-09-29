@@ -34,8 +34,7 @@ type BankAccountSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: T
   addedAt: String! @join__field(graph: TRANSFER_MODULE)
   balance: BankAccountBalanceSchema! @join__field(graph: TRANSFER_MODULE)
   id: ID! @join__field(graph: TRANSFER_MODULE)
-  institutionId: String! @join__field(graph: TRANSFER_MODULE)
-  institutionName: String! @join__field(graph: TRANSFER_MODULE)
+  institution: InstitutionSchema! @join__field(graph: TRANSFER_MODULE)
   name: String! @join__field(graph: TRANSFER_MODULE)
   officialName: String @join__field(graph: TRANSFER_MODULE)
   subType: String @join__field(graph: TRANSFER_MODULE)
@@ -68,7 +67,6 @@ input ConnectBankAccountDto {
   """account id [Plaid]"""
   accountId: String!
   institutionId: String!
-  institutionName: String!
   publicToken: String!
 }
 type ConnectDebitCard {
@@ -192,6 +190,13 @@ type GetWallets {
   data: [WalletSchema!]!
   errors: [ApiError!]
   success: Boolean!
+}
+type InstitutionSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: TRANSFER_MODULE, key: "institutionId") {
+  institutionId: String! @join__field(graph: TRANSFER_MODULE)
+  institutionLogo: String @join__field(graph: TRANSFER_MODULE)
+  institutionName: String! @join__field(graph: TRANSFER_MODULE)
+  primaryColor: String @join__field(graph: TRANSFER_MODULE)
+  websiteUrl: String @join__field(graph: TRANSFER_MODULE)
 }
 type LightningTransaction {
   amount: Float!

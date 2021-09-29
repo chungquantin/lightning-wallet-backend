@@ -21,8 +21,7 @@ type BankAccountSchema @key(fields: "id") {
   id: ID!
   userId: String!
   accountId: String!
-  institutionId: String!
-  institutionName: String!
+  institution: InstitutionSchema!
   balance: BankAccountBalanceSchema!
   ach: BankAccountAchSchema!
   name: String!
@@ -30,6 +29,13 @@ type BankAccountSchema @key(fields: "id") {
   subType: String
   type: BankAccountType!
   addedAt: String!
+}
+type InstitutionSchema @key(fields: "institutionId") {
+  institutionId: String!
+  institutionName: String!
+  institutionLogo: String
+  primaryColor: String
+  websiteUrl: String
 }
 type BankAccountBalanceSchema @key(fields: "id") {
   id: ID!
@@ -91,7 +97,6 @@ input ConnectBankAccountDto {
   accountId: String!
   publicToken: String!
   institutionId: String!
-  institutionName: String!
 }
 type ConnectDebitCard {
   success: Boolean!

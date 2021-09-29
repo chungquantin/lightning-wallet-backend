@@ -2,7 +2,7 @@ import { Resolver, Query } from 'type-graphql';
 import { ApiArrayResponse } from 'neutronpay-wallet-common/dist/shared';
 import { BankAccount } from '../../../entity';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { BankAccountRepository } from '../../../repository/BankAccountRepository';
+import { BankAccountRepository } from '../../../repository';
 
 export const ApiGetBankAccounts = ApiArrayResponse<BankAccount>(
 	'GetBankAccounts',
@@ -20,7 +20,7 @@ class GetBankAccountsResolver {
 	@Query(() => ApiGetBankAccounts, { nullable: true })
 	async getBankAccounts(): Promise<ApiGetBankAccountsType> {
 		const bankAccounts = await this.bankAccountRepository.find({
-			relations: ['balance', 'ach'],
+			relations: ['balance', 'ach', 'institution'],
 		});
 		return {
 			success: true,

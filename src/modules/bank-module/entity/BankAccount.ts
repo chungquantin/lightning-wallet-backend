@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import { BankAccountBalance } from './BankAccountBalance';
 import { BankAccountType } from '../constants/BankAccountType';
 import { BankAccountAch } from './BankAccountAch';
+import { Institution } from '.';
 
 @Directive('@key(fields: "id")')
 @ObjectType('BankAccountSchema')
@@ -30,13 +31,10 @@ export class BankAccount extends BaseEntity {
 	@Column('text')
 	accountId: string;
 
-	@Field(() => String!)
-	@Column('text')
-	institutionId: string;
-
-	@Field(() => String!)
-	@Column('text')
-	institutionName: string;
+	@Field(() => Institution!)
+	@OneToOne(() => Institution, { cascade: true })
+	@JoinColumn()
+	institution: Institution;
 
 	@Field(() => BankAccountBalance!)
 	@OneToOne(() => BankAccountBalance, { cascade: true })
@@ -52,15 +50,15 @@ export class BankAccount extends BaseEntity {
 	@Column('text')
 	name: string;
 
-	@Field(() => String!, { nullable: true })
+	@Field(() => String, { nullable: true })
 	@Column('text')
-	officialName: string;
+	officialName: string | null | undefined;
 
 	@Field(() => String, { nullable: true })
 	@Column('text')
-	subType: string;
+	subType: string | null | undefined;
 
-	@Field(() => BankAccountType!)
+	@Field(() => BankAccountType)
 	@Column('text')
 	type: BankAccountType;
 

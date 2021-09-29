@@ -2,7 +2,7 @@ import { Resolver, Query, Arg } from 'type-graphql';
 import { ApiResponse } from 'neutronpay-wallet-common/dist/shared';
 import { BankAccount } from '../../../entity';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { BankAccountRepository } from '../../../repository/BankAccountRepository';
+import { BankAccountRepository } from '../../../repository';
 import { ServiceCustomMessage } from '../../../constants/CustomMessage';
 import { GetBankAccountDto } from './get_bank_account.dto';
 
@@ -27,7 +27,7 @@ class GetBankAccountResolver {
 			where: {
 				id: bankAccountId,
 			},
-			relations: ['balance', 'ach'],
+			relations: ['balance', 'ach', 'institution'],
 		});
 		if (!bankAccount) {
 			return {

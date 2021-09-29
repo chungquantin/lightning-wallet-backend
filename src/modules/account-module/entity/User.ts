@@ -52,7 +52,7 @@ export class User extends BaseEntity {
 	@Column({ nullable: true })
 	firstName: string;
 
-	@Field(() => String!)
+	@Field(() => String)
 	@Column({ nullable: true })
 	lastName: string;
 
