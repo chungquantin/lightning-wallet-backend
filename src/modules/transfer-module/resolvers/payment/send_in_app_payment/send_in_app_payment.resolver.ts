@@ -4,8 +4,6 @@ import {
 	Mutation,
 	Ctx,
 	UseMiddleware,
-	ObjectType,
-	Field,
 } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import {
@@ -18,28 +16,23 @@ import {
 	WalletRepository,
 } from '../../../repository';
 import { Wallet } from '../../../entity';
-import { SendPaymentDto } from './send_payment.dto';
+import { SendInAppPaymentDto } from './send_in_app_payment.dto';
 import { Transaction } from '../../../entity/Transaction';
 import { WalletGQLContext } from '../../../server';
 import { mqProduce } from '../../../queue';
 import { TransactionStatus } from '../../../constants';
 import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
-@ObjectType()
-class PaymentResponse {
-	@Field()
-	transaction: Transaction;
-}
 
-export const ApiSendResponse = ApiResponse<PaymentResponse>(
-	'SendTransaction',
-	PaymentResponse,
+export const ApiSendInAppPaymentResponse = ApiResponse<Transaction>(
+	'SendInAppPayment',
+	Transaction,
 );
-export type ApiSendResponseType = InstanceType<
-	typeof ApiSendResponse
+export type ApiSendInAppPaymentResponseType = InstanceType<
+	typeof ApiSendInAppPaymentResponse
 >;
 
 @Resolver((of) => Wallet)
-class SendPaymentResolver {
+class SendInAppPaymentResolver {
 	@InjectRepository(WalletRepository)
 	private readonly walletRepository: WalletRepository;
 
@@ -47,8 +40,8 @@ class SendPaymentResolver {
 	private readonly transactionRepository: TransactionRepository;
 
 	@UseMiddleware(isAuth)
-	@Mutation(() => ApiSendResponse, { nullable: true })
-	async sendPayment(
+	@Mutation(() => ApiSendInAppPaymentResponse, { nullable: true })
+	async sendInAppPayment(
 		@Arg('data')
 		{
 			amount,
@@ -56,10 +49,10 @@ class SendPaymentResolver {
 			walletId,
 			method,
 			description,
-		}: SendPaymentDto,
+		}: SendInAppPaymentDto,
 		@Ctx()
 		{ currentUser, dataSources, channel }: WalletGQLContext,
-	): Promise<ApiSendResponseType> {
+	): Promise<ApiSendInAppPaymentResponseType> {
 		const { transaction, userWallet, toWallet } =
 			await this.transactionRepository.createTransaction(
 				{
@@ -129,11 +122,9 @@ class SendPaymentResolver {
 
 		return {
 			success: true,
-			data: {
-				transaction,
-			},
+			data: transaction,
 		};
 	}
 }
 
-export default SendPaymentResolver;
+export default SendInAppPaymentResolver;

@@ -11,6 +11,7 @@ import {
 	BankTransferNetwork,
 	BankTransferType,
 } from 'plaid';
+import { TRANSACTION_FEE } from '../../../constants/BUS';
 
 export const ApiDeposit = ApiResponse<String>('Deposit', String);
 export type ApiDepositType = InstanceType<typeof ApiDeposit>;
@@ -40,6 +41,7 @@ class DepositResolver {
 		{ dataSources, currentUser }: BankGQLContext,
 	): Promise<ApiDepositType> {
 		// Check if bank account exists
+		amount = amount * (1 + TRANSACTION_FEE);
 		const myBankAccount = await this.bankAccountRepository.findOne({
 			where: {
 				ach: {

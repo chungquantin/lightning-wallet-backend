@@ -15,6 +15,7 @@ export class TransactionRepository extends Repository<Transaction> {
 		dataSources,
 		walletRepository,
 	) {
+		let toWallet: Wallet | null = null;
 		// Validate withdrawable amount
 		const MAX_USD_AMOUNT_THRESHOLD = 10000;
 		const MIN_USD_AMOUNT_THRESHOLD = 1;
@@ -83,34 +84,36 @@ export class TransactionRepository extends Repository<Transaction> {
 		}
 
 		// Check if destination wallet exists
-		const toWallet: Wallet = await walletRepository.findOne({
-			where: {
-				id: walletId,
-			},
-		});
+		if (walletId) {
+			toWallet = await walletRepository.findOne({
+				where: {
+					id: walletId,
+				},
+			});
 
-		if (!toWallet) {
-			return {
-				success: false,
-				errors: [
-					{
-						message: CustomMessage.walletIsNotFound,
-						path: 'walletId',
-					},
-				],
-			};
-		}
+			if (!toWallet) {
+				return {
+					success: false,
+					errors: [
+						{
+							message: CustomMessage.walletIsNotFound,
+							path: 'walletId',
+						},
+					],
+				};
+			}
 
-		if (userWallet.id === toWallet.id) {
-			return {
-				success: false,
-				errors: [
-					{
-						message: CustomMessage.stopBeingNaughty,
-						path: 'walletId',
-					},
-				],
-			};
+			if (userWallet.id === toWallet.id) {
+				return {
+					success: false,
+					errors: [
+						{
+							message: CustomMessage.stopBeingNaughty,
+							path: 'walletId',
+						},
+					],
+				};
+			}
 		}
 
 		// Get btc information
@@ -126,7 +129,7 @@ export class TransactionRepository extends Repository<Transaction> {
 			btcExchangeRate,
 			currency,
 			fromWalletId: userWallet.id,
-			toWalletId: toWallet.id,
+			toWalletId: walletId,
 			description,
 			networkFee: 0,
 			transactionFee: 0,
@@ -134,6 +137,8 @@ export class TransactionRepository extends Repository<Transaction> {
 			method,
 		}).save();
 
-		return { transaction, userWallet, toWallet };
+		return toWallet
+			? { transaction, userWallet, toWallet }
+			: { transaction, userWallet };
 	}
 }

@@ -1,18 +1,10 @@
 import { Field, InputType } from 'type-graphql';
 import { FiatCurrency, TransactionMethod } from '../../../constants';
+
 @InputType()
-export class SendPaymentDto {
+export class SendOutAppLightningPaymentDto {
 	@Field()
-	walletId: string;
-
-	@Field()
-	amount: number;
-
-	@Field()
-	currency: FiatCurrency;
-
-	@Field()
-	method: TransactionMethod;
+	paymentRequest: string;
 
 	@Field()
 	description: string;

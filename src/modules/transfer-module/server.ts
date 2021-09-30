@@ -61,7 +61,9 @@ export async function listen(
 						WalletResolver.GetTransactions,
 						WalletResolver.GetTransaction,
 						// Payment Request Resolver
-						PaymentResolver.SendPayment,
+						PaymentResolver.SendInAppPayment,
+						PaymentResolver.SendOutAppLightningPayment,
+						PaymentResolver.SendInAppLightningPayment,
 						PaymentResolver.SendPaymentRequest,
 						PaymentResolver.RespondPaymentRequest,
 						PaymentResolver.GetPaymentRequest,
@@ -118,17 +120,17 @@ export async function listen(
 							(req as any).user = decoded;
 							return Object.assign(contextResponse, {
 								currentUser: (req as any).user || undefined,
-							});
+							} as any);
 						}
 						return Object.assign(contextResponse, {
 							currentUser: JSON.parse(
 								req.headers.currentuser as string,
 							),
-						});
+						} as any);
 					} catch (error) {
 						return Object.assign(contextResponse, {
 							currentUser: undefined,
-						});
+						} as any);
 					}
 				},
 			});

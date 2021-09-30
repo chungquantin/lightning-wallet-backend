@@ -1,19 +1,19 @@
 import { Channel } from 'amqplib';
 import { Connection } from 'typeorm';
 import { Queue } from 'neutronpay-wallet-common/dist/constants/queue';
-import { SendResponse } from './proto/lnd_pb';
+import { CustomMessage } from 'neutronpay-wallet-common/dist/shared';
+import { SendPayment } from './node';
+import { LightningPayment } from './entity/LightningPayment';
 
-interface OutgoingMessageDataMap {
-	lightning_payment_sended: SendResponse.AsObject;
-}
+interface OutgoingMessageDataMap {}
 
 type OutgoingMessage<Key extends keyof OutgoingMessageDataMap> = {
 	operation: Key;
 	data: OutgoingMessageDataMap[Key];
 };
 interface IncomingMessageDataMap {
-	hello_world: {
-		userId: string;
+	lightning_payment_sended: {
+		paymentRequest: PaymentRequest;
 	};
 }
 interface IncomingMessage<Key extends keyof IncomingMessageDataMap> {
@@ -29,7 +29,31 @@ type HandlerMap = {
 };
 
 const handlerMap: HandlerMap = {
-	hello_world: () => {},
+	// Produced from Wallet Module -> sendLightningPayment
+	lightning_payment_sended: async ({ paymentRequest }) => {
+		const response = await SendPayment({
+			payment_request: paymentRequest,
+		});
+
+		if (!response) {
+			throw {
+				success: false,
+				errors: [
+					{
+						message: CustomMessage.somethingWentWrong,
+						path: 'sendLightningPayment',
+					},
+				],
+			};
+		}
+		LightningPayment.create({
+			paymentError: response.payment_error,
+			paymentPreImage: response.payment_preimage.toString(),
+			paymentHash: response.payment_hash.toString(),
+			totalFees: response.payment_route?.totalFees,
+			totalAmt: response.payment_route?.totalAmt,
+		}).save();
+	},
 };
 
 export const mqProduce = <Key extends keyof OutgoingMessageDataMap>(
@@ -58,6 +82,8 @@ export const queueHandler = async (
 			}
 		});
 	};
+
+	mqConsume(Queue.LND_QUEUE);
 
 	channel.assertQueue(Queue.LND_QUEUE, {
 		durable: false,

@@ -15,12 +15,16 @@ import { Connection, getConnection } from 'typeorm';
 import { genORMConnection } from 'neutronpay-wallet-common/dist/helpers/orm.config';
 import { queueHandler } from './queue';
 import { REDIS, redisPubSub } from './cache';
-import * as LndResolver from './resolvers/node';
+import * as dataSources from './utils/dataSource';
+import * as NodeResolver from './resolvers/node';
+import * as BtcResolver from './resolvers/btc';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
 
-export interface WalletGQLContext extends GQLContext {
-	dataSources: {};
+export interface LndGQLContext extends GQLContext {
+	dataSources: {
+		exchangeRateApi: dataSources.ExchangeRateApi;
+	};
 }
 
 export async function listen(
@@ -48,8 +52,11 @@ export async function listen(
 			const schema = await buildFederatedSchema(
 				{
 					resolvers: [
-						LndResolver.GetLightningTransactions,
-						LndResolver.SendLightningPayment,
+						NodeResolver.GetLightningTransactions,
+						BtcResolver.GenerateChainInvoice,
+						BtcResolver.GenerateLightningInvoice,
+						BtcResolver.GetBtcAddress,
+						BtcResolver.GetBtcAddresses,
 					],
 					orphanedTypes: [],
 					container: Container,
@@ -74,14 +81,16 @@ export async function listen(
 					],
 					{ retries: 10, retry: 10000 }, // Options
 				),
-				context: ({ req }): Partial<WalletGQLContext> => {
+				context: ({ req }): Partial<LndGQLContext> => {
 					const redis = new REDIS().server;
 
-					const contextResponse = {
+					const contextResponse: Partial<LndGQLContext> = {
 						request: req as any,
 						redis,
 						channel,
-						dataSources: {},
+						dataSources: {
+							exchangeRateApi: new dataSources.ExchangeRateApi(),
+						},
 						url: req?.protocol + '://' + req?.get('host'),
 					};
 

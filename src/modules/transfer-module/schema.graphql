@@ -143,24 +143,42 @@ type GetMyPaymentRequests {
   data: [TransactionRequestSchema!]!
 }
 type Mutation {
-  sendPayment(data: SendPaymentDto!): SendTransaction
+  sendInAppPayment(data: SendInAppPaymentDto!): SendInAppPayment
+  sendOutAppLightningPayment(data: SendOutAppLightningPaymentDto!): SendOutAppLightningPayment
+  sendInAppLightningPayment(data: SendInAppLightningPaymentDto!): SendInAppLightningPayment
   sendPaymentRequest(data: SendRequestPaymentDto!): SendPaymentRequest
   respondPaymentRequest(data: RespondPaymentRequestDto!): RespondPaymentRequest
   cancelPaymentRequest(data: CancelPaymentRequestDto!): CancelPaymentRequest
 }
-type SendTransaction {
+type SendInAppPayment {
   success: Boolean!
   errors: [ApiError!]
-  data: PaymentResponse
+  data: TransactionSchema
 }
-type PaymentResponse {
-  transaction: TransactionSchema!
-}
-input SendPaymentDto {
-  walletId: String!
+input SendInAppPaymentDto {
+  walletId: String
   amount: Float!
   currency: String!
   method: String!
+  description: String!
+}
+type SendOutAppLightningPayment {
+  success: Boolean!
+  errors: [ApiError!]
+  data: TransactionSchema
+}
+input SendOutAppLightningPaymentDto {
+  paymentRequest: String!
+  description: String!
+}
+type SendInAppLightningPayment {
+  success: Boolean!
+  errors: [ApiError!]
+  data: TransactionSchema
+}
+input SendInAppLightningPaymentDto {
+  paymentRequest: String!
+  walletId: String!
   description: String!
 }
 type SendPaymentRequest {

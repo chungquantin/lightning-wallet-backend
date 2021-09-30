@@ -3,9 +3,14 @@ schema {
   mutation: Mutation
 }
 type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
   lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions
+  getBtcAddress: getBtcAddress
+  getBtcAddresses: getBtcAddresses
 }
+union _Entity = LightningInvoiceSchema | ChainInvoiceSchema
+scalar _Any
 type _Service {
   """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
   sdl: String
@@ -30,16 +35,56 @@ input PaginationInputType {
   limit: Int
   skip: Int
 }
-type Mutation {
-  sendLightningPayment(data: SendLightningPaymentDto!): SendLightningPayment
-}
-type SendLightningPayment {
+type getBtcAddress {
   success: Boolean!
   errors: [ApiError!]
-  data: String
+  data: BtcAddress
 }
-input SendLightningPaymentDto {
-  paymentRequest: String!
+type BtcAddress {
+  lightningInvoice: LightningInvoiceSchema!
+  chainInvoice: ChainInvoiceSchema!
+}
+type LightningInvoiceSchema @key(fields: "id") {
+  id: ID!
+  userId: String!
+  addIndex: String!
+  payReq: String!
+  createdAt: String!
+  expires_at: String!
+}
+type ChainInvoiceSchema @key(fields: "id") {
+  id: ID!
+  userId: String!
+  address: String!
+  createdAt: String!
+}
+type getBtcAddresses {
+  success: Boolean!
+  errors: [ApiError!]
+  data: BtcAddresses
+}
+type BtcAddresses {
+  lightningInvoices: [LightningInvoiceSchema!]!
+  chainInvoices: [ChainInvoiceSchema!]!
+}
+type Mutation {
+  generateOnChainInvoice: GenerateChainInvoice
+  generateLightningInvoice(data: GenerateLightningInvoiceDto!): GenerateLightningInvoice
+}
+type GenerateChainInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: ChainInvoiceSchema
+}
+type GenerateLightningInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LightningInvoiceSchema
+}
+input GenerateLightningInvoiceDto {
+  amount: Float!
+  currency: String!
+  description: String!
 }
 directive @key(fields: String!) on OBJECT | INTERFACE
 directive @extends on OBJECT | INTERFACE

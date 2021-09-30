@@ -18,6 +18,7 @@ import {
 	BankTransferNetwork,
 	BankTransferType,
 } from 'plaid';
+import { TRANSACTION_FEE } from '../../../constants/BUS';
 
 export const ApiWithdraw = ApiResponse<String>('Deposit', String);
 export type ApiWithdrawType = InstanceType<typeof ApiWithdraw>;
@@ -46,6 +47,8 @@ class WithdrawResolver {
 		}: WithdrawDto,
 		@Ctx() { dataSources, currentUser }: BankGQLContext,
 	): Promise<ApiWithdrawType> {
+		amount = amount * (1 + TRANSACTION_FEE);
+
 		// TODO check wallet balance on front end
 		// Check if bank account exists
 		const myBankAccount = await this.bankAccountRepository.findOne({

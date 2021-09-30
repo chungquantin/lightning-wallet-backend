@@ -29,7 +29,7 @@ export class Transaction extends BaseEntity {
 	@PrimaryColumn('uuid')
 	fromWalletId: string;
 
-	@Field(() => String!)
+	@Field(() => String)
 	@PrimaryColumn('uuid')
 	toWalletId: string;
 

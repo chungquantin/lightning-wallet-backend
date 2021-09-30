@@ -21,5 +21,5 @@
 		"skipLibCheck": true
 	},
 	"exclude": ["node_modules", "./swagger.json", "./dist"],
-	"include": ["./**/*.tsx", "./**/*.ts"]
+	"include": ["./**/*.tsx", "./**/*.ts", "resolvers/btc/get_btc_addresses", "resolvers/btc/get_my_btc_address"]
 }

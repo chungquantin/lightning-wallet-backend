@@ -21,6 +21,9 @@ interface OutgoingMessageDataMap {
 	transaction_request_canceled: {
 		transactionRequest: TransactionRequest;
 	};
+	lightning_payment_sended: {
+		paymentRequest: any;
+	};
 }
 
 type OutgoingMessage<Key extends keyof OutgoingMessageDataMap> = {
