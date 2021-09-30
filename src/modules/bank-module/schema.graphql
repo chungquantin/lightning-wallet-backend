@@ -8,6 +8,8 @@ type Query {
   getBankAccount(data: GetBankAccountDto!): GetBankAccount
   getBankAccounts: GetBankAccounts
   getMyBankAccounts: GetMyBankAccounts
+  getBankTransfers(data: GetBankTransfersDto!): GetBankTransfers
+  getBankTransfer(data: GetBankTransferDto!): GetBankTransfer
   exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken
 }
 union _Entity = BankAccountSchema | InstitutionSchema | BankAccountBalanceSchema | BankAccountAchSchema
@@ -81,6 +83,45 @@ type GetMyBankAccounts {
   errors: [ApiError!]
   data: [BankAccountSchema!]!
 }
+type GetBankTransfers {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [BankTransfer!]!
+}
+type BankTransfer {
+  account_id: String!
+  ach_class: String!
+  amount: String!
+  cancellable: Boolean!
+  created: String!
+  customTag: String!
+  description: String!
+  direction: String!
+  failure_reason: String!
+  id: String!
+  currency: String!
+  network: String!
+  originationAccountId: String!
+  status: String!
+  type: String!
+  legalName: String!
+}
+input GetBankTransfersDto {
+  startDate: String!
+  endDate: String!
+  count: Float!
+  offset: Float!
+  originationAccountId: String!
+  direction: String!
+}
+type GetBankTransfer {
+  success: Boolean!
+  errors: [ApiError!]
+  data: BankTransfer
+}
+input GetBankTransferDto {
+  bankTransferId: String!
+}
 type PlaidExchangePublicToken {
   success: Boolean!
   errors: [ApiError!]
@@ -93,6 +134,7 @@ type Mutation {
   connectBankAccount(data: ConnectBankAccountDto!): ConnectBankAccount
   connectDebitCard: ConnectDebitCard
   deleteBankAccount(data: DeleteBankAccountDto!): DeleteBankAccount
+  deposit(data: WithdrawDto!): Deposit
   createLinkToken: PlaidCreateLinkToken
 }
 type ConnectBankAccount {
@@ -118,6 +160,22 @@ type DeleteBankAccount {
 }
 input DeleteBankAccountDto {
   bankAccountId: String!
+}
+type Deposit {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input WithdrawDto {
+  """The user's account number."""
+  accountNumber: String!
+  """The user's routing number."""
+  routingNumber: String!
+  """The type of the bank account (checking or savings)."""
+  accountType: String!
+  accountName: String!
+  amount: Float!
+  currency: String!
 }
 type PlaidCreateLinkToken {
   success: Boolean!

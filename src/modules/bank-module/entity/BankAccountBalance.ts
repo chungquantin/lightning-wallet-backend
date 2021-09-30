@@ -22,7 +22,7 @@ export class BankAccountBalance extends BaseEntity {
 
 	@Field(() => Number!, { nullable: true })
 	@Column('float')
-	currentBalance: number | undefined;
+	currentBalance: number;
 
 	@Field(() => Number)
 	@Column('float', { nullable: true })

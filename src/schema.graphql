@@ -50,6 +50,24 @@ enum BankAccountType {
   Loan
   Other
 }
+type BankTransfer {
+  account_id: String!
+  ach_class: String!
+  amount: String!
+  cancellable: Boolean!
+  created: String!
+  currency: String!
+  customTag: String!
+  description: String!
+  direction: String!
+  failure_reason: String!
+  id: String!
+  legalName: String!
+  network: String!
+  originationAccountId: String!
+  status: String!
+  type: String!
+}
 type CancelPaymentRequest {
   data: String
   errors: [ApiError!]
@@ -82,6 +100,11 @@ type DeleteBankAccount {
 input DeleteBankAccountDto {
   bankAccountId: String!
 }
+type Deposit {
+  data: String
+  errors: [ApiError!]
+  success: Boolean!
+}
 input ExchangeTokenDto {
   publicToken: String!
 }
@@ -112,6 +135,27 @@ type GetBankAccounts {
   data: [BankAccountSchema!]!
   errors: [ApiError!]
   success: Boolean!
+}
+type GetBankTransfer {
+  data: BankTransfer
+  errors: [ApiError!]
+  success: Boolean!
+}
+input GetBankTransferDto {
+  bankTransferId: String!
+}
+type GetBankTransfers {
+  data: [BankTransfer!]!
+  errors: [ApiError!]
+  success: Boolean!
+}
+input GetBankTransfersDto {
+  count: Float!
+  direction: String!
+  endDate: String!
+  offset: Float!
+  originationAccountId: String!
+  startDate: String!
 }
 type GetMeWallet {
   data: WalletSchema
@@ -241,6 +285,7 @@ type Mutation {
   connectDebitCard: ConnectDebitCard @join__field(graph: TRANSFER_MODULE)
   createLinkToken: PlaidCreateLinkToken @join__field(graph: TRANSFER_MODULE)
   deleteBankAccount(data: DeleteBankAccountDto!): DeleteBankAccount @join__field(graph: TRANSFER_MODULE)
+  deposit(data: WithdrawDto!): Deposit @join__field(graph: TRANSFER_MODULE)
   forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword @join__field(graph: ACCOUNT_MODULE)
   login(data: LoginDto!): Login @join__field(graph: ACCOUNT_MODULE)
   logout: Logout @join__field(graph: ACCOUNT_MODULE)
@@ -272,6 +317,8 @@ type Query {
   exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken @join__field(graph: TRANSFER_MODULE)
   getBankAccount(data: GetBankAccountDto!): GetBankAccount @join__field(graph: TRANSFER_MODULE)
   getBankAccounts: GetBankAccounts @join__field(graph: TRANSFER_MODULE)
+  getBankTransfer(data: GetBankTransferDto!): GetBankTransfer @join__field(graph: TRANSFER_MODULE)
+  getBankTransfers(data: GetBankTransfersDto!): GetBankTransfers @join__field(graph: TRANSFER_MODULE)
   getCurrentUser: Me @join__field(graph: ACCOUNT_MODULE)
   getMyBankAccounts: GetMyBankAccounts @join__field(graph: TRANSFER_MODULE)
   getMyContacts(Pagination: PaginationInputType): GetMyContacts @join__field(graph: ACCOUNT_MODULE)
@@ -420,4 +467,15 @@ type WalletSchema @join__owner(graph: LND_MODULE) @join__type(graph: LND_MODULE,
   id: ID! @join__field(graph: LND_MODULE)
   transactions: [TransactionSchema!]! @join__field(graph: LND_MODULE)
   userId: ID! @join__field(graph: LND_MODULE)
+}
+input WithdrawDto {
+  accountName: String!
+  """The user's account number."""
+  accountNumber: String!
+  """The type of the bank account (checking or savings)."""
+  accountType: String!
+  amount: Float!
+  currency: String!
+  """The user's routing number."""
+  routingNumber: String!
 }

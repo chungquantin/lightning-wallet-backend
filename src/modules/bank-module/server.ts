@@ -21,10 +21,12 @@ import * as PlaidResolver from './resolvers/plaid';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
 import { plaidConfiguration } from './config/plaid';
+import * as dataSources from './utils/dataSource';
 
 export interface BankGQLContext extends GQLContext {
 	dataSources: {
 		plaidClient: PlaidApi;
+		exchangeRateApi: dataSources.ExchangeRateApi;
 	};
 }
 
@@ -66,6 +68,10 @@ export async function listen(
 						BankResolver.GetBankAccount,
 						BankResolver.GetBankAccounts,
 						BankResolver.GetMyBankAccounts,
+						BankResolver.GetBankTransfer,
+						BankResolver.GetBankTransfers,
+						BankResolver.Deposit,
+						BankResolver.Withdraw,
 					],
 					orphanedTypes: [],
 					container: Container,
@@ -99,6 +105,7 @@ export async function listen(
 						channel,
 						dataSources: {
 							plaidClient,
+							exchangeRateApi: new dataSources.ExchangeRateApi(),
 						},
 						url: req?.protocol + '://' + req?.get('host'),
 					};
