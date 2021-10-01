@@ -24,6 +24,18 @@ class GenerateChainInvoiceResolver {
 		@Ctx()
 		{ currentUser }: LndGQLContext,
 	): Promise<ApiGenerateChainInvoiceResponseType> {
+		const chainInvoiceInDatabase =
+			await this.chainInvoiceRepository.findOne({
+				where: {
+					userId: currentUser?.userId,
+				},
+				order: {
+					id: 'DESC',
+				},
+			});
+		if (chainInvoiceInDatabase) {
+			return { success: true, data: chainInvoiceInDatabase };
+		}
 		const chainData = await NewAddress();
 		if (!chainData) {
 			return {
@@ -36,10 +48,12 @@ class GenerateChainInvoiceResolver {
 				],
 			};
 		}
-		const chainInvoice = await this.chainInvoiceRepository.create({
-			address: chainData.address,
-			userId: currentUser?.userId,
-		});
+		const chainInvoice = await this.chainInvoiceRepository
+			.create({
+				address: chainData.address,
+				userId: currentUser?.userId,
+			})
+			.save();
 		return {
 			success: true,
 			data: chainInvoice,

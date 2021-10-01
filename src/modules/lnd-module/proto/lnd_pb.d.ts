@@ -4441,10 +4441,10 @@ export class AddInvoiceResponse extends jspb.Message {
 
 export namespace AddInvoiceResponse {
   export type AsObject = {
-    rHash: Uint8Array | string,
-    paymentRequest: string,
-    addIndex: number,
-    paymentAddr: Uint8Array | string,
+   	r_hash: Uint8Array | string,
+    payment_request: string,
+    add_index: number,
+    payment_addr: Uint8Array | string,
   }
 }
 

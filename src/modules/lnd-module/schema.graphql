@@ -47,10 +47,11 @@ type BtcAddress {
 type LightningInvoiceSchema @key(fields: "id") {
   id: ID!
   userId: String!
-  addIndex: String!
+  addIndex: Float!
   payReq: String!
+  rHash: String!
   createdAt: String!
-  expires_at: String!
+  expiresAt: String!
 }
 type ChainInvoiceSchema @key(fields: "id") {
   id: ID!

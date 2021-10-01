@@ -58,12 +58,20 @@ class GenerateLightningInvoiceResolver {
 				],
 			};
 		}
-		const lightningInvoice = this.lightningInvoiceRepository.create({
-			payReq: lightningData.paymentAddr.toString(),
-			addIndex: lightningData.addIndex.toString(),
+		console.log(lightningData);
+		await this.lightningInvoiceRepository.delete({
 			userId: currentUser?.userId,
 		});
-		lightningInvoice.save();
+		const lightningInvoice = await this.lightningInvoiceRepository
+			.create({
+				payReq: lightningData.payment_request,
+				addIndex: lightningData.add_index,
+				userId: currentUser?.userId,
+				rHash: new TextDecoder().decode(
+					lightningData.r_hash as BufferSource,
+				),
+			})
+			.save();
 
 		return { success: true, data: lightningInvoice };
 	}

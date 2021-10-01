@@ -21,23 +21,27 @@ export class LightningInvoice extends BaseEntity {
 	@Column('text')
 	userId: string;
 
-	@Field(() => String!)
-	@Column('text')
-	addIndex: string;
+	@Field(() => Number!)
+	@Column('int')
+	addIndex: number;
 
 	@Field(() => String!)
 	@Column('text')
 	payReq: string;
 
 	@Field(() => String!)
+	@Column('text')
+	rHash: string;
+
+	@Field(() => String)
 	@Column('text', { default: moment().unix().toString() })
 	createdAt: string;
 
-	@Field(() => String!)
+	@Field(() => String)
 	@Column('text', {
 		default: moment().add(1, 'minute').unix().toString(),
 	})
-	expires_at: string;
+	expiresAt: string;
 
 	@BeforeInsert()
 	async addId() {

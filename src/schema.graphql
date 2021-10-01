@@ -282,11 +282,12 @@ type InstitutionSchema @join__owner(graph: TRANSFER_MODULE) @join__type(graph: T
   websiteUrl: String @join__field(graph: TRANSFER_MODULE)
 }
 type LightningInvoiceSchema @join__owner(graph: BANK_MODULE) @join__type(graph: BANK_MODULE, key: "id") {
-  addIndex: String! @join__field(graph: BANK_MODULE)
+  addIndex: Float! @join__field(graph: BANK_MODULE)
   createdAt: String! @join__field(graph: BANK_MODULE)
-  expires_at: String! @join__field(graph: BANK_MODULE)
+  expiresAt: String! @join__field(graph: BANK_MODULE)
   id: ID! @join__field(graph: BANK_MODULE)
   payReq: String! @join__field(graph: BANK_MODULE)
+  rHash: String! @join__field(graph: BANK_MODULE)
   userId: String! @join__field(graph: BANK_MODULE)
 }
 type LightningTransaction {
