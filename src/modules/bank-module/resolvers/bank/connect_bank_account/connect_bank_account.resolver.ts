@@ -82,6 +82,17 @@ class ConnectBankAccountResolver {
 					institution_id: institutionId,
 					country_codes: [CountryCode.Ca, CountryCode.Es],
 				});
+				if (!institution) {
+					return {
+						success: false,
+						errors: [
+							{
+								message: 'No Plaid institution found',
+								path: 'institutionId',
+							},
+						],
+					};
+				}
 				scopedInstitution = await this.institutionRepository.create({
 					institutionId: institution.institution_id,
 					institutionLogo: institution.logo,
@@ -137,7 +148,7 @@ class ConnectBankAccountResolver {
 
 			createdBankAccount.save().then(() => {
 				scopedBalance.save();
-				scopedBalance.save();
+				scopedAch.save();
 				scopedInstitution.save();
 			});
 			return {

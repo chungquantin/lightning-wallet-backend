@@ -1,12 +1,23 @@
-import { Directive, Field, ObjectType } from 'type-graphql';
-import { Entity, PrimaryColumn, BaseEntity, Column } from 'typeorm';
+import { Directive, Field, ID, ObjectType } from 'type-graphql';
+import {
+	Entity,
+	PrimaryColumn,
+	BaseEntity,
+	Column,
+	BeforeInsert,
+} from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 @Directive('@key(fields: "institutionId")')
 @ObjectType('InstitutionSchema')
 @Entity('Institution')
 export class Institution extends BaseEntity {
+	@Field(() => ID)
+	@PrimaryColumn('uuid')
+	id: string;
+
 	@Field(() => String!)
-	@PrimaryColumn('text')
+	@Column('text')
 	institutionId: string;
 
 	@Field(() => String!)
@@ -24,4 +35,9 @@ export class Institution extends BaseEntity {
 	@Field(() => String, { nullable: true })
 	@Column('text')
 	websiteUrl: string | null | undefined;
+
+	@BeforeInsert()
+	async addId() {
+		this.id = uuidv4();
+	}
 }

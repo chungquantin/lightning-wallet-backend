@@ -8,3 +8,4 @@ export { default as GetBankTransfers } from './get_bank_transfers/get_bank_trans
 export { default as GetBankTransfer } from './get_bank_transfer/get_bank_transfer.resolver';
 export { default as Deposit } from './deposit/deposit.resolver';
 export { default as Withdraw } from './withdraw/withdraw.resolver';
+export { default as GetInstitutions } from './get_institutions/get_institutions.resolver';

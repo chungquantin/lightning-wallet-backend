@@ -10,6 +10,7 @@ type Query {
   getMyBankAccounts: GetMyBankAccounts
   getBankTransfers(data: GetBankTransfersDto!): GetBankTransfers
   getBankTransfer(data: GetBankTransferDto!): GetBankTransfer
+  getInstitutions: GetInstitutions
   exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken
 }
 union _Entity = BankAccountSchema | InstitutionSchema | BankAccountBalanceSchema | BankAccountAchSchema
@@ -41,6 +42,7 @@ type BankAccountSchema @key(fields: "id") {
   addedAt: String!
 }
 type InstitutionSchema @key(fields: "institutionId") {
+  id: ID!
   institutionId: String!
   institutionName: String!
   institutionLogo: String
@@ -121,6 +123,11 @@ type GetBankTransfer {
 }
 input GetBankTransferDto {
   bankTransferId: String!
+}
+type GetInstitutions {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [InstitutionSchema!]!
 }
 type PlaidExchangePublicToken {
   success: Boolean!
