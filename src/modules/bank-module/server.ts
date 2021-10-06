@@ -73,6 +73,7 @@ export async function listen(
 						BankResolver.Deposit,
 						BankResolver.Withdraw,
 						BankResolver.GetInstitutions,
+						BankResolver.GetInstitution,
 					],
 					orphanedTypes: [],
 					container: Container,

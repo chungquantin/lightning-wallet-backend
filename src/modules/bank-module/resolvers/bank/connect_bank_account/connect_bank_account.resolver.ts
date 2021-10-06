@@ -32,6 +32,29 @@ export type ApiConnectBankAccountType = InstanceType<
 	typeof ApiConnectBankAccount
 >;
 
+/**
+	* [
+  "public-sandbox-00c8fc9a-493b-476b-8ff6-2113101a1614",
+  {
+    "institution": {
+      "id": "ins_116475",
+      "name": "West Community Credit Union"
+    },
+    "accounts": [
+      {
+        "_id": "jdm6bjqVkjh6qX9nQEr6cZ4gQpxeMeF6PVGPx",
+        "meta": {
+          "name": "Plaid Saving",
+          "number": "1111"
+        },
+        "subtype": "savings",
+        "type": "depository"
+      }
+    ],
+    "linkSessionId": "6893a544-8f6b-41a1-8245-651121e53ff4"
+  }
+]
+ */
 @Resolver((of) => BankAccount)
 class ConnectBankAccountResolver {
 	@InjectRepository(BankAccountRepository)
@@ -80,8 +103,9 @@ class ConnectBankAccountResolver {
 					data: { institution },
 				} = await plaidClient.institutionsGetById({
 					institution_id: institutionId,
-					country_codes: [CountryCode.Ca, CountryCode.Es],
+					country_codes: [CountryCode.Ca, CountryCode.Us],
 				});
+				console.log(institution);
 				if (!institution) {
 					return {
 						success: false,
@@ -147,9 +171,13 @@ class ConnectBankAccountResolver {
 			});
 
 			createdBankAccount.save().then(() => {
-				scopedBalance.save();
-				scopedAch.save();
-				scopedInstitution.save();
+				if (scopedBalance && scopedAch && scopedInstitution) {
+					scopedBalance.save();
+					scopedAch.save();
+					scopedInstitution.save();
+				} else {
+					throw new Error('scoped object is not defined');
+				}
 			});
 			return {
 				data: 'Bank connected!',

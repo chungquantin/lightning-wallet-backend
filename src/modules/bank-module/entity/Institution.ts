@@ -25,15 +25,15 @@ export class Institution extends BaseEntity {
 	institutionName: string;
 
 	@Field(() => String, { nullable: true })
-	@Column('text')
+	@Column('text', { nullable: true })
 	institutionLogo: string | null | undefined;
 
 	@Field(() => String, { nullable: true })
-	@Column('text')
+	@Column('text', { nullable: true })
 	primaryColor: string | null | undefined;
 
 	@Field(() => String, { nullable: true })
-	@Column('text')
+	@Column('text', { nullable: true })
 	websiteUrl: string | null | undefined;
 
 	@BeforeInsert()

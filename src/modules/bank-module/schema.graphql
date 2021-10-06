@@ -11,6 +11,7 @@ type Query {
   getBankTransfers(data: GetBankTransfersDto!): GetBankTransfers
   getBankTransfer(data: GetBankTransferDto!): GetBankTransfer
   getInstitutions: GetInstitutions
+  getInstitution(data: GetInstitutionDto!): GetInstitutionById
   exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken
 }
 union _Entity = BankAccountSchema | InstitutionSchema | BankAccountBalanceSchema | BankAccountAchSchema
@@ -129,6 +130,14 @@ type GetInstitutions {
   errors: [ApiError!]
   data: [InstitutionSchema!]!
 }
+type GetInstitutionById {
+  success: Boolean!
+  errors: [ApiError!]
+  data: InstitutionSchema
+}
+input GetInstitutionDto {
+  institutionId: String!
+}
 type PlaidExchangePublicToken {
   success: Boolean!
   errors: [ApiError!]
@@ -138,11 +147,27 @@ input ExchangeTokenDto {
   publicToken: String!
 }
 type Mutation {
+  deposit(data: WithdrawDto!): Deposit
   connectBankAccount(data: ConnectBankAccountDto!): ConnectBankAccount
   connectDebitCard: ConnectDebitCard
   deleteBankAccount(data: DeleteBankAccountDto!): DeleteBankAccount
-  deposit(data: WithdrawDto!): Deposit
   createLinkToken: PlaidCreateLinkToken
+}
+type Deposit {
+  success: Boolean!
+  errors: [ApiError!]
+  data: String
+}
+input WithdrawDto {
+  """The user's account number."""
+  accountNumber: String!
+  """The user's routing number."""
+  routingNumber: String!
+  """The type of the bank account (checking or savings)."""
+  accountType: String!
+  accountName: String!
+  amount: Float!
+  currency: String!
 }
 type ConnectBankAccount {
   success: Boolean!
@@ -167,22 +192,6 @@ type DeleteBankAccount {
 }
 input DeleteBankAccountDto {
   bankAccountId: String!
-}
-type Deposit {
-  success: Boolean!
-  errors: [ApiError!]
-  data: String
-}
-input WithdrawDto {
-  """The user's account number."""
-  accountNumber: String!
-  """The user's routing number."""
-  routingNumber: String!
-  """The type of the bank account (checking or savings)."""
-  accountType: String!
-  accountName: String!
-  amount: Float!
-  currency: String!
 }
 type PlaidCreateLinkToken {
   success: Boolean!
