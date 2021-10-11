@@ -1,30 +1,33 @@
-import 'reflect-metadata';
-import 'dotenv/config';
-import { REDIS } from 'neutronpay-wallet-common/dist/helpers/redis';
-import { env, EnvironmentType } from 'neutronpay-wallet-common/dist/utils/environmentType';
-import { formatValidationError } from 'neutronpay-wallet-common/dist/utils/formatValidationError';
-import { GQLContext } from 'neutronpay-wallet-common/dist/utils/graphql-utils';
-import { DEV_BASE_URL } from 'neutronpay-wallet-common/dist/constants/global-variables';
-import { register } from 'prom-client';
-import { ApolloServer } from 'apollo-server-express';
-import { MemcachedCache } from 'apollo-server-cache-memcached';
+import "reflect-metadata";
+import "dotenv/config";
+import { REDIS } from "neutronpay-wallet-common/dist/helpers/redis";
+import {
+  env,
+  EnvironmentType
+} from "neutronpay-wallet-common/dist/utils/environmentType";
+import { formatValidationError } from "neutronpay-wallet-common/dist/utils/formatValidationError";
+import { GQLContext } from "neutronpay-wallet-common/dist/utils/graphql-utils";
+import { DEV_BASE_URL } from "neutronpay-wallet-common/dist/constants/global-variables";
+import { register } from "prom-client";
+import { ApolloServer } from "apollo-server-express";
+import { MemcachedCache } from "apollo-server-cache-memcached";
 import {
   ApolloGateway,
   RemoteGraphQLDataSource,
-  ServiceEndpointDefinition,
-} from '@apollo/gateway';
-import * as cors from 'cors';
-import * as fs from 'fs';
-import * as express from 'express';
-import * as expressJwt from 'express-jwt';
-import * as jwt from 'jsonwebtoken';
+  ServiceEndpointDefinition
+} from "@apollo/gateway";
+import * as cors from "cors";
+import * as fs from "fs";
+import * as express from "express";
+import * as expressJwt from "express-jwt";
+import * as jwt from "jsonwebtoken";
 import {
   AccountCreationModule,
   BankModule,
   LndModule,
-  TransferModule,
-} from './modules';
-import { printSchemaWithDirectives } from 'graphql-tools';
+  TransferModule
+} from "./modules";
+import { printSchemaWithDirectives } from "graphql-tools";
 
 // import NodeMailerService from "./helper/email";
 // import { DEV_BASE_URL } from "./constants/global-variables";
@@ -34,25 +37,21 @@ export const buildGateway = async () => {
 
   const serviceList: ServiceEndpointDefinition[] = [
     {
-      name: 'account-module',
-      url:
-        'http://localhost:3001' ||
-        (await AccountCreationModule.listen(3001)),
+      name: "account-module",
+      url: "http://localhost:3001" || (await AccountCreationModule.listen(3001))
     },
     {
-      name: 'transfer-module',
-      url:
-        'http://localhost:3002' ||
-        (await TransferModule.listen(3002)),
+      name: "transfer-module",
+      url: "http://localhost:3002" || (await TransferModule.listen(3002))
     },
     {
-      name: 'bank-module',
-      url: 'http://localhost:3003' || (await BankModule.listen(3003)),
+      name: "bank-module",
+      url: "http://localhost:3003" || (await BankModule.listen(3003))
     },
     {
-      name: 'lnd-module',
-      url: 'http://localhost:3004' || (await LndModule.listen(3004)),
-    },
+      name: "lnd-module",
+      url: "http://localhost:3004" || (await LndModule.listen(3004))
+    }
   ];
 
   const gateway = new ApolloGateway({
@@ -62,68 +61,61 @@ export const buildGateway = async () => {
         url,
         willSendRequest({ request, context }) {
           request.http ?.headers.set(
-            'currentUser',
+            "currentUser",
             (context as any).currentUser
               ? JSON.stringify((context as any).currentUser)
-              : '',
+              : ""
           );
-        },
+        }
       });
-    },
+    }
   });
 
   const { schema, executor } = await gateway.load();
 
   const sdl = printSchemaWithDirectives(schema);
-  await fs.writeFileSync(__dirname + '/schema.graphql', sdl);
+  fs.writeFileSync(__dirname + "/schema.graphql", sdl);
 
   const corsOptions = {
-    credentials:
-      env(EnvironmentType.PROD) || env(EnvironmentType.PROD_STAGE),
-    origin: DEV_BASE_URL,
+    credentials: env(EnvironmentType.PROD) || env(EnvironmentType.PROD_STAGE),
+    origin: DEV_BASE_URL
   };
 
   const server = new ApolloServer({
     schema,
     executor,
-    formatError: (err) => {
+    formatError: err => {
       err.message = formatValidationError(err);
       return err;
     },
     cache: new MemcachedCache(
-      [
-        'memcached-server-1',
-        'memcached-server-2',
-        'memcached-server-3',
-      ],
-      { retries: 10, retry: 10000 }, // Options
+      ["memcached-server-1", "memcached-server-2", "memcached-server-3"],
+      { retries: 10, retry: 10000 } // Options
     ),
     context: ({ req }): Partial<GQLContext> => {
       const token =
-        req.body.token ||
-        req.query.token ||
-        req.headers['x-access-token'];
+        req.body.token || req.query.token || req.headers["x-access-token"];
 
       try {
-        if (token !== '') {
-          const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+        if (token !== "") {
+          const decoded = jwt.verify(token, process.env.TOKEN_KEY as string);
           (req as any).user = decoded;
         }
         return {
           request: req,
           currentUser: (req as any).user || undefined,
           redis: new REDIS().server,
-          url: req ?.protocol + '://' + req ?.get('host'),
+          url: req ?.protocol + "://" + req ?.get("host")
         };
       } catch (error) {
         return {
           request: req,
           currentUser: undefined,
           redis: new REDIS().server,
-          url: req ?.protocol + '://' + req ?.get('host'),
+          url: req ?.protocol + "://" + req ?.get("host")
         };
       }
-    },
+    }
   });
 
   await server.start();
@@ -132,40 +124,38 @@ export const buildGateway = async () => {
 
   app.use(
     expressJwt({
-      secret: 'f1BtnWgD3VKY',
-      algorithms: ['HMACSHA256'],
-      credentialsRequired: false,
-    }),
+      secret: "f1BtnWgD3VKY",
+      algorithms: ["HMACSHA256"],
+      credentialsRequired: false
+    })
   );
   app.use(cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  app.use('*', (req, _, next) => {
-    const query = req.query.query || req.body.query || '';
+  app.use("*", (req, _, next) => {
+    const query = req.query.query || req.body.query || "";
     if (query.length > 2000) {
-      throw new Error('Query too large');
+      throw new Error("Query too large");
     }
     next();
   });
 
   // Grafana Configuration
-  app.use('/metric', async (req, res) => {
+  app.use("/metric", async (_, res) => {
     try {
-      res.set('Content-Type', register.contentType);
+      res.set("Content-Type", register.contentType);
       res.end(await register.metrics());
     } catch (err) {
       res.status(500).end(err);
     }
   });
 
-  const PORT = env(EnvironmentType.TEST)
-    ? 8080
-    : process.env.PORT || 3000;
+  const PORT = env(EnvironmentType.TEST) ? 8080 : process.env.PORT || 3000;
 
-  await app.listen({ port: PORT });
+  app.listen({ port: PORT });
 
   console.log(
-    `Gateway is ready at ${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`,
+    `Gateway is ready at ${process.env.SERVER_URI}:${PORT}${process.env.SERVER_ENDPOINT}`
   );
 };

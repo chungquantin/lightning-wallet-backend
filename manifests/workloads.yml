@@ -1,0 +1,98 @@
+kind: Deployment
+apiVersion: apps/v1
+# Account Service
+metadata:
+  name: account
+spec:
+  selector:
+    matchLabels:
+      app: account
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: account
+    spec:
+      containers:
+        - name: account
+          image: chungtin2001/account:latest
+
+# Bank Service
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bank
+spec:
+  selector:
+    matchLabels:
+      app: bank
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bank
+    spec:
+      containers:
+        - name: bank
+          image: chungtin2001/bank:latest
+
+# Transfer service
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: transfer
+spec:
+  selector:
+    matchLabels:
+      app: transfer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: transfer
+    spec:
+      containers:
+        - name: transfer
+          image: chungtin2001/transfer:latest
+
+# Lightning Daemon Service
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: lnd
+spec:
+  selector:
+    matchLabels:
+      app: lnd
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: lnd
+    spec:
+      containers:
+        - name: lnd
+          image: chungtin2001/lnd:latest
+
+# Gateway service
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: gateway
+spec:
+  selector:
+    matchLabels:
+      app: gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: chungtin2001/gateway:latest

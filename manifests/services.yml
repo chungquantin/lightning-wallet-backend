@@ -1,0 +1,59 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: account
+spec:
+  selector:
+    app: account
+  ports:
+    - port: 3001
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bank
+spec:
+  selector:
+    app: bank
+  ports:
+    - port: 3002
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: transfer
+spec:
+  selector:
+    app: transfer
+  ports:
+    - port: 3003
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: lnd
+spec:
+  selector:
+    app: lnd
+  ports:
+    - port: 3004
+  type: ClusterIP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+    - port: 3000
+      nodePort: 30000
+  type: NodePort
