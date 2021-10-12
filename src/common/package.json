@@ -1,31 +1,110 @@
 {
-	"name": "neutronpay-wallet-common",
-	"version": "1.0.2",
-	"description": "Neutronpay Wallet common package for microservice",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"build": "rimraf ./dist & tsc",
-		"prepublish": "rimraf ./dist & tsc"
-	},
-	"keywords": [],
-	"author": "NeutronPay Dev Team",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/chungquantin/neutronpay-wallet-common.git"
-	},
-	"bugs": {
-		"url": "https://github.com/chungquantin/neutronpay-wallet-common/issues"
-	},
-	"homepage": "https://github.com/chungquantin/neutronpay-wallet-common#readme",
-	"dependencies": {
-		"rimraf": "^3.0.2"
-	},
-	"publishConfig": {
-		"registry": "https://npm.pkg.github.com/"
-	},
-	"devDependencies": {
-		"typescript": "^4.4.2"
-	}
+  "name": "neutronpay-wallet-common",
+  "version": "1.0.2",
+  "description": "Neutronpay Wallet common package for microservice",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf ./dist & tsc",
+    "prepublish": "rimraf ./dist & tsc"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/connect-redis": "0.0.16",
+    "@types/express-jwt": "^6.0.2",
+    "@types/express-session": "^1.17.3",
+    "@types/faker": "^5.1.7",
+    "@types/graphql": "^14.5.0",
+    "@types/ioredis": "^4.19.1",
+    "@types/jsonwebtoken": "^8.5.5",
+    "@types/node": "^8.10.66",
+    "ts-node-dev": "^1.1.1"
+  },
+  "dependencies": {
+    "@apollo/federation": "^0.29.0",
+    "@apollo/gateway": "^0.38.0",
+    "@types/amqplib": "^0.8.2",
+    "@types/body-parser": "^1.19.0",
+    "@types/express-winston": "^4.0.0",
+    "@types/jest": "^26.0.20",
+    "@types/moment": "^2.13.0",
+    "@types/morgan": "^1.9.2",
+    "@types/uuid": "^8.3.0",
+    "@types/winston": "^2.4.4",
+    "@types/ws": "^7.4.7",
+    "amqplib": "^0.8.0",
+    "apollo-server": "^3.1.2",
+    "apollo-server-cache-memcached": "^3.0.3",
+    "apollo-server-express": "^3.1.2",
+    "axios": "^0.21.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "class-validator": "^0.13.1",
+    "concurrently": "^6.3.0",
+    "connect-redis": "^5.0.0",
+    "cookie-parser": "^1.4.5",
+    "core-js": "3.0.0-beta.11",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-jwt": "^6.1.0",
+    "express-session": "^1.17.1",
+    "express-winston": "^4.1.0",
+    "faker": "^5.4.0",
+    "fetch-cookie": "^0.11.0",
+    "graphql": "^15.3.0",
+    "graphql-import": "^1.0.2",
+    "graphql-redis-subscriptions": "^2.3.1",
+    "graphql-request": "^3.4.0",
+    "graphql-subscriptions": "^1.1.0",
+    "graphql-tag": "^2.11.0",
+    "graphql-tools": "^7.0.2",
+    "graphql-yoga": "^1.18.3",
+    "ioredis": "^4.19.4",
+    "isomorphic-fetch": "^3.0.0",
+    "jest": "^26.6.3",
+    "jsonwebtoken": "^8.5.1",
+    "merge-graphql-schemas": "^1.7.8",
+    "mock-session": "0.0.5",
+    "morgan": "^1.10.0",
+    "neutronpay-wallet-common": "^1.0.1",
+    "node-pre-gyp": "^0.17.0",
+    "nodemon": "^2.0.7",
+    "pg": "^8.5.1",
+    "prom-client": "^13.2.0",
+    "reflect-metadata": "^0.1.13",
+    "request-promise": "^4.2.6",
+    "rimraf": "^3.0.2",
+    "subscriptions-transport-ws": "^0.9.18",
+    "ts-jest": "^26.5.3",
+    "ts-node": "^3.3.0",
+    "type-graphql": "^1.1.1",
+    "typedi": "^0.10.0",
+    "typeorm": "^0.2.38",
+    "typeorm-naming-strategies": "^2.0.0",
+    "typeorm-typedi-extensions": "^0.4.1",
+    "typescript": "^4.2.3",
+    "uuid": "^7.0.0",
+    "winston": "^3.3.3",
+    "yup": "^0.32.8"
+  },
+  "keywords": [],
+  "author": "NeutronPay Dev Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chungquantin/neutronpay-wallet-common.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chungquantin/neutronpay-wallet-common/issues"
+  },
+  "homepage": "https://github.com/chungquantin/neutronpay-wallet-common#readme",
+  "dependencies": {
+    "rimraf": "^3.0.2"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.2"
+  }
 }

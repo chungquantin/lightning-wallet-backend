@@ -20,12 +20,6 @@ import * as fs from "fs";
 import * as express from "express";
 import * as expressJwt from "express-jwt";
 import * as jwt from "jsonwebtoken";
-import {
-  AccountCreationModule,
-  BankModule,
-  LndModule,
-  TransferModule
-} from "./modules";
 import { printSchemaWithDirectives } from "graphql-tools";
 
 // import NodeMailerService from "./helper/email";
@@ -37,27 +31,19 @@ export const buildGateway = async () => {
   const serviceList: ServiceEndpointDefinition[] = [
     {
       name: "account-module",
-      url: process.env.GATEWAY
-        ? "http://localhost:3001"
-        : await AccountCreationModule.listen(3001)
+      url: "http://localhost:3001"
     },
     {
       name: "transfer-module",
-      url: process.env.GATEWAY
-        ? "http://localhost:3002"
-        : await TransferModule.listen(3002)
+      url: "http://localhost:3002"
     },
     {
       name: "bank-module",
-      url: process.env.GATEWAY
-        ? "http://localhost:3003"
-        : await BankModule.listen(3003)
+      url: "http://localhost:3003"
     },
     {
       name: "lnd-module",
-      url: process.env.GATEWAY
-        ? "http://localhost:3004"
-        : await LndModule.listen(3004)
+      url: "http://localhost:3004"
     }
   ];
 
@@ -67,7 +53,7 @@ export const buildGateway = async () => {
       return new RemoteGraphQLDataSource({
         url,
         willSendRequest({ request, context }) {
-          request.http ?.headers.set(
+          request.http?.headers.set(
             "currentUser",
             (context as any).currentUser
               ? JSON.stringify((context as any).currentUser)
@@ -91,7 +77,7 @@ export const buildGateway = async () => {
   const server = new ApolloServer({
     schema,
     executor,
-    formatError: err => {
+    formatError: (err: any) => {
       err.message = formatValidationError(err);
       return err;
     },
@@ -112,14 +98,14 @@ export const buildGateway = async () => {
           request: req,
           currentUser: (req as any).user || undefined,
           redis: new REDIS().server,
-          url: req ?.protocol + "://" + req ?.get("host")
+          url: req?.protocol + "://" + req?.get("host")
         };
       } catch (error) {
         return {
           request: req,
           currentUser: undefined,
           redis: new REDIS().server,
-          url: req ?.protocol + "://" + req ?.get("host")
+          url: req?.protocol + "://" + req?.get("host")
         };
       }
     }
@@ -140,7 +126,7 @@ export const buildGateway = async () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  app.use("*", (req, _, next) => {
+  app.use("*", (req: any, _: any, next: any) => {
     const query = req.query.query || req.body.query || "";
     if (query.length > 2000) {
       throw new Error("Query too large");
@@ -149,14 +135,17 @@ export const buildGateway = async () => {
   });
 
   // Grafana Configuration
-  app.use("/metric", async (_, res) => {
-    try {
-      res.set("Content-Type", register.contentType);
-      res.end(await register.metrics());
-    } catch (err) {
-      res.status(500).end(err);
+  app.use(
+    "/metric",
+    async (_: any, res: any): Promise<void> => {
+      try {
+        res.set("Content-Type", register.contentType);
+        res.end(await register.metrics());
+      } catch (err) {
+        res.status(500).end(err);
+      }
     }
-  });
+  );
 
   const PORT = env(EnvironmentType.TEST) ? 8080 : process.env.PORT || 3000;
 

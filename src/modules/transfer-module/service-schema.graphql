@@ -2,6 +2,7 @@ schema {
   query: Query
   mutation: Mutation
 }
+
 type WalletSchema @key(fields: "id") {
   id: ID!
   userId: ID!
@@ -10,12 +11,14 @@ type WalletSchema @key(fields: "id") {
   transactions: [TransactionSchema!]!
   createdAt: String!
 }
+
 """Fiat currency"""
 enum FiatCurrency {
   USD
   CAD
   VND
 }
+
 type TransactionSchema @key(fields: "id") {
   id: ID!
   fromWalletId: String!
@@ -31,6 +34,7 @@ type TransactionSchema @key(fields: "id") {
   btcAmount: Float!
   createdAt: String!
 }
+
 """Transaction status"""
 enum TransactionStatus {
   UNKNOWN
@@ -38,11 +42,13 @@ enum TransactionStatus {
   DONE
   EXPIRED
 }
+
 """Transaction method"""
 enum TransactionMethod {
   ON_CHAIN
   LIGHTNING
 }
+
 type Query {
   getWallet(data: GetWalletDto!): GetWallet
   getMyWallet: GetMeWallet
@@ -54,56 +60,68 @@ type Query {
   getPaymentRequests(Pagination: PaginationInputType): GetPaymentRequests
   getMyPaymentRequests(Pagination: PaginationInputType): GetMyPaymentRequests
 }
+
 type GetWallet {
   success: Boolean!
   errors: [ApiError!]
   data: WalletSchema
 }
+
 type ApiError {
   path: String!
   message: String!
 }
+
 input GetWalletDto {
-  walletId: String
-  userId: String
+  walletId: String = ""
+  userId: String = ""
 }
+
 type GetMeWallet {
   success: Boolean!
   errors: [ApiError!]
   data: WalletSchema
 }
+
 type GetWallets {
   success: Boolean!
   errors: [ApiError!]
   data: [WalletSchema!]!
 }
+
 input PaginationInputType {
-  limit: Int
-  skip: Int
+  limit: Int = 0
+  skip: Int = 0
 }
+
 type GetMyWalletTransactions {
   success: Boolean!
   errors: [ApiError!]
   data: [TransactionSchema!]!
 }
+
 type GetTransactions {
   success: Boolean!
   errors: [ApiError!]
   data: [TransactionSchema!]!
 }
+
 type GetTransaction {
   success: Boolean!
   errors: [ApiError!]
   data: TransactionSchema
 }
+
 input GetTransactionDto {
   transactionId: String!
 }
+
 type GetPaymentRequest {
   success: Boolean!
   errors: [ApiError!]
   data: TransactionRequestSchema
 }
+
 type TransactionRequestSchema @key(fields: "id") {
   id: ID!
   transaction: TransactionSchema!
@@ -113,6 +131,7 @@ type TransactionRequestSchema @key(fields: "id") {
   createdAt: String!
   expiredAt: String!
 }
+
 """Transaction request status"""
 enum TransactionRequestStatus {
   UNKNOWN
@@ -121,19 +140,23 @@ enum TransactionRequestStatus {
   CONFIRMED
   REJECTED
 }
+
 input GetPaymentRequestDto {
   paymentRequestId: String!
 }
+
 type GetPaymentRequests {
   success: Boolean!
   errors: [ApiError!]
   data: [TransactionRequestSchema!]!
 }
+
 type GetMyPaymentRequests {
   success: Boolean!
   errors: [ApiError!]
   data: [TransactionRequestSchema!]!
 }
+
 type Mutation {
   sendInAppPayment(data: SendInAppPaymentDto!): SendInAppPayment
   sendOutAppLightningPayment(data: SendOutAppLightningPaymentDto!): SendOutAppLightningPayment
@@ -142,11 +165,13 @@ type Mutation {
   respondPaymentRequest(data: RespondPaymentRequestDto!): RespondPaymentRequest
   cancelPaymentRequest(data: CancelPaymentRequestDto!): CancelPaymentRequest
 }
+
 type SendInAppPayment {
   success: Boolean!
   errors: [ApiError!]
   data: TransactionSchema
 }
+
 input SendInAppPaymentDto {
   walletId: String
   amount: Float!
@@ -154,30 +179,36 @@ input SendInAppPaymentDto {
   method: String!
   description: String!
 }
+
 type SendOutAppLightningPayment {
   success: Boolean!
   errors: [ApiError!]
   data: TransactionSchema
 }
+
 input SendOutAppLightningPaymentDto {
   paymentRequest: String!
   description: String!
 }
+
 type SendInAppLightningPayment {
   success: Boolean!
   errors: [ApiError!]
   data: TransactionSchema
 }
+
 input SendInAppLightningPaymentDto {
   paymentRequest: String!
   walletId: String!
   description: String!
 }
+
 type SendPaymentRequest {
   success: Boolean!
   errors: [ApiError!]
   data: TransactionRequestSchema
 }
+
 input SendRequestPaymentDto {
   walletId: String!
   amount: Float!
@@ -185,20 +216,24 @@ input SendRequestPaymentDto {
   method: String!
   description: String!
 }
+
 type RespondPaymentRequest {
   success: Boolean!
   errors: [ApiError!]
   data: Boolean
 }
+
 input RespondPaymentRequestDto {
   paymentRequestId: String!
   confirmed: Boolean!
 }
+
 type CancelPaymentRequest {
   success: Boolean!
   errors: [ApiError!]
   data: String
 }
+
 input CancelPaymentRequestDto {
   paymentRequestId: String!
 }

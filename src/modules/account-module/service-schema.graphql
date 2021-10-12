@@ -2,6 +2,7 @@ schema {
   query: Query
   mutation: Mutation
 }
+
 type UserSchema @key(fields: "id") {
   id: ID!
   email: String!
@@ -17,43 +18,52 @@ type UserSchema @key(fields: "id") {
   createdAt: String!
   name: String!
 }
+
 type Query {
   getCurrentUser: Me
   getMyContacts(Pagination: PaginationInputType): GetMyContacts
   getUser(data: GetUserDto!): GetUser
   getUsers(Pagination: PaginationInputType): GetUsers
 }
+
 type Me {
   success: Boolean!
   errors: [ApiError!]
   data: UserSchema
 }
+
 type ApiError {
   path: String!
   message: String!
 }
+
 type GetMyContacts {
   success: Boolean!
   errors: [ApiError!]
   data: [UserSchema!]!
 }
+
 input PaginationInputType {
-  limit: Int
-  skip: Int
+  limit: Int = 0
+  skip: Int = 0
 }
+
 type GetUser {
   success: Boolean!
   errors: [ApiError!]
   data: UserSchema
 }
+
 input GetUserDto {
   userId: String!
 }
+
 type GetUsers {
   success: Boolean!
   errors: [ApiError!]
   data: [UserSchema!]!
 }
+
 type Mutation {
   login(data: LoginDto!): Login
   logout: Logout
@@ -62,29 +72,35 @@ type Mutation {
   forgotPasswordChange(data: ForgotPasswordChangeDto!): SendForgotPassword
   addNewContact(data: AddNewContactDto!): AddNewContact
 }
+
 type Login {
   success: Boolean!
   errors: [ApiError!]
   data: TokenResponse
 }
+
 type TokenResponse {
   accessToken: String!
   refreshToken: String!
 }
+
 input LoginDto {
   email: String!
   password: String!
 }
+
 type Logout {
   success: Boolean!
   errors: [ApiError!]
   data: String
 }
+
 type Register {
   success: Boolean!
   errors: [ApiError!]
   data: UserSchema
 }
+
 input RegisterDto {
   firstName: String!
   lastName: String!
@@ -93,28 +109,34 @@ input RegisterDto {
   phoneNumber: String!
   avatar: String!
 }
+
 type ForgotPassword {
   success: Boolean!
   errors: [ApiError!]
   data: String
 }
+
 input SendForgotPasswordDto {
   email: String!
 }
+
 type SendForgotPassword {
   success: Boolean!
   errors: [ApiError!]
   data: String
 }
+
 input ForgotPasswordChangeDto {
   key: String!
   newPassword: String!
 }
+
 type AddNewContact {
   success: Boolean!
   errors: [ApiError!]
   data: String
 }
+
 input AddNewContactDto {
   userId: String!
 }
