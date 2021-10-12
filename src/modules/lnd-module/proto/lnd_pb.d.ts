@@ -90,15 +90,15 @@ export class Transaction extends jspb.Message {
 
 export namespace Transaction {
   export type AsObject = {
-    tx_hash: string,
+    txHash: string,
     amount: number,
-    num_confirmations: number,
-    block_hash: string,
-    block_height: number,
-    time_stamp: number,
-    total_fees: number,
-    dest_addresses_list: Array<string>,
-    raw_tx_hex: string,
+    numConfirmations: number,
+    blockHash: string,
+    blockHeight: number,
+    timeStamp: number,
+    totalFees: number,
+    destAddressesList: Array<string>,
+    rawTxHex: string,
     label: string,
   }
 }
@@ -4441,10 +4441,10 @@ export class AddInvoiceResponse extends jspb.Message {
 
 export namespace AddInvoiceResponse {
   export type AsObject = {
-   	r_hash: Uint8Array | string,
-    payment_request: string,
-    add_index: number,
-    payment_addr: Uint8Array | string,
+   	rHash: Uint8Array | string,
+    paymentRequest: string,
+    addIndex: number,
+    paymentAddr: Uint8Array | string,
   }
 }
 

@@ -18,6 +18,7 @@ import {
   TransactionDetails,
   WalletBalanceResponse,
 } from "./proto/lnd_pb";
+import { ServiceClientConstructor } from "@grpc/grpc-js/build/src/make-client";
 
 process.env.GRPC_SSL_CIPHER_SUITES = "HIGH+ECDSA";
 
@@ -47,8 +48,8 @@ const credentials: grpc.ChannelCredentials =
 // Pass the crendentials when creating a channel
 const packageDefinition = protoLoader.loadSync(__dirname + "/proto/lnd.proto");
 const lnrpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
-const lnrpc: any = lnrpcDescriptor.lnrpc;
-const client: ILightningRPCServer = new lnrpc.Lightning(
+const lnrpc = lnrpcDescriptor.lnrpc;
+const client: ILightningRPCServer = new (lnrpc as any).Lightning(
   "165.232.151.71:10009",
   credentials,
   { "grpc.max_receive_message_length": 50 * 1024 * 1024 }

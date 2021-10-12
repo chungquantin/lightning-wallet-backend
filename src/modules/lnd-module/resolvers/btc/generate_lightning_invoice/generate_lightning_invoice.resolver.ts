@@ -12,7 +12,7 @@ export const ApiGenerateLightningInvoiceResponse =
   ApiResponse<LightningInvoice>("GenerateLightningInvoice", LightningInvoice);
 export type ApiGenerateLightningInvoiceResponseType = InstanceType<
   typeof ApiGenerateLightningInvoiceResponse
-  >;
+>;
 
 @Service()
 @Resolver(() => LightningInvoice)
@@ -46,16 +46,15 @@ class GenerateLightningInvoiceResolver {
         ],
       };
     }
-    console.log(lightningData);
     await this.lightningInvoiceRepository.delete({
-      userId: currentUser ?.userId,
+      userId: currentUser?.userId,
     });
     const lightningInvoice = await this.lightningInvoiceRepository
       .create({
-        payReq: lightningData.payment_request,
-        addIndex: lightningData.add_index,
-        userId: currentUser ?.userId,
-        rHash: new TextDecoder().decode(lightningData.r_hash as BufferSource),
+        payReq: lightningData.paymentRequest,
+        addIndex: lightningData.addIndex,
+        userId: currentUser?.userId,
+        rHash: new TextDecoder().decode(lightningData.rHash as BufferSource),
       })
       .save();
 

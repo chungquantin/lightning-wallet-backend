@@ -49,6 +49,7 @@ class LightningGetTransactionsResolver {
   ): Promise<ApiGetLightningTransactionsType> {
     try {
       const response = await GetTransactions();
+      console.log(response);
       return {
         success: true,
         data:
@@ -61,10 +62,10 @@ class LightningGetTransactionsResolver {
             )
             .map((transaction) => ({
               amount: transaction.amount,
-              hash: transaction.tx_hash,
-              fees: transaction.total_fees,
-              blockHash: transaction.block_hash,
-              timeStamp: transaction.time_stamp,
+              hash: transaction.txHash,
+              fees: transaction.totalFees,
+              blockHash: transaction.blockHash,
+              timeStamp: transaction.timeStamp,
             })) || [],
       };
     } catch (err) {
