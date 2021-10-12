@@ -37,19 +37,27 @@ export const buildGateway = async () => {
   const serviceList: ServiceEndpointDefinition[] = [
     {
       name: "account-module",
-      url: "http://localhost:3001" || (await AccountCreationModule.listen(3001))
+      url: process.env.GATEWAY
+        ? "http://localhost:3001"
+        : await AccountCreationModule.listen(3001)
     },
     {
       name: "transfer-module",
-      url: "http://localhost:3002" || (await TransferModule.listen(3002))
+      url: process.env.GATEWAY
+        ? "http://localhost:3002"
+        : await TransferModule.listen(3002)
     },
     {
       name: "bank-module",
-      url: "http://localhost:3003" || (await BankModule.listen(3003))
+      url: process.env.GATEWAY
+        ? "http://localhost:3003"
+        : await BankModule.listen(3003)
     },
     {
       name: "lnd-module",
-      url: "http://localhost:3004" || (await LndModule.listen(3004))
+      url: process.env.GATEWAY
+        ? "http://localhost:3004"
+        : await LndModule.listen(3004)
     }
   ];
 
@@ -59,7 +67,7 @@ export const buildGateway = async () => {
       return new RemoteGraphQLDataSource({
         url,
         willSendRequest({ request, context }) {
-          request.http?.headers.set(
+          request.http ?.headers.set(
             "currentUser",
             (context as any).currentUser
               ? JSON.stringify((context as any).currentUser)
@@ -104,14 +112,14 @@ export const buildGateway = async () => {
           request: req,
           currentUser: (req as any).user || undefined,
           redis: new REDIS().server,
-          url: req?.protocol + "://" + req?.get("host")
+          url: req ?.protocol + "://" + req ?.get("host")
         };
       } catch (error) {
         return {
           request: req,
           currentUser: undefined,
           redis: new REDIS().server,
-          url: req?.protocol + "://" + req?.get("host")
+          url: req ?.protocol + "://" + req ?.get("host")
         };
       }
     }

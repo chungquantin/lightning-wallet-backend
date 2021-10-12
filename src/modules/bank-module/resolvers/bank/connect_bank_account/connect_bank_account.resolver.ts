@@ -70,6 +70,7 @@ class ConnectBankAccountResolver {
     @Arg("data")
     { accountId, publicToken, institutionId }: ConnectBankAccountDto
   ): Promise<ApiConnectBankAccountType> {
+    console.log("CONNECT_BANK_ACCOUNT");
     try {
       let scopedAch: BankAccountAch,
         scopedBalance: BankAccountBalance,
@@ -159,6 +160,7 @@ class ConnectBankAccountResolver {
           createdBankAccount.institution = scopedInstitution;
         }
       });
+      console.log(createdBankAccount);
 
       createdBankAccount.save().then(() => {
         if (scopedBalance && scopedAch && scopedInstitution) {

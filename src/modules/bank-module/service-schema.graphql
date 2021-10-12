@@ -6,9 +6,9 @@ type BankAccountBalanceSchema @key(fields: "id") {
   id: ID!
   availableBalance: Float
   currentBalance: Float
-  limitBalance: Float!
-  isoCurrencyCode: String!
-  unofficialCurrencyCode: String!
+  limitBalance: Float
+  isoCurrencyCode: String
+  unofficialCurrencyCode: String
 }
 type BankAccountAchSchema @key(fields: "id") {
   id: ID!
