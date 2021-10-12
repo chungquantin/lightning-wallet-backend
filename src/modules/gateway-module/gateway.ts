@@ -1,9 +1,8 @@
-import "reflect-metadata";
 import "dotenv/config";
 import { REDIS } from "neutronpay-wallet-common/dist/helpers/redis";
 import {
   env,
-  EnvironmentType
+  EnvironmentType,
 } from "neutronpay-wallet-common/dist/utils/environmentType";
 import { formatValidationError } from "neutronpay-wallet-common/dist/utils/formatValidationError";
 import { GQLContext } from "neutronpay-wallet-common/dist/utils/graphql-utils";
@@ -14,19 +13,13 @@ import { MemcachedCache } from "apollo-server-cache-memcached";
 import {
   ApolloGateway,
   RemoteGraphQLDataSource,
-  ServiceEndpointDefinition
+  ServiceEndpointDefinition,
 } from "@apollo/gateway";
 import * as cors from "cors";
 import * as fs from "fs";
 import * as express from "express";
 import * as expressJwt from "express-jwt";
 import * as jwt from "jsonwebtoken";
-import {
-  AccountCreationModule,
-  BankModule,
-  LndModule,
-  TransferModule
-} from "./modules";
 import { printSchemaWithDirectives } from "graphql-tools";
 
 // import NodeMailerService from "./helper/email";
@@ -38,20 +31,20 @@ export const buildGateway = async () => {
   const serviceList: ServiceEndpointDefinition[] = [
     {
       name: "account-module",
-      url: "http://localhost:3001" || (await AccountCreationModule.listen(3001))
+      url: "http://localhost:3001",
     },
     {
       name: "transfer-module",
-      url: "http://localhost:3002" || (await TransferModule.listen(3002))
+      url: "http://localhost:3002",
     },
     {
       name: "bank-module",
-      url: "http://localhost:3003" || (await BankModule.listen(3003))
+      url: "http://localhost:3003",
     },
     {
       name: "lnd-module",
-      url: "http://localhost:3004" || (await LndModule.listen(3004))
-    }
+      url: "http://localhost:3004",
+    },
   ];
 
   const gateway = new ApolloGateway({
@@ -60,15 +53,15 @@ export const buildGateway = async () => {
       return new RemoteGraphQLDataSource({
         url,
         willSendRequest({ request, context }) {
-          request.http ?.headers.set(
+          request.http?.headers.set(
             "currentUser",
             (context as any).currentUser
               ? JSON.stringify((context as any).currentUser)
               : ""
           );
-        }
+        },
       });
-    }
+    },
   });
 
   const { schema, executor } = await gateway.load();
@@ -78,13 +71,13 @@ export const buildGateway = async () => {
 
   const corsOptions = {
     credentials: env(EnvironmentType.PROD) || env(EnvironmentType.PROD_STAGE),
-    origin: DEV_BASE_URL
+    origin: DEV_BASE_URL,
   };
 
   const server = new ApolloServer({
     schema,
     executor,
-    formatError: err => {
+    formatError: (err: any) => {
       err.message = formatValidationError(err);
       return err;
     },
@@ -105,17 +98,17 @@ export const buildGateway = async () => {
           request: req,
           currentUser: (req as any).user || undefined,
           redis: new REDIS().server,
-          url: req ?.protocol + "://" + req ?.get("host")
+          url: req?.protocol + "://" + req?.get("host"),
         };
       } catch (error) {
         return {
           request: req,
           currentUser: undefined,
           redis: new REDIS().server,
-          url: req ?.protocol + "://" + req ?.get("host")
+          url: req?.protocol + "://" + req?.get("host"),
         };
       }
-    }
+    },
   });
 
   await server.start();
@@ -126,14 +119,14 @@ export const buildGateway = async () => {
     expressJwt({
       secret: "f1BtnWgD3VKY",
       algorithms: ["HMACSHA256"],
-      credentialsRequired: false
+      credentialsRequired: false,
     })
   );
   app.use(cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  app.use("*", (req, _, next) => {
+  app.use("*", (req: any, _: any, next: any) => {
     const query = req.query.query || req.body.query || "";
     if (query.length > 2000) {
       throw new Error("Query too large");
@@ -142,7 +135,7 @@ export const buildGateway = async () => {
   });
 
   // Grafana Configuration
-  app.use("/metric", async (_, res) => {
+  app.use("/metric", async (_: any, res: any): Promise<void> => {
     try {
       res.set("Content-Type", register.contentType);
       res.end(await register.metrics());

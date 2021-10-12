@@ -17,7 +17,7 @@ mkdir -p ${PROTO_DEST}
 
 # TypeScript code generation
 yarn run grpc_tools_node_protoc \
-    --plugin=protoc-gen-ts=C:/Users/HP/AppData/Roaming/npm/protoc-gen-ts.cmd \
+    --plugin=protoc-gen-ts=/usr/local/lib/node_modules/protoc-gen-ts/bin/protoc-gen-ts\
     --ts_out=${PROTO_DEST} \
     -I ./proto \
     proto/*.proto

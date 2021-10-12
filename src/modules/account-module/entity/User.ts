@@ -29,7 +29,7 @@ export class User extends BaseEntity {
   avatar: string;
 
   @Field(() => Boolean!)
-  @Column("bool", { default: false })
+  @Column("bool", { default: true })
   emailVerified: boolean;
 
   @Field(() => Boolean!)

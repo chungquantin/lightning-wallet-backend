@@ -1,31 +1,77 @@
 {
-	"name": "neutronpay-wallet-common",
-	"version": "1.0.2",
-	"description": "Neutronpay Wallet common package for microservice",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"scripts": {
-		"build": "rimraf ./dist & tsc",
-		"prepublish": "rimraf ./dist & tsc"
-	},
-	"keywords": [],
-	"author": "NeutronPay Dev Team",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/chungquantin/neutronpay-wallet-common.git"
-	},
-	"bugs": {
-		"url": "https://github.com/chungquantin/neutronpay-wallet-common/issues"
-	},
-	"homepage": "https://github.com/chungquantin/neutronpay-wallet-common#readme",
-	"dependencies": {
-		"rimraf": "^3.0.2"
-	},
-	"publishConfig": {
-		"registry": "https://npm.pkg.github.com/"
-	},
-	"devDependencies": {
-		"typescript": "^4.4.2"
-	}
+  "name": "neutronpay-wallet-common",
+  "version": "1.0.3",
+  "description": "Neutronpay Wallet common package for microservice",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf ./dist & tsc",
+    "prepublish": "rimraf ./dist & tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^16.10.3",
+    "typescript": "^4.4.2"
+  },
+  "dependencies": {
+    "@apollo/federation": "^0.33.1",
+    "@apollo/gateway": "^0.42.1",
+    "@types/amqplib": "^0.8.2",
+    "@types/faker": "^5.5.8",
+    "@types/graphql": "^14.5.0",
+    "@types/ioredis": "^4.27.6",
+    "@types/ws": "^8.2.0",
+    "@types/yup": "^0.29.13",
+    "amqplib": "^0.8.0",
+    "apollo-server": "^3.1.2",
+    "apollo-server-cache-memcached": "^3.0.3",
+    "apollo-server-express": "^3.4.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "class-validator": "^0.13.1",
+    "concurrently": "^6.3.0",
+    "connect-redis": "^5.0.0",
+    "cookie-parser": "^1.4.5",
+    "copyfiles": "^2.4.1",
+    "core-js": "3.0.0-beta.11",
+    "cross-fetch": "^3.1.4",
+    "dotenv": "^8.6.0",
+    "express": "^4.17.1",
+    "faker": "^5.5.3",
+    "graphql": "^15.6.1",
+    "graphql-request": "^3.5.0",
+    "graphql-tools": "^7.0.5",
+    "jest": "^27.2.5",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "mocha": "^9.1.2",
+    "moment": "^2.29.1",
+    "neutronpay-wallet-common": "^1.0.1",
+    "node-pre-gyp": "^0.17.0",
+    "pg": "^8.7.1",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "subscriptions-transport-ws": "^0.9.18",
+    "ts-jest": "^26.5.3",
+    "ts-node": "^3.3.0",
+    "type-graphql": "^1.1.1",
+    "typedi": "^0.10.0",
+    "typeorm": "^0.2.38",
+    "typeorm-naming-strategies": "^2.0.0",
+    "typeorm-typedi-extensions": "^0.4.1",
+    "typescript": "^4.4.2",
+    "uuid": "^7.0.0",
+    "winston": "^3.3.3",
+    "yup": "^0.32.10"
+  },
+  "keywords": [],
+  "author": "NeutronPay Dev Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chungquantin/neutronpay-wallet-common.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chungquantin/neutronpay-wallet-common/issues"
+  },
+  "homepage": "https://github.com/chungquantin/neutronpay-wallet-common#readme"
 }

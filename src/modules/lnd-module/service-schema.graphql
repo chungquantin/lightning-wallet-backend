@@ -2,20 +2,24 @@ schema {
   query: Query
   mutation: Mutation
 }
+
 type Query {
   lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions
   getBtcAddress: getBtcAddress
   getBtcAddresses: getBtcAddresses
 }
+
 type LndGetTransactions {
   success: Boolean!
   errors: [ApiError!]
   data: [LightningTransaction!]!
 }
+
 type ApiError {
   path: String!
   message: String!
 }
+
 type LightningTransaction {
   amount: Float!
   hash: String!
@@ -23,19 +27,23 @@ type LightningTransaction {
   blockHash: String!
   timeStamp: Float!
 }
+
 input PaginationInputType {
-  limit: Int
-  skip: Int
+  limit: Int = 0
+  skip: Int = 0
 }
+
 type getBtcAddress {
   success: Boolean!
   errors: [ApiError!]
   data: BtcAddress
 }
+
 type BtcAddress {
   lightningInvoice: LightningInvoiceSchema!
   chainInvoice: ChainInvoiceSchema!
 }
+
 type LightningInvoiceSchema @key(fields: "id") {
   id: ID!
   userId: String!
@@ -45,35 +53,42 @@ type LightningInvoiceSchema @key(fields: "id") {
   createdAt: String!
   expiresAt: String!
 }
+
 type ChainInvoiceSchema @key(fields: "id") {
   id: ID!
   userId: String!
   address: String!
   createdAt: String!
 }
+
 type getBtcAddresses {
   success: Boolean!
   errors: [ApiError!]
   data: BtcAddresses
 }
+
 type BtcAddresses {
   lightningInvoices: [LightningInvoiceSchema!]!
   chainInvoices: [ChainInvoiceSchema!]!
 }
+
 type Mutation {
   generateOnChainInvoice: GenerateChainInvoice
   generateLightningInvoice(data: GenerateLightningInvoiceDto!): GenerateLightningInvoice
 }
+
 type GenerateChainInvoice {
   success: Boolean!
   errors: [ApiError!]
   data: ChainInvoiceSchema
 }
+
 type GenerateLightningInvoice {
   success: Boolean!
   errors: [ApiError!]
   data: LightningInvoiceSchema
 }
+
 input GenerateLightningInvoiceDto {
   amount: Float!
   currency: String!

@@ -15,6 +15,7 @@ import { ForgotPasswordChangeDto } from "./forgot_password_change.dto";
 import { YUP_CHANGE_PASSWORD } from "./forgot_password_change.validate";
 import { FORGOT_PASSWORD_PREFIX } from "neutronpay-wallet-common/dist/constants/global-variables";
 import * as bcrypt from "bcryptjs";
+import { Service } from "typedi";
 import "dotenv/config";
 
 export const ApiForgotPasswordResponse = ApiResponse<String>(
@@ -23,7 +24,7 @@ export const ApiForgotPasswordResponse = ApiResponse<String>(
 );
 export type ApiForgotPasswordResponseType = InstanceType<
   typeof ApiForgotPasswordResponse
-  >;
+>;
 
 const ApiSendForgotPasswordResponse = ApiResponse<String>(
   "SendForgotPassword",
@@ -31,8 +32,9 @@ const ApiSendForgotPasswordResponse = ApiResponse<String>(
 );
 type ApiSendForgotPasswordResponseType = InstanceType<
   typeof ApiForgotPasswordResponse
-  >;
+>;
 
+@Service()
 @Resolver(() => User)
 class ForgotPasswordResolver {
   @InjectRepository(UserRepository)
@@ -42,7 +44,7 @@ class ForgotPasswordResolver {
   @Mutation(() => ApiForgotPasswordResponse!, { nullable: true })
   async sendForgotPasswordEmail(
     @Arg("data") { email }: SendForgotPasswordDto,
-    @Ctx() { }: GQLContext
+    @Ctx() {}: GQLContext
   ): Promise<ApiForgotPasswordResponseType> {
     const user = await this.userRepository.findOne({
       where: { email }

@@ -1,15 +1,15 @@
 FROM node:14-alpine
 
-RUN mkdir transfer
+RUN mkdir account
 
 COPY package.json ./package.json
 COPY tsconfig.json ./tsconfig.json
 COPY ormconfig.json ./ormconfig.json
 COPY .env ./.env
-COPY src/modules/transfer-module ./src/modules/transfer-module
+COPY . ./
 RUN npm i --legacy-peer-deps
 RUN npm run build
 
 EXPOSE 6379
 
-CMD node dist/index.js
+CMD cd dist && node index.js

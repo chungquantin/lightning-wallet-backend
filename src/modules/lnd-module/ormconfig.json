@@ -1,0 +1,16 @@
+{
+  "type": "postgres",
+  "port": 5432,
+  "url": "postgres://ghgrfgdyngbrqd:cfb57f02790934fcf798eb86cb999822d63ee9cc0061a0d91e800047b90c3c96@ec2-52-203-74-38.compute-1.amazonaws.com:5432/d1b76ll5sv67sp",
+  "name": "default",
+  "synchronize": true,
+  "logging": true,
+  "entities": ["entity/*{.ts,.js}"],
+  "migrations": ["migration/*{.ts,.js}"],
+  "subscribers": ["subscribers/*{.ts,.js}"],
+  "cli": {
+    "entitiesDir": "entity",
+    "migrationsDir": "migration",
+    "subscribersDir": "subscriber"
+  }
+}
