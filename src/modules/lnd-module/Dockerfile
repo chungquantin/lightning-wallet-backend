@@ -1,6 +1,6 @@
 FROM node:14-alpine
 
-RUN mkdir account
+RUN mkdir lnd
 
 COPY package.json ./package.json
 COPY tsconfig.json ./tsconfig.json

@@ -81,7 +81,7 @@ export async function listen(port: number): Promise<string | undefined> {
             dataSources: {
               exchangeRateApi: new dataSources.ExchangeRateApi(),
             },
-            url: req ?.protocol + "://" + req ?.get("host"),
+            url: req?.protocol + "://" + req?.get("host"),
           };
 
           try {
@@ -115,22 +115,24 @@ export async function listen(port: number): Promise<string | undefined> {
       console.table(
         env(EnvironmentType.PROD)
           ? {
-            SERVICE_NAME: "LIGHTNING-DAEMON",
-            SERVICE_ENDPOINT: url,
-            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
-            PROCESS_ID: process.pid,
-            DATABASE_URL: process.env.DATABASE_URL,
-            REDIS_HOST: process.env.REDIS_HOST,
-            REDIS_PORT: process.env.REDIS_PORT,
-          }
+              SERVICE_NAME: "LIGHTNING-DAEMON",
+              SERVICE_ENDPOINT: url,
+              ENVIRONMENT: process.env.NODE_ENV?.trim(),
+              PROCESS_ID: process.pid,
+              DATABASE_URL: process.env.DATABASE_URL,
+              REDIS_HOST: process.env.REDIS_HOST,
+              REDIS_PORT: process.env.REDIS_PORT,
+            }
           : {
-            SERVICE_NAME: "LIGHTNING-DAEMON",
-            SERVICE_ENDPOINT: url,
-            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
-            PROCESS_ID: process.pid,
-            PORT: port,
-            DATABASE: conn ?.options.database,
-          }
+              SERVICE_NAME: "LIGHTNING-DAEMON",
+              SERVICE_ENDPOINT: url,
+              ENVIRONMENT: process.env.NODE_ENV?.trim(),
+              PROCESS_ID: process.pid,
+              PORT: port,
+              DATABASE: conn?.options.database,
+              REDIS_HOST: process.env.REDIS_HOST,
+              REDIS_PORT: process.env.REDIS_PORT,
+            }
       );
 
       return url;

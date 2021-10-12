@@ -1,15 +1,12 @@
 FROM node:14-alpine
 
-RUN mkdir account
+RUN mkdir gateway
 
 COPY package.json ./package.json
 COPY tsconfig.json ./tsconfig.json
-COPY ormconfig.json ./ormconfig.json
 COPY .env ./.env
 COPY . ./
 RUN npm i --legacy-peer-deps
 RUN npm run build
-
-EXPOSE 6379
 
 CMD cd dist && node index.js

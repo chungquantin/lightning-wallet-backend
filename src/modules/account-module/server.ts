@@ -127,6 +127,8 @@ export async function listen(port: number): Promise<string | undefined> {
               PROCESS_ID: process.pid,
               PORT: port,
               DATABASE: conn?.options.database,
+              REDIS_HOST: process.env.REDIS_HOST,
+              REDIS_PORT: process.env.REDIS_PORT,
             }
       );
 

@@ -5,9 +5,9 @@
   "name": "default",
   "synchronize": true,
   "logging": true,
-  "entities": ["entity/*.ts"],
-  "migrations": ["migration/*.ts"],
-  "subscribers": ["subscribers/*.ts"],
+  "entities": ["entity/*{.ts,.js}"],
+  "migrations": ["migration/*{.ts,.js}"],
+  "subscribers": ["subscribers/*{.ts,.js}"],
   "cli": {
     "entitiesDir": "entity",
     "migrationsDir": "migration",

@@ -1,7 +1,7 @@
 import { ApolloServer } from "apollo-server";
 import Container from "typedi";
 import { buildFederatedSchema } from "neutronpay-wallet-common/dist/helpers/buildFederatedSchema";
-import { REDIS, redisPubSub } from "./cache";
+// import { REDIS, redisPubSub } from "./cache";
 import { ResolveTime } from "neutronpay-wallet-common/dist/middleware";
 import { customAuthChecker } from "neutronpay-wallet-common/dist/utils";
 import { MemcachedCache } from "apollo-server-cache-memcached";
@@ -10,7 +10,7 @@ import { printSchemaWithDirectives } from "graphql-tools";
 import { withRabbitMQConnect } from "./rabbit";
 import {
   env,
-  EnvironmentType
+  EnvironmentType,
 } from "neutronpay-wallet-common/dist/utils/environmentType";
 import { Connection } from "typeorm";
 import { genORMConnection } from "neutronpay-wallet-common/dist/helpers/orm.config";
@@ -22,7 +22,12 @@ import * as fs from "fs";
 import * as jwt from "jsonwebtoken";
 import { plaidConfiguration } from "./config/plaid";
 import * as dataSources from "./utils/dataSource";
-import { BankAccount, BankAccountAch, BankAccountBalance, Institution } from "./entity"
+import {
+  BankAccount,
+  BankAccountAch,
+  BankAccountBalance,
+  Institution,
+} from "./entity";
 
 export interface BankGQLContext extends GQLContext {
   dataSources: {
@@ -34,12 +39,11 @@ export interface BankGQLContext extends GQLContext {
 export async function listen(port: number): Promise<string | undefined> {
   return withRabbitMQConnect({
     name: "BANK",
-    url:
-      "amqps://lvbzzlva:Elg4XFIZ99gS1Cp2EN2_0__zp_FFdHXt@mustang.rmq.cloudamqp.com/lvbzzlva",
+    url: "amqps://lvbzzlva:Elg4XFIZ99gS1Cp2EN2_0__zp_FFdHXt@mustang.rmq.cloudamqp.com/lvbzzlva",
     callback: async ({ channel }) => {
-      if (!env(EnvironmentType.PROD)) {
-        await new REDIS().server.flushall();
-      }
+      // if (!env(EnvironmentType.PROD)) {
+      //   await new REDIS().server.flushall();
+      // }
 
       // Connect to Plaid
       const plaidClient = new PlaidApi(plaidConfiguration);
@@ -48,7 +52,7 @@ export async function listen(port: number): Promise<string | undefined> {
       let conn: Connection;
       conn = await genORMConnection({
         connection: "default",
-        service: "BANK"
+        service: "BANK",
       });
       if (channel) {
         queueHandler(conn, channel);
@@ -69,13 +73,18 @@ export async function listen(port: number): Promise<string | undefined> {
             BankResolver.Deposit,
             BankResolver.Withdraw,
             BankResolver.GetInstitutions,
-            BankResolver.GetInstitution
+            BankResolver.GetInstitution,
           ],
-          orphanedTypes: [BankAccount, BankAccountAch, BankAccountBalance, Institution],
+          orphanedTypes: [
+            BankAccount,
+            BankAccountAch,
+            BankAccountBalance,
+            Institution,
+          ],
           container: Container,
-          pubSub: redisPubSub,
+          // pubSub: redisPubSub,
           authChecker: customAuthChecker,
-          globalMiddlewares: [ResolveTime]
+          globalMiddlewares: [ResolveTime],
         },
         {},
         __dirname
@@ -91,17 +100,17 @@ export async function listen(port: number): Promise<string | undefined> {
           { retries: 10, retry: 10000 } // Options
         ),
         context: ({ req }): Partial<BankGQLContext> => {
-          const redis = new REDIS().server;
+          // const redis = new REDIS().server;
 
           const contextResponse = {
             request: req,
-            redis,
+            // redis,
             channel,
             dataSources: {
               plaidClient,
-              exchangeRateApi: new dataSources.ExchangeRateApi()
+              exchangeRateApi: new dataSources.ExchangeRateApi(),
             },
-            url: req ?.protocol + "://" + req ?.get("host")
+            url: req?.protocol + "://" + req?.get("host"),
           };
 
           try {
@@ -116,18 +125,18 @@ export async function listen(port: number): Promise<string | undefined> {
               );
               (req as any).user = decoded;
               return Object.assign(contextResponse, {
-                currentUser: (req as any).user || undefined
+                currentUser: (req as any).user || undefined,
               });
             }
             return Object.assign(contextResponse, {
-              currentUser: JSON.parse(req.headers.currentuser as string)
+              currentUser: JSON.parse(req.headers.currentuser as string),
             });
           } catch (error) {
             return Object.assign(contextResponse, {
-              currentUser: undefined
+              currentUser: undefined,
             });
           }
-        }
+        },
       });
 
       const { url } = await server.listen({ port });
@@ -135,25 +144,27 @@ export async function listen(port: number): Promise<string | undefined> {
       console.table(
         env(EnvironmentType.PROD)
           ? {
-            SERVICE_NAME: "BANK",
-            SERVICE_ENDPOINT: url,
-            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
-            PROCESS_ID: process.pid,
-            DATABASE_URL: process.env.DATABASE_URL,
-            REDIS_HOST: process.env.REDIS_HOST,
-            REDIS_PORT: process.env.REDIS_PORT
-          }
+              SERVICE_NAME: "BANK",
+              SERVICE_ENDPOINT: url,
+              ENVIRONMENT: process.env.NODE_ENV?.trim(),
+              PROCESS_ID: process.pid,
+              DATABASE_URL: process.env.DATABASE_URL,
+              REDIS_HOST: process.env.REDIS_HOST,
+              REDIS_PORT: process.env.REDIS_PORT,
+            }
           : {
-            SERVICE_NAME: "BANK",
-            SERVICE_ENDPOINT: url,
-            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
-            PROCESS_ID: process.pid,
-            PORT: port,
-            DATABASE: conn ?.options.database
+              SERVICE_NAME: "BANK",
+              SERVICE_ENDPOINT: url,
+              ENVIRONMENT: process.env.NODE_ENV?.trim(),
+              PROCESS_ID: process.pid,
+              PORT: port,
+              DATABASE: conn?.options.database,
+              REDIS_HOST: process.env.REDIS_HOST,
+              REDIS_PORT: process.env.REDIS_PORT,
             }
       );
 
       return url;
-    }
+    },
   });
 }

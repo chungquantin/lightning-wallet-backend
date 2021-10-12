@@ -11,7 +11,7 @@ import { printSchemaWithDirectives } from "graphql-tools";
 import { withRabbitMQConnect } from "./rabbit";
 import {
   env,
-  EnvironmentType
+  EnvironmentType,
 } from "neutronpay-wallet-common/dist/utils/environmentType";
 import { Connection } from "typeorm";
 import { genORMConnection } from "neutronpay-wallet-common/dist/helpers/orm.config";
@@ -31,8 +31,7 @@ export interface WalletGQLContext extends GQLContext {
 export async function listen(port: number): Promise<string | undefined> {
   return withRabbitMQConnect({
     name: "TRANSFER",
-    url:
-      "amqps://lvbzzlva:Elg4XFIZ99gS1Cp2EN2_0__zp_FFdHXt@mustang.rmq.cloudamqp.com/lvbzzlva",
+    url: "amqps://lvbzzlva:Elg4XFIZ99gS1Cp2EN2_0__zp_FFdHXt@mustang.rmq.cloudamqp.com/lvbzzlva",
     callback: async ({ channel }) => {
       if (!env(EnvironmentType.PROD)) {
         await new REDIS().server.flushall();
@@ -40,7 +39,7 @@ export async function listen(port: number): Promise<string | undefined> {
       let conn: Connection;
       conn = await genORMConnection({
         connection: "default",
-        service: "TRANSFER"
+        service: "TRANSFER",
       });
       if (channel) {
         queueHandler(conn, channel);
@@ -64,13 +63,13 @@ export async function listen(port: number): Promise<string | undefined> {
             PaymentResolver.GetPaymentRequest,
             PaymentResolver.GetPaymentRequests,
             PaymentResolver.GetMyPaymentRequests,
-            PaymentResolver.CancelMyPaymentRequest
+            PaymentResolver.CancelMyPaymentRequest,
           ],
           orphanedTypes: [Wallet],
           container: Container,
           pubSub: redisPubSub,
           authChecker: customAuthChecker,
-          globalMiddlewares: [ResolveTime]
+          globalMiddlewares: [ResolveTime],
         },
         {},
         __dirname
@@ -93,9 +92,9 @@ export async function listen(port: number): Promise<string | undefined> {
             redis,
             channel,
             dataSources: {
-              exchangeRateApi: new dataSource.ExchangeRateApi()
+              exchangeRateApi: new dataSource.ExchangeRateApi(),
             },
-            url: req?.protocol + "://" + req?.get("host")
+            url: req?.protocol + "://" + req?.get("host"),
           };
 
           try {
@@ -110,18 +109,18 @@ export async function listen(port: number): Promise<string | undefined> {
               );
               (req as any).user = decoded;
               return Object.assign(contextResponse, {
-                currentUser: (req as any).user || undefined
+                currentUser: (req as any).user || undefined,
               } as any);
             }
             return Object.assign(contextResponse, {
-              currentUser: JSON.parse(req.headers.currentuser as string)
+              currentUser: JSON.parse(req.headers.currentuser as string),
             } as any);
           } catch (error) {
             return Object.assign(contextResponse, {
-              currentUser: undefined
+              currentUser: undefined,
             } as any);
           }
-        }
+        },
       });
 
       const { url } = await server.listen({ port });
@@ -135,7 +134,7 @@ export async function listen(port: number): Promise<string | undefined> {
               PROCESS_ID: process.pid,
               DATABASE_URL: process.env.DATABASE_URL,
               REDIS_HOST: process.env.REDIS_HOST,
-              REDIS_PORT: process.env.REDIS_PORT
+              REDIS_PORT: process.env.REDIS_PORT,
             }
           : {
               SERVICE_NAME: "TRANSFER",
@@ -143,11 +142,13 @@ export async function listen(port: number): Promise<string | undefined> {
               ENVIRONMENT: process.env.NODE_ENV?.trim(),
               PROCESS_ID: process.pid,
               PORT: port,
-              DATABASE: conn?.options.database
+              DATABASE: conn?.options.database,
+              REDIS_HOST: process.env.REDIS_HOST,
+              REDIS_PORT: process.env.REDIS_PORT,
             }
       );
 
       return url;
-    }
+    },
   });
 }
