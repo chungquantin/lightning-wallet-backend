@@ -12,7 +12,7 @@ import {
   env,
   EnvironmentType
 } from "neutronpay-wallet-common/dist/utils/environmentType";
-import { Connection, getConnection } from "typeorm";
+import { Connection } from "typeorm";
 import { genORMConnection } from "neutronpay-wallet-common/dist/helpers/orm.config";
 import { queueHandler } from "./queue";
 import { PlaidApi } from "plaid";
@@ -22,6 +22,7 @@ import * as fs from "fs";
 import * as jwt from "jsonwebtoken";
 import { plaidConfiguration } from "./config/plaid";
 import * as dataSources from "./utils/dataSource";
+import { BankAccount, BankAccountAch, BankAccountBalance, Institution } from "./entity"
 
 export interface BankGQLContext extends GQLContext {
   dataSources: {
@@ -45,14 +46,10 @@ export async function listen(port: number): Promise<string | undefined> {
 
       // Connect to Database
       let conn: Connection;
-      try {
-        conn = getConnection("default");
-      } catch (error) {
-        conn = await genORMConnection({
-          connection: "default",
-          service: "BANK"
-        });
-      }
+      conn = await genORMConnection({
+        connection: "default",
+        service: "BANK"
+      });
       if (channel) {
         queueHandler(conn, channel);
       }
@@ -74,7 +71,7 @@ export async function listen(port: number): Promise<string | undefined> {
             BankResolver.GetInstitutions,
             BankResolver.GetInstitution
           ],
-          orphanedTypes: [],
+          orphanedTypes: [BankAccount, BankAccountAch, BankAccountBalance, Institution],
           container: Container,
           pubSub: redisPubSub,
           authChecker: customAuthChecker,
@@ -104,7 +101,7 @@ export async function listen(port: number): Promise<string | undefined> {
               plaidClient,
               exchangeRateApi: new dataSources.ExchangeRateApi()
             },
-            url: req?.protocol + "://" + req?.get("host")
+            url: req ?.protocol + "://" + req ?.get("host")
           };
 
           try {
@@ -138,21 +135,21 @@ export async function listen(port: number): Promise<string | undefined> {
       console.table(
         env(EnvironmentType.PROD)
           ? {
-              SERVICE_NAME: "BANK",
-              SERVICE_ENDPOINT: url,
-              ENVIRONMENT: process.env.NODE_ENV?.trim(),
-              PROCESS_ID: process.pid,
-              DATABASE_URL: process.env.DATABASE_URL,
-              REDIS_HOST: process.env.REDIS_HOST,
-              REDIS_PORT: process.env.REDIS_PORT
-            }
+            SERVICE_NAME: "BANK",
+            SERVICE_ENDPOINT: url,
+            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
+            PROCESS_ID: process.pid,
+            DATABASE_URL: process.env.DATABASE_URL,
+            REDIS_HOST: process.env.REDIS_HOST,
+            REDIS_PORT: process.env.REDIS_PORT
+          }
           : {
-              SERVICE_NAME: "BANK",
-              SERVICE_ENDPOINT: url,
-              ENVIRONMENT: process.env.NODE_ENV?.trim(),
-              PROCESS_ID: process.pid,
-              PORT: port,
-              DATABASE: conn?.options.database
+            SERVICE_NAME: "BANK",
+            SERVICE_ENDPOINT: url,
+            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
+            PROCESS_ID: process.pid,
+            PORT: port,
+            DATABASE: conn ?.options.database
             }
       );
 

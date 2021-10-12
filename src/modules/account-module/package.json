@@ -1,24 +1,61 @@
 {
-	"name": "@neutronpay/wallet-account-module",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"gen-gql": "rimraf ./graphql & gqlg --schemaFilePath ./schema.graphql --destDirPath ./graphql",
-		"start": "SET NODE_ENV=development& ts-node index.ts",
-		"dev": "SET NODE_ENV=development& ts-node-dev index.ts",
-		"build": "rimraf ./dist & tsc",
-		"start:dev": "concurrently \" npx cross-env redis-server \" \" SET NODE_ENV=development&  ts-node-dev --respawn index.ts --no-autorestart \" "
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"dependencies": {
-		"@types/amqplib": "^0.8.2",
-		"amqplib": "^0.8.0",
-		"neutronpay-wallet-common": "^1.0.1",
-		"rimraf": "^3.0.2",
-		"ts-node-dev": "^1.1.8",
-		"typescript": "^4.4.2"
-	}
+  "name": "@neutronpay/wallet-account-module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "gen-gql": "rimraf ./graphql & gqlg --schemaFilePath ./schema.graphql --destDirPath ./graphql",
+    "start": " NODE_ENV=development& ts-node index.ts",
+    "dev": " NODE_ENV=development& ts-node-dev index.ts",
+    "build": "rimraf ./dist & tsc",
+    "start:dev": "concurrently \" npx cross-env redis-server \" \" NODE_ENV=development&  ts-node-dev --respawn index.ts --no-autorestart \" "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/jsonwebtoken": "^8.5.5",
+    "@types/node": "^8.10.66",
+    "ts-node-dev": "^1.1.1",
+    "@types/amqplib": "^0.8.2",
+    "@types/moment": "^2.13.0",
+    "@types/uuid": "^8.3.0",
+    "@types/ws": "^7.4.7"
+  },
+  "dependencies": {
+    "amqplib": "^0.8.0",
+    "apollo-server": "^3.1.2",
+    "apollo-server-cache-memcached": "^3.0.3",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "class-validator": "^0.13.1",
+    "concurrently": "^6.3.0",
+    "connect-redis": "^5.0.0",
+    "cookie-parser": "^1.4.5",
+    "core-js": "3.0.0-beta.11",
+    "dotenv": "^8.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "neutronpay-wallet-common": "^1.0.1",
+    "node-pre-gyp": "^0.17.0",
+    "pg": "^8.7.1",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "subscriptions-transport-ws": "^0.9.18",
+    "ts-jest": "^26.5.3",
+    "ts-node": "^3.3.0",
+    "type-graphql": "^1.1.1",
+    "uuid": "^7.0.0",
+    "@types/amqplib": "^0.8.2",
+    "ts-node-dev": "^1.1.8",
+    "typedi": "^0.10.0",
+    "typeorm": "^0.2.38",
+    "typeorm-naming-strategies": "^2.0.0",
+    "typeorm-typedi-extensions": "^0.4.1",
+    "typescript": "^4.4.2",
+    "moment": "^2.29.1"
+  },
+  "resolutions": {
+    "graphql": "^15.0.0"
+  }
 }

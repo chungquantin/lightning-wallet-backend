@@ -11,7 +11,7 @@ import {
   env,
   EnvironmentType,
 } from "neutronpay-wallet-common/dist/utils/environmentType";
-import { Connection, getConnection } from "typeorm";
+import { Connection } from "typeorm";
 import { genORMConnection } from "neutronpay-wallet-common/dist/helpers/orm.config";
 import { queueHandler } from "./queue";
 import { REDIS, redisPubSub } from "./cache";
@@ -36,14 +36,10 @@ export async function listen(port: number): Promise<string | undefined> {
         await new REDIS().server.flushall();
       }
       let conn: Connection;
-      try {
-        conn = getConnection("default");
-      } catch (error) {
-        conn = await genORMConnection({
-          connection: "default",
-          service: "LND",
-        });
-      }
+      conn = await genORMConnection({
+        connection: "default",
+        service: "LND",
+      });
       if (channel) {
         queueHandler(conn, channel);
       }

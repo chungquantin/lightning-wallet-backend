@@ -30,7 +30,7 @@ spec:
   selector:
     app: transfer
   ports:
-    - port: 3003
+    - port: 3004
   type: ClusterIP
 
 ---
@@ -42,7 +42,7 @@ spec:
   selector:
     app: lnd
   ports:
-    - port: 3004
+    - port: 3003
   type: ClusterIP
 
 ---

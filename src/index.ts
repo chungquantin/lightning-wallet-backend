@@ -1,12 +1,11 @@
-import { buildGateway } from './gateway';
-import { Container } from 'typedi';
-import * as typeorm from 'typeorm';
-import { collectDefaultMetrics } from 'prom-client';
-
-console.log('Server boots up!');
-
-typeorm.useContainer(Container);
+import { buildGateway } from "./gateway";
+import { collectDefaultMetrics } from "prom-client";
+import { useContainer } from 'typeorm'
+import { Container } from 'typedi'
+console.log("Server boots up!");
 
 collectDefaultMetrics();
 
-buildGateway().catch((err) => console.log(err));
+useContainer(Container)
+
+buildGateway().catch(err => console.log(err));

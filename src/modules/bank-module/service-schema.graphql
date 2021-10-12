@@ -2,6 +2,50 @@ schema {
   query: Query
   mutation: Mutation
 }
+type BankAccountBalanceSchema @key(fields: "id") {
+  id: ID!
+  availableBalance: Float
+  currentBalance: Float
+  limitBalance: Float!
+  isoCurrencyCode: String!
+  unofficialCurrencyCode: String!
+}
+type BankAccountAchSchema @key(fields: "id") {
+  id: ID!
+  routingNumber: String!
+  account: String!
+  wire_routing: String!
+}
+type BankAccountSchema @key(fields: "id") {
+  id: ID!
+  userId: String!
+  accountId: String!
+  institution: InstitutionSchema!
+  balance: BankAccountBalanceSchema!
+  ach: BankAccountAchSchema!
+  name: String!
+  officialName: String
+  subType: String
+  type: BankAccountType!
+  addedAt: String!
+}
+"""Values of the Bank Account Type field"""
+enum BankAccountType {
+  Investment
+  Credit
+  Depository
+  Loan
+  Brokerage
+  Other
+}
+type InstitutionSchema @key(fields: "institutionId") {
+  id: ID!
+  institutionId: String!
+  institutionName: String!
+  institutionLogo: String
+  primaryColor: String
+  websiteUrl: String
+}
 type Query {
   getBankAccount(data: GetBankAccountDto!): GetBankAccount
   getBankAccounts: GetBankAccounts
@@ -20,50 +64,6 @@ type GetBankAccount {
 type ApiError {
   path: String!
   message: String!
-}
-type BankAccountSchema @key(fields: "id") {
-  id: ID!
-  userId: String!
-  accountId: String!
-  institution: InstitutionSchema!
-  balance: BankAccountBalanceSchema!
-  ach: BankAccountAchSchema!
-  name: String!
-  officialName: String
-  subType: String
-  type: BankAccountType!
-  addedAt: String!
-}
-type InstitutionSchema @key(fields: "institutionId") {
-  id: ID!
-  institutionId: String!
-  institutionName: String!
-  institutionLogo: String
-  primaryColor: String
-  websiteUrl: String
-}
-type BankAccountBalanceSchema @key(fields: "id") {
-  id: ID!
-  availableBalance: Float
-  currentBalance: Float
-  limitBalance: Float!
-  isoCurrencyCode: String!
-  unofficialCurrencyCode: String!
-}
-type BankAccountAchSchema @key(fields: "id") {
-  id: ID!
-  routingNumber: String!
-  account: String!
-  wire_routing: String!
-}
-"""Values of the Bank Account Type field"""
-enum BankAccountType {
-  Investment
-  Credit
-  Depository
-  Loan
-  Brokerage
-  Other
 }
 input GetBankAccountDto {
   bankAccountId: String!

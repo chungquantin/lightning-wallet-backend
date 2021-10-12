@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import "dotenv/config";
 import { REDIS } from "neutronpay-wallet-common/dist/helpers/redis";
 import {
@@ -60,7 +59,7 @@ export const buildGateway = async () => {
       return new RemoteGraphQLDataSource({
         url,
         willSendRequest({ request, context }) {
-          request.http ?.headers.set(
+          request.http?.headers.set(
             "currentUser",
             (context as any).currentUser
               ? JSON.stringify((context as any).currentUser)
@@ -105,14 +104,14 @@ export const buildGateway = async () => {
           request: req,
           currentUser: (req as any).user || undefined,
           redis: new REDIS().server,
-          url: req ?.protocol + "://" + req ?.get("host")
+          url: req?.protocol + "://" + req?.get("host")
         };
       } catch (error) {
         return {
           request: req,
           currentUser: undefined,
           redis: new REDIS().server,
-          url: req ?.protocol + "://" + req ?.get("host")
+          url: req?.protocol + "://" + req?.get("host")
         };
       }
     }

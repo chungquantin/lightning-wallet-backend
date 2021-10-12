@@ -1,23 +1,23 @@
-import { Resolver, Mutation } from 'type-graphql';
-import { ApiResponse } from 'neutronpay-wallet-common/dist/shared';
+import { Resolver, Mutation } from "type-graphql";
+import { ApiResponse } from "neutronpay-wallet-common/dist/shared";
+import { Service } from "typedi";
 
 export const ApiConnectDebitCard = ApiResponse<String>(
-	'ConnectDebitCard',
-	String,
+  "ConnectDebitCard",
+  String
 );
-export type ApiConnectDebitCardType = InstanceType<
-	typeof ApiConnectDebitCard
->;
+export type ApiConnectDebitCardType = InstanceType<typeof ApiConnectDebitCard>;
 
-@Resolver((of) => String)
+@Service()
+@Resolver(() => String)
 class ConnectDebitCardResolver {
-	@Mutation(() => ApiConnectDebitCard, { nullable: true })
-	async connectDebitCard(): Promise<ApiConnectDebitCardType> {
-		return {
-			data: 'Debit card connect',
-			success: true,
-		};
-	}
+  @Mutation(() => ApiConnectDebitCard, { nullable: true })
+  async connectDebitCard(): Promise<ApiConnectDebitCardType> {
+    return {
+      data: "Debit card connect",
+      success: true
+    };
+  }
 }
 
 export default ConnectDebitCardResolver;

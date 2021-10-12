@@ -2,54 +2,6 @@ schema {
   query: Query
   mutation: Mutation
 }
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-  getBankAccount(data: GetBankAccountDto!): GetBankAccount
-  getBankAccounts: GetBankAccounts
-  getMyBankAccounts: GetMyBankAccounts
-  getBankTransfers(data: GetBankTransfersDto!): GetBankTransfers
-  getBankTransfer(data: GetBankTransferDto!): GetBankTransfer
-  getInstitutions: GetInstitutions
-  getInstitution(data: GetInstitutionDto!): GetInstitutionById
-  exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken
-}
-union _Entity = BankAccountSchema | InstitutionSchema | BankAccountBalanceSchema | BankAccountAchSchema
-scalar _Any
-type _Service {
-  """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
-  sdl: String
-}
-type GetBankAccount {
-  success: Boolean!
-  errors: [ApiError!]
-  data: BankAccountSchema
-}
-type ApiError {
-  path: String!
-  message: String!
-}
-type BankAccountSchema @key(fields: "id") {
-  id: ID!
-  userId: String!
-  accountId: String!
-  institution: InstitutionSchema!
-  balance: BankAccountBalanceSchema!
-  ach: BankAccountAchSchema!
-  name: String!
-  officialName: String
-  subType: String
-  type: BankAccountType!
-  addedAt: String!
-}
-type InstitutionSchema @key(fields: "institutionId") {
-  id: ID!
-  institutionId: String!
-  institutionName: String!
-  institutionLogo: String
-  primaryColor: String
-  websiteUrl: String
-}
 type BankAccountBalanceSchema @key(fields: "id") {
   id: ID!
   availableBalance: Float
@@ -64,6 +16,19 @@ type BankAccountAchSchema @key(fields: "id") {
   account: String!
   wire_routing: String!
 }
+type BankAccountSchema @key(fields: "id") {
+  id: ID!
+  userId: String!
+  accountId: String!
+  institution: InstitutionSchema!
+  balance: BankAccountBalanceSchema!
+  ach: BankAccountAchSchema!
+  name: String!
+  officialName: String
+  subType: String
+  type: BankAccountType!
+  addedAt: String!
+}
 """Values of the Bank Account Type field"""
 enum BankAccountType {
   Investment
@@ -72,6 +37,41 @@ enum BankAccountType {
   Loan
   Brokerage
   Other
+}
+type InstitutionSchema @key(fields: "institutionId") {
+  id: ID!
+  institutionId: String!
+  institutionName: String!
+  institutionLogo: String
+  primaryColor: String
+  websiteUrl: String
+}
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+  getBankAccount(data: GetBankAccountDto!): GetBankAccount
+  getBankAccounts: GetBankAccounts
+  getMyBankAccounts: GetMyBankAccounts
+  getBankTransfers(data: GetBankTransfersDto!): GetBankTransfers
+  getBankTransfer(data: GetBankTransferDto!): GetBankTransfer
+  getInstitutions: GetInstitutions
+  getInstitution(data: GetInstitutionDto!): GetInstitutionById
+  exchangePublicToken(data: ExchangeTokenDto!): PlaidExchangePublicToken
+}
+union _Entity = BankAccountBalanceSchema | BankAccountAchSchema | BankAccountSchema | InstitutionSchema
+scalar _Any
+type _Service {
+  """The sdl representing the federated service capabilities. Includes federation directives, removes federation types, and includes rest of full schema after schema directives have been applied"""
+  sdl: String
+}
+type GetBankAccount {
+  success: Boolean!
+  errors: [ApiError!]
+  data: BankAccountSchema
+}
+type ApiError {
+  path: String!
+  message: String!
 }
 input GetBankAccountDto {
   bankAccountId: String!

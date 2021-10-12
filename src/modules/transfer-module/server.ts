@@ -13,7 +13,7 @@ import {
   env,
   EnvironmentType
 } from "neutronpay-wallet-common/dist/utils/environmentType";
-import { Connection, getConnection } from "typeorm";
+import { Connection } from "typeorm";
 import { genORMConnection } from "neutronpay-wallet-common/dist/helpers/orm.config";
 import { queueHandler } from "./queue";
 import * as WalletResolver from "./resolvers/wallet";
@@ -38,14 +38,10 @@ export async function listen(port: number): Promise<string | undefined> {
         await new REDIS().server.flushall();
       }
       let conn: Connection;
-      try {
-        conn = getConnection("default");
-      } catch (error) {
-        conn = await genORMConnection({
-          connection: "default",
-          service: "TRANSFER"
-        });
-      }
+      conn = await genORMConnection({
+        connection: "default",
+        service: "TRANSFER"
+      });
       if (channel) {
         queueHandler(conn, channel);
       }
@@ -99,7 +95,7 @@ export async function listen(port: number): Promise<string | undefined> {
             dataSources: {
               exchangeRateApi: new dataSource.ExchangeRateApi()
             },
-            url: req ?.protocol + "://" + req ?.get("host")
+            url: req?.protocol + "://" + req?.get("host")
           };
 
           try {
@@ -133,21 +129,21 @@ export async function listen(port: number): Promise<string | undefined> {
       console.table(
         env(EnvironmentType.PROD)
           ? {
-            SERVICE_NAME: "TRANSFER",
-            SERVICE_ENDPOINT: url,
-            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
-            PROCESS_ID: process.pid,
-            DATABASE_URL: process.env.DATABASE_URL,
-            REDIS_HOST: process.env.REDIS_HOST,
-            REDIS_PORT: process.env.REDIS_PORT
-          }
+              SERVICE_NAME: "TRANSFER",
+              SERVICE_ENDPOINT: url,
+              ENVIRONMENT: process.env.NODE_ENV?.trim(),
+              PROCESS_ID: process.pid,
+              DATABASE_URL: process.env.DATABASE_URL,
+              REDIS_HOST: process.env.REDIS_HOST,
+              REDIS_PORT: process.env.REDIS_PORT
+            }
           : {
-            SERVICE_NAME: "TRANSFER",
-            SERVICE_ENDPOINT: url,
-            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
-            PROCESS_ID: process.pid,
-            PORT: port,
-            DATABASE: conn ?.options.database
+              SERVICE_NAME: "TRANSFER",
+              SERVICE_ENDPOINT: url,
+              ENVIRONMENT: process.env.NODE_ENV?.trim(),
+              PROCESS_ID: process.pid,
+              PORT: port,
+              DATABASE: conn?.options.database
             }
       );
 

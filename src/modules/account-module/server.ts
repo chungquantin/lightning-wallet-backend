@@ -17,7 +17,7 @@ import {
   EnvironmentType
 } from "neutronpay-wallet-common/dist/utils/environmentType";
 import { genORMConnection } from "neutronpay-wallet-common/dist/helpers/orm.config";
-import { Connection, getConnection } from "typeorm";
+import { Connection } from "typeorm";
 
 export async function listen(port: number): Promise<string | undefined> {
   return withRabbitMQConnect({
@@ -26,14 +26,10 @@ export async function listen(port: number): Promise<string | undefined> {
       "amqps://lvbzzlva:Elg4XFIZ99gS1Cp2EN2_0__zp_FFdHXt@mustang.rmq.cloudamqp.com/lvbzzlva",
     callback: async ({ channel }) => {
       let conn: Connection;
-      try {
-        conn = getConnection("default");
-      } catch (error) {
-        conn = await genORMConnection({
-          service: "ACCOUNT",
-          connection: "default"
-        });
-      }
+      conn = await genORMConnection({
+        service: "ACCOUNT",
+        connection: "default"
+      });
 
       const schema = await buildFederatedSchema(
         {
@@ -62,7 +58,7 @@ export async function listen(port: number): Promise<string | undefined> {
         __dirname
       );
 
-      const sdl = printSchemaWithDirectives(schema);
+      const sdl = printSchemaWithDirectives(schema as any);
       fs.writeFileSync(__dirname + "/schema.graphql", sdl);
 
       const server = new ApolloServer({
@@ -90,7 +86,7 @@ export async function listen(port: number): Promise<string | undefined> {
                 redis,
                 channel,
                 currentUser: (req as any).user || undefined,
-                url: req ?.protocol + "://" + req ?.get("host")
+                url: req?.protocol + "://" + req?.get("host")
               };
             }
             return {
@@ -98,7 +94,7 @@ export async function listen(port: number): Promise<string | undefined> {
               redis,
               channel,
               currentUser: JSON.parse(req.headers.currentuser as string),
-              url: req ?.protocol + "://" + req ?.get("host")
+              url: req?.protocol + "://" + req?.get("host")
             };
           } catch (error) {
             return {
@@ -106,7 +102,7 @@ export async function listen(port: number): Promise<string | undefined> {
               redis,
               channel,
               currentUser: undefined,
-              url: req ?.protocol + "://" + req ?.get("host")
+              url: req?.protocol + "://" + req?.get("host")
             };
           }
         }
@@ -117,21 +113,21 @@ export async function listen(port: number): Promise<string | undefined> {
       console.table(
         env(EnvironmentType.PROD)
           ? {
-            SERVICE_NAME: "ACCOUNT",
-            SERVICE_ENDPOINT: url,
-            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
-            PROCESS_ID: process.pid,
-            DATABASE_URL: process.env.DATABASE_URL,
-            REDIS_HOST: process.env.REDIS_HOST,
-            REDIS_PORT: process.env.REDIS_PORT
-          }
+              SERVICE_NAME: "ACCOUNT",
+              SERVICE_ENDPOINT: url,
+              ENVIRONMENT: process.env.NODE_ENV?.trim(),
+              PROCESS_ID: process.pid,
+              DATABASE_URL: process.env.DATABASE_URL,
+              REDIS_HOST: process.env.REDIS_HOST,
+              REDIS_PORT: process.env.REDIS_PORT
+            }
           : {
-            SERVICE_NAME: "ACCOUNT",
-            SERVICE_ENDPOINT: url,
-            ENVIRONMENT: process.env.NODE_ENV ?.trim(),
-            PROCESS_ID: process.pid,
-            PORT: port,
-            DATABASE: conn ?.options.database
+              SERVICE_NAME: "ACCOUNT",
+              SERVICE_ENDPOINT: url,
+              ENVIRONMENT: process.env.NODE_ENV?.trim(),
+              PROCESS_ID: process.pid,
+              PORT: port,
+              DATABASE: conn?.options.database
             }
       );
 
