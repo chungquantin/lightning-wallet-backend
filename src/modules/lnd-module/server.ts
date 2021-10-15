@@ -74,6 +74,7 @@ export async function listen(port: number): Promise<string | undefined> {
           { retries: 10, retry: 10000 } // Options
         ),
         context: ({ req }): Partial<LndGQLContext> => {
+          console.log(req.headers);
           const redis = new REDIS().server;
 
           const contextResponse: Partial<LndGQLContext> = {

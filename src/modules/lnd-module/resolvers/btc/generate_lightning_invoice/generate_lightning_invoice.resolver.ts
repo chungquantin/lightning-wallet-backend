@@ -34,7 +34,7 @@ class GenerateLightningInvoiceResolver {
       `btc${currency}`
     ]();
     const btcAmount = exchangeRate * amount;
-    const lightningData = await AddInvoice(description, btcAmount);
+    const lightningData = await AddInvoice(description, btcAmount * 100000000);
     if (!lightningData) {
       return {
         success: false,

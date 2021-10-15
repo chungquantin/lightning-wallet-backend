@@ -1,4 +1,11 @@
-import { Resolver, Query, ObjectType, Field, Ctx } from "type-graphql";
+import {
+  Resolver,
+  Query,
+  ObjectType,
+  Field,
+  Ctx,
+  UseMiddleware,
+} from "type-graphql";
 import { ApiResponse } from "neutronpay-wallet-common/dist/shared";
 import { ChainInvoice, LightningInvoice } from "../../../entity";
 import {
@@ -8,6 +15,7 @@ import {
 import { InjectRepository } from "typeorm-typedi-extensions";
 import { LndGQLContext } from "../../../server";
 import { Service } from "typedi";
+import { isAuth } from "neutronpay-wallet-common";
 
 @ObjectType()
 class BtcAddress {
@@ -32,6 +40,7 @@ class GetMyBtcAddressResolver {
   @InjectRepository(LightningInvoiceRepository)
   private readonly lightningInvoiceRepository: LightningInvoiceRepository;
 
+  @UseMiddleware(isAuth)
   @Query(() => ApiGetMyBtcAddress, { nullable: true })
   async getMyBtcAddress(
     @Ctx() { currentUser }: LndGQLContext
@@ -47,6 +56,7 @@ class GetMyBtcAddressResolver {
         success: false,
         errors: [
           {
+            path: "chainInvoice",
             message: "Chain invoice does not found",
           },
         ],
@@ -63,6 +73,7 @@ class GetMyBtcAddressResolver {
         success: false,
         errors: [
           {
+            path: "lightningInvoice",
             message: "Lightning invoice does not found",
           },
         ],
