@@ -18,24 +18,24 @@ class BtcAddress {
   chainInvoice: ChainInvoice;
 }
 
-export const ApiGetBtcAddress = ApiResponse<BtcAddress>(
+export const ApiGetMyBtcAddress = ApiResponse<BtcAddress>(
   "getBtcAddress",
   BtcAddress
 );
-export type ApiGetBtcAddressType = InstanceType<typeof ApiGetBtcAddress>;
+export type ApiGetMyBtcAddressType = InstanceType<typeof ApiGetMyBtcAddress>;
 
 @Service()
 @Resolver(() => BtcAddress)
-class GetBtcAddressResolver {
+class GetMyBtcAddressResolver {
   @InjectRepository(ChainInvoiceRepository)
   private readonly chainInvoiceRepository: ChainInvoiceRepository;
   @InjectRepository(LightningInvoiceRepository)
   private readonly lightningInvoiceRepository: LightningInvoiceRepository;
 
-  @Query(() => ApiGetBtcAddress, { nullable: true })
-  async getBtcAddress(
+  @Query(() => ApiGetMyBtcAddress, { nullable: true })
+  async getMyBtcAddress(
     @Ctx() { currentUser }: LndGQLContext
-  ): Promise<ApiGetBtcAddressType> {
+  ): Promise<ApiGetMyBtcAddressType> {
     const chainInvoice = await this.chainInvoiceRepository.findOne({
       where: {
         userId: currentUser?.userId,
@@ -78,4 +78,4 @@ class GetBtcAddressResolver {
   }
 }
 
-export default GetBtcAddressResolver;
+export default GetMyBtcAddressResolver;

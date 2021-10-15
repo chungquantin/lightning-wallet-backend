@@ -46,10 +46,12 @@ export async function listen(port: number): Promise<string | undefined> {
       const schema = await buildFederatedSchema(
         {
           resolvers: [
-            NodeResolver.GetLightningTransactions,
+            NodeResolver.GetNodeTransactions,
+            NodeResolver.CheckOnChainStatus,
+            NodeResolver.CheckLightningStatus,
             BtcResolver.GenerateChainInvoice,
             BtcResolver.GenerateLightningInvoice,
-            BtcResolver.GetBtcAddress,
+            BtcResolver.GetMyBtcAddress,
             BtcResolver.GetBtcAddresses,
           ],
           orphanedTypes: [],

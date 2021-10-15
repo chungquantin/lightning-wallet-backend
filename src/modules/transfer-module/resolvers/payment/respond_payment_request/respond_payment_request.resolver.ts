@@ -43,8 +43,8 @@ class RespondPaymentRequestResolver {
     try {
       const userWallet = await this.walletRepository.findOne({
         where: {
-          userId: currentUser?.userId
-        }
+          userId: currentUser?.userId,
+        },
       });
 
       if (!userWallet) {
@@ -53,20 +53,19 @@ class RespondPaymentRequestResolver {
           errors: [
             {
               path: "paymentRequestId",
-              message: CustomMessage.walletIsNotFound
-            }
-          ]
+              message: CustomMessage.walletIsNotFound,
+            },
+          ],
         };
       }
 
-      const transactionRequest = await this.transactionRequestRepository.findOne(
-        {
+      const transactionRequest =
+        await this.transactionRequestRepository.findOne({
           where: {
-            id: paymentRequestId
+            id: paymentRequestId,
           },
-          relations: ["transaction"]
-        }
-      );
+          relations: ["transaction"],
+        });
 
       if (!transactionRequest) {
         return {
@@ -74,9 +73,9 @@ class RespondPaymentRequestResolver {
           errors: [
             {
               path: "paymentRequestId",
-              message: CustomMessage.transactionRequestNotFound
-            }
-          ]
+              message: CustomMessage.transactionRequestNotFound,
+            },
+          ],
         };
       }
 
@@ -89,9 +88,9 @@ class RespondPaymentRequestResolver {
           errors: [
             {
               path: "transactionRequestStatus",
-              message: CustomMessage.transactionRequestIsConfirmedOrRejected
-            }
-          ]
+              message: CustomMessage.transactionRequestIsConfirmedOrRejected,
+            },
+          ],
         };
       }
       if (moment().unix() > parseInt(transactionRequest.expiredAt)) {
@@ -100,9 +99,9 @@ class RespondPaymentRequestResolver {
           errors: [
             {
               path: "expiredAt",
-              message: CustomMessage.transactionIsExpired
-            }
-          ]
+              message: CustomMessage.transactionIsExpired,
+            },
+          ],
         };
       }
 
@@ -112,16 +111,16 @@ class RespondPaymentRequestResolver {
           errors: [
             {
               path: "requestTo",
-              message: CustomMessage.thisRequestIsNotForYou
-            }
-          ]
+              message: CustomMessage.thisRequestIsNotForYou,
+            },
+          ],
         };
       }
 
       const fromWallet = await this.walletRepository.findOne({
         where: {
-          id: transactionRequest.requestFrom
-        }
+          id: transactionRequest.requestFrom,
+        },
       });
 
       if (!fromWallet) {
@@ -130,20 +129,22 @@ class RespondPaymentRequestResolver {
           errors: [
             {
               path: "fromWallet",
-              message: CustomMessage.walletIsNotFound
-            }
-          ]
+              message: CustomMessage.walletIsNotFound,
+            },
+          ],
         };
       }
 
       if (confirmed) {
         transactionRequest.status = TransactionRequestStatus.CONFIRMED;
-        transactionRequest.transaction.status = TransactionStatus.DONE;
+        transactionRequest.transaction.status = TransactionStatus.PAID;
+        transactionRequest.transaction.settledAt = moment().unix().toString();
+        transactionRequest.settledAt = moment().unix().toString();
 
         const { currency, transaction, amount } = {
           currency: transactionRequest.transaction.currency,
           transaction: transactionRequest.transaction,
-          amount: transactionRequest.transaction.amount
+          amount: transactionRequest.transaction.amount,
         };
 
         // Handle balance wallet
@@ -178,17 +179,19 @@ class RespondPaymentRequestResolver {
           Queue.NOTIFICATION_QUEUE,
           {
             data: { transactionRequest },
-            operation: "transaction_request_confirmed"
+            operation: "transaction_request_confirmed",
           }
         );
 
         return {
           success: true,
-          data: true
+          data: true,
         };
       } else {
         transactionRequest.status = TransactionRequestStatus.REJECTED;
-        transactionRequest.transaction.status = TransactionStatus.DONE;
+        transactionRequest.transaction.status = TransactionStatus.UNPAID;
+        transactionRequest.transaction.settledAt = moment().unix().toString();
+        transactionRequest.settledAt = moment().unix().toString();
         transactionRequest.save();
 
         mqProduce<"transaction_request_rejected">(
@@ -196,7 +199,7 @@ class RespondPaymentRequestResolver {
           Queue.NOTIFICATION_QUEUE,
           {
             data: { transactionRequest },
-            operation: "transaction_request_rejected"
+            operation: "transaction_request_rejected",
           }
         );
 
@@ -209,7 +212,7 @@ class RespondPaymentRequestResolver {
 
         return {
           success: true,
-          data: false
+          data: false,
         };
       }
     } catch (err) {
@@ -218,9 +221,9 @@ class RespondPaymentRequestResolver {
         errors: [
           {
             path: "respondPaymentRequest",
-            message: err.message
-          }
-        ]
+            message: err.message,
+          },
+        ],
       };
     }
   }

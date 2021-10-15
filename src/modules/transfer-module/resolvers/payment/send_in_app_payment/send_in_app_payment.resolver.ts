@@ -2,7 +2,7 @@ import { Arg, Resolver, Mutation, Ctx, UseMiddleware } from "type-graphql";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import {
   ApiResponse,
-  CustomMessage
+  CustomMessage,
 } from "neutronpay-wallet-common/dist/shared";
 import { isAuth } from "neutronpay-wallet-common/dist/middleware";
 import { TransactionRepository, WalletRepository } from "../../../repository";
@@ -14,6 +14,7 @@ import { mqProduce } from "../../../queue";
 import { TransactionStatus } from "../../../constants";
 import { Queue } from "neutronpay-wallet-common/dist/constants/queue";
 import { Service } from "typedi";
+import moment from "moment";
 
 export const ApiSendInAppPaymentResponse = ApiResponse<Transaction>(
   "SendInAppPayment",
@@ -40,31 +41,28 @@ class SendInAppPaymentResolver {
     @Ctx()
     { currentUser, dataSources, channel }: WalletGQLContext
   ): Promise<ApiSendInAppPaymentResponseType> {
-    const {
-      transaction,
-      userWallet,
-      toWallet
-    } = await this.transactionRepository.createTransaction(
-      {
-        amount,
-        currency,
-        currentUser,
-        walletId,
-        method,
-        description
-      },
-      dataSources,
-      this.walletRepository
-    );
+    const { transaction, userWallet, toWallet } =
+      await this.transactionRepository.createTransaction(
+        {
+          amount,
+          currency,
+          currentUser,
+          walletId,
+          method,
+          description,
+        },
+        dataSources,
+        this.walletRepository
+      );
 
     if (!transaction || !userWallet || !toWallet) {
       return {
         success: false,
         errors: [
           {
-            message: CustomMessage.cannotCreateTransaction
-          }
-        ]
+            message: CustomMessage.cannotCreateTransaction,
+          },
+        ],
       };
     }
     // Handle balance wallet
@@ -94,19 +92,20 @@ class SendInAppPaymentResolver {
     })();
 
     // Update transaction status
-    transaction.status = TransactionStatus.DONE;
+    transaction.status = TransactionStatus.PAID;
+    transaction.paidAmount = amount;
     transaction.save();
 
     mqProduce<"transaction_sended">(channel, Queue.NOTIFICATION_QUEUE, {
       data: {
-        transaction
+        transaction,
       },
-      operation: "transaction_sended"
+      operation: "transaction_sended",
     });
 
     return {
       success: true,
-      data: transaction
+      data: transaction,
     };
   }
 }

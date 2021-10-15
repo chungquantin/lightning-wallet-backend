@@ -1,9 +1,6 @@
 import { Arg, Resolver, Mutation, Ctx, UseMiddleware } from "type-graphql";
 import { InjectRepository } from "typeorm-typedi-extensions";
-import {
-  ApiResponse,
-  TransactionStatus
-} from "neutronpay-wallet-common/dist/shared";
+import { ApiResponse } from "neutronpay-wallet-common/dist/shared";
 import { isAuth } from "neutronpay-wallet-common/dist/middleware";
 import { WalletRepository } from "../../../repository";
 import { WalletGQLContext } from "../../../server";
@@ -13,7 +10,7 @@ import { TransactionRequest } from "../../../entity/TransactionRequest";
 import { TransactionRequestRepository } from "../../../repository/TransactionRequestRepository";
 import { TransactionRequestStatus } from "../../../constants/TransactionRequestStatus.enum";
 import { REDIS_PAYMENT_SENT_PREFIX } from "../../../constants/globalConstants";
-import { CustomMessage } from "../../../constants";
+import { CustomMessage, TransactionStatus } from "../../../constants";
 import { CancelPaymentRequestDto } from "./cancel_payment_request.dto";
 import * as moment from "moment";
 import { Service } from "typedi";
@@ -24,7 +21,7 @@ export const ApiCancelPaymentRequestResponse = ApiResponse<String>(
 );
 export type ApiCancelPaymentRequestResponseType = InstanceType<
   typeof ApiCancelPaymentRequestResponse
-  >;
+>;
 
 @Service()
 @Resolver(() => TransactionRequest)
@@ -44,8 +41,8 @@ class CancelPaymentRequestResolver {
   ): Promise<ApiCancelPaymentRequestResponseType> {
     const userWallet = await this.walletRepository.findOne({
       where: {
-        userId: currentUser ?.userId
-      }
+        userId: currentUser?.userId,
+      },
     });
     if (!userWallet) {
       return {
@@ -53,17 +50,17 @@ class CancelPaymentRequestResolver {
         errors: [
           {
             message: CustomMessage.walletIsNotFound,
-            path: "currentUser"
-          }
-        ]
+            path: "currentUser",
+          },
+        ],
       };
     }
     const paymentRequest = await this.transactionRequestRepository.findOne({
       where: {
         id: paymentRequestId,
-        requestFrom: userWallet.id
+        requestFrom: userWallet.id,
       },
-      relations: ["transaction"]
+      relations: ["transaction"],
     });
     if (!paymentRequest) {
       return {
@@ -71,9 +68,9 @@ class CancelPaymentRequestResolver {
         errors: [
           {
             path: "paymentRequest",
-            message: CustomMessage.transactionRequestNotFound
-          }
-        ]
+            message: CustomMessage.transactionRequestNotFound,
+          },
+        ],
       };
     }
 
@@ -86,18 +83,20 @@ class CancelPaymentRequestResolver {
         errors: [
           {
             path: "paymentRequest",
-            message: CustomMessage.transactionRequestIsCanceled
-          }
-        ]
+            message: CustomMessage.transactionRequestIsCanceled,
+          },
+        ],
       };
     }
 
     paymentRequest.status = TransactionRequestStatus.CANCELED;
-    paymentRequest.transaction.status = TransactionStatus.DONE;
+    paymentRequest.transaction.status = TransactionStatus.UNPAID;
+    paymentRequest.transaction.settledAt = moment().unix().toString();
+    paymentRequest.settledAt = moment().unix().toString();
     paymentRequest.save();
 
     await redis.set(
-      `${REDIS_PAYMENT_SENT_PREFIX}${currentUser ?.userId}${paymentRequest.requestTo}`,
+      `${REDIS_PAYMENT_SENT_PREFIX}${currentUser?.userId}${paymentRequest.requestTo}`,
       "FALSE",
       "ex",
       60 * 60 * 24 * 7
@@ -108,15 +107,15 @@ class CancelPaymentRequestResolver {
       Queue.NOTIFICATION_QUEUE,
       {
         data: {
-          transactionRequest: paymentRequest
+          transactionRequest: paymentRequest,
         },
-        operation: "transaction_request_canceled"
+        operation: "transaction_request_canceled",
       }
     );
 
     return {
       success: true,
-      data: `Payment request ${paymentRequestId} is canceled successfully`
+      data: `Payment request ${paymentRequestId} is canceled successfully`,
     };
   }
 }

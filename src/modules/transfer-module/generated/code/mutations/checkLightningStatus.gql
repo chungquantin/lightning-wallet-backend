@@ -1,0 +1,22 @@
+mutation checkLightningStatus($data: CheckLightningStatusDto!) {
+    checkLightningStatus(data: $data){
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            memo
+            rHash
+            value
+            settled
+            creationDate
+            settleDate
+            paymentRequest
+            cltvExpiry
+            amtPaid
+            amtPaidSat
+            amtPaidMsat
+        }
+    }
+}

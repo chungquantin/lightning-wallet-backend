@@ -1,4 +1,4 @@
-query _service{
+query _service() {
     _service{
         sdl
     }

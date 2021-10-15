@@ -1,7 +1,7 @@
 import { Resolver, UseMiddleware, Mutation, Arg, Ctx } from "type-graphql";
 import {
   ApiResponse,
-  CustomMessage
+  CustomMessage,
 } from "neutronpay-wallet-common/dist/shared";
 import { WalletGQLContext } from "../../../server";
 import { SendInAppLightningPaymentDto } from "./send_in_app_lightning_payment.dto";
@@ -43,8 +43,8 @@ class SendInAppLightningPaymentResolver {
       // Get the current user wallet
       const wallet = await this.walletRepository.findOne({
         where: {
-          userId: currentUser?.userId
-        }
+          userId: currentUser?.userId,
+        },
       });
       if (!wallet) {
         return {
@@ -52,9 +52,9 @@ class SendInAppLightningPaymentResolver {
           errors: [
             {
               path: "userId",
-              message: CustomMessage.walletIsNotFound
-            }
-          ]
+              message: CustomMessage.walletIsNotFound,
+            },
+          ],
         };
       }
       let walletBalance = wallet.balance;
@@ -69,37 +69,34 @@ class SendInAppLightningPaymentResolver {
           errors: [
             {
               message: "amountSatoshi",
-              path: `Insufficient funds. Available balance ${balanceConvertedBtc} ${walletCurrency}. Please check already requested withdrawals.`
-            }
-          ]
+              path: `Insufficient funds. Available balance ${balanceConvertedBtc} ${walletCurrency}. Please check already requested withdrawals.`,
+            },
+          ],
         };
       }
 
-      const {
-        userWallet,
-        transaction,
-        toWallet
-      } = await this.transactionRepository.createTransaction(
-        {
-          amount: balanceConvertedBtc,
-          currency: walletCurrency,
-          currentUser,
-          walletId,
-          method: "LIGHTNING",
-          description: description
-        },
-        dataSources,
-        this.walletRepository
-      );
+      const { userWallet, transaction, toWallet } =
+        await this.transactionRepository.createTransaction(
+          {
+            amount: balanceConvertedBtc,
+            currency: walletCurrency,
+            currentUser,
+            walletId,
+            method: "LIGHTNING",
+            description: description,
+          },
+          dataSources,
+          this.walletRepository
+        );
 
       if (!userWallet || !transaction || !toWallet) {
         return {
           success: false,
           errors: [
             {
-              message: CustomMessage.cannotCreateTransaction
-            }
-          ]
+              message: CustomMessage.cannotCreateTransaction,
+            },
+          ],
         };
       }
 
@@ -112,12 +109,13 @@ class SendInAppLightningPaymentResolver {
       })();
 
       // Update transaction status
-      transaction.status = TransactionStatus.DONE;
+      transaction.status = TransactionStatus.PAID;
+      transaction.paidAmount = balanceConvertedBtc;
       transaction.save();
 
       return {
         success: true,
-        data: transaction
+        data: transaction,
       };
     } else {
       return {
@@ -125,9 +123,9 @@ class SendInAppLightningPaymentResolver {
         errors: [
           {
             message: "Invalid payment request",
-            path: "amountSatoshi"
-          }
-        ]
+            path: "amountSatoshi",
+          },
+        ],
       };
     }
   }

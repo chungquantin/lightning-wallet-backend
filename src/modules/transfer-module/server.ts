@@ -21,10 +21,12 @@ import * as PaymentResolver from "./resolvers/payment";
 import * as fs from "fs";
 import * as jwt from "jsonwebtoken";
 import { dataSource } from "./utils";
+import GlobalGraphQLResolver from "./generated/resolver";
 
 export interface WalletGQLContext extends GQLContext {
   dataSources: {
     exchangeRateApi: dataSource.ExchangeRateApi;
+    lndService: GlobalGraphQLResolver;
   };
 }
 
@@ -64,6 +66,7 @@ export async function listen(port: number): Promise<string | undefined> {
             PaymentResolver.GetPaymentRequests,
             PaymentResolver.GetMyPaymentRequests,
             PaymentResolver.CancelMyPaymentRequest,
+            PaymentResolver.CheckTransactionStatus,
           ],
           orphanedTypes: [Wallet],
           container: Container,
@@ -87,12 +90,13 @@ export async function listen(port: number): Promise<string | undefined> {
         context: ({ req }): Partial<WalletGQLContext> => {
           const redis = new REDIS().server;
 
-          const contextResponse = {
+          const contextResponse: Partial<WalletGQLContext> = {
             request: req,
             redis,
             channel,
             dataSources: {
               exchangeRateApi: new dataSource.ExchangeRateApi(),
+              lndService: new GlobalGraphQLResolver("http://localhost:3003"),
             },
             url: req?.protocol + "://" + req?.get("host"),
           };

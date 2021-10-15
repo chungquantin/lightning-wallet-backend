@@ -16,8 +16,8 @@ directive @provides(fields: String!) on FIELD_DEFINITION
 type Query {
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
-  lightningGetTransactions(Pagination: PaginationInputType): LndGetTransactions
-  getBtcAddress: getBtcAddress
+  getNodeTransactions(Pagination: PaginationInputType): GetNodeTransactions
+  getMyBtcAddress: getBtcAddress
   getBtcAddresses: getBtcAddresses
 }
 
@@ -30,7 +30,7 @@ type _Service {
   sdl: String
 }
 
-type LndGetTransactions {
+type GetNodeTransactions {
   success: Boolean!
   errors: [ApiError!]
   data: [LightningTransaction!]!
@@ -94,8 +94,63 @@ type BtcAddresses {
 }
 
 type Mutation {
+  checkOnChainStatus(data: CheckOnChainStatusDto!): CheckOnChainStatus
+  checkLightningStatus(data: CheckLightningStatusDto!): CheckLightningStatus
   generateOnChainInvoice: GenerateChainInvoice
   generateLightningInvoice(data: GenerateLightningInvoiceDto!): GenerateLightningInvoice
+}
+
+type CheckOnChainStatus {
+  success: Boolean!
+  errors: [ApiError!]
+  data: OnChainStatusResponse
+}
+
+type OnChainStatusResponse {
+  amount: Float!
+  timeStamp: Float!
+  txHash: String!
+  status: TransactionStatus!
+}
+
+"""Transaction status"""
+enum TransactionStatus {
+  UNPAID
+  PENDING
+  PAID
+  EXPIRED
+  PARTIALLY_PAID
+}
+
+input CheckOnChainStatusDto {
+  userId: String!
+  amount: Float!
+  txFee: Float!
+  createdAt: Float!
+}
+
+type CheckLightningStatus {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LightningStatusResponse
+}
+
+type LightningStatusResponse {
+  memo: String!
+  rHash: String!
+  value: Float!
+  settled: Boolean!
+  creationDate: Float!
+  settleDate: Float!
+  paymentRequest: String!
+  cltvExpiry: Float!
+  amtPaid: Float!
+  amtPaidSat: Float!
+  amtPaidMsat: Float!
+}
+
+input CheckLightningStatusDto {
+  userId: String!
 }
 
 type GenerateChainInvoice {
