@@ -58,8 +58,7 @@ export async function listen(port: number): Promise<string | undefined> {
             WalletResolver.GetTransaction,
             // Payment Request Resolver
             PaymentResolver.SendInAppPayment,
-            PaymentResolver.SendOutAppLightningPayment,
-            PaymentResolver.SendInAppLightningPayment,
+            PaymentResolver.SendLightningPayment,
             PaymentResolver.SendPaymentRequest,
             PaymentResolver.RespondPaymentRequest,
             PaymentResolver.GetPaymentRequest,

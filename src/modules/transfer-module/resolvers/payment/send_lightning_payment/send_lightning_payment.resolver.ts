@@ -6,7 +6,7 @@ import {
 } from "neutronpay-wallet-common/dist/shared";
 import { mqProduce } from "../../../queue";
 import { WalletGQLContext } from "../../../server";
-import { SendOutAppLightningPaymentDto } from "./send_out_app_lightning_payment.dto";
+import { SendLightningPaymentDto } from "./send_lightning_payment.dto";
 import { isAuth } from "neutronpay-wallet-common/dist/middleware";
 import { decode as lightningDecode } from "bolt11";
 import { InjectRepository } from "typeorm-typedi-extensions";
@@ -14,33 +14,34 @@ import { TransactionStatus } from "../../../constants";
 import { Transaction } from "../../../entity/Transaction";
 import { WalletRepository, TransactionRepository } from "../../../repository";
 import { Service } from "typedi";
+import { lightningUtil } from "../../../utils";
 
-export const ApiSendOutAppLightningPayment = ApiResponse<Transaction>(
-  "SendOutAppLightningPayment",
+export const ApiSendLightningPayment = ApiResponse<Transaction>(
+  "SendLightningPayment",
   Transaction
 );
-export type ApiSendOutAppLightningPaymentType = InstanceType<
-  typeof ApiSendOutAppLightningPayment
+export type ApiSendLightningPaymentType = InstanceType<
+  typeof ApiSendLightningPayment
 >;
 
 @Service()
 @Resolver(() => String)
-class SendOutAppLightningPaymentResolver {
+class SendLightningPaymentResolver {
   @InjectRepository(WalletRepository)
   private readonly walletRepository: WalletRepository;
   @InjectRepository(TransactionRepository)
   private readonly transactionRepository: TransactionRepository;
 
   @UseMiddleware(isAuth)
-  @Mutation(() => ApiSendOutAppLightningPayment, { nullable: true })
-  async sendOutAppLightningPayment(
+  @Mutation(() => ApiSendLightningPayment, { nullable: true })
+  async sendLightningPayment(
     @Arg("data")
-    { paymentRequest, description }: SendOutAppLightningPaymentDto,
+    { paymentRequest }: SendLightningPaymentDto,
     @Ctx()
     { channel, dataSources, currentUser }: WalletGQLContext
-  ): Promise<ApiSendOutAppLightningPaymentType> {
+  ): Promise<ApiSendLightningPaymentType> {
     const decodedPayReq = lightningDecode(paymentRequest);
-    const amountSatoshi = decodedPayReq.satoshis;
+    const amountSatoshi = Number(decodedPayReq.satoshis);
     if (amountSatoshi) {
       // Get the current user wallet
       const wallet = await this.walletRepository.findOne({
@@ -85,7 +86,9 @@ class SendOutAppLightningPaymentResolver {
             currentUser,
             walletId: null,
             method: "LIGHTNING",
-            description: description,
+            description: decodedPayReq.tags.filter(
+              (tag) => tag.tagName === "description"
+            )[0].data,
           },
           dataSources,
           this.walletRepository
@@ -139,4 +142,4 @@ class SendOutAppLightningPaymentResolver {
   }
 }
 
-export default SendOutAppLightningPaymentResolver;
+export default SendLightningPaymentResolver;
