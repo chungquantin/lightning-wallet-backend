@@ -1,0 +1,15 @@
+mutation generateOnChainInvoice() {
+    generateOnChainInvoice{
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            id
+            userId
+            address
+            createdAt
+        }
+    }
+}

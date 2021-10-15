@@ -34,6 +34,8 @@ type TransactionSchema @key(fields: "id") {
   fromWalletId: String!
   toWalletId: String!
   amount: Float!
+  paidAmount: Float!
+  amountLessFee: Float!
   networkFee: Float!
   transactionFee: Float!
   status: TransactionStatus!
@@ -43,20 +45,23 @@ type TransactionSchema @key(fields: "id") {
   btcExchangeRate: Float!
   btcAmount: Float!
   createdAt: String!
+  settledAt: String
 }
 
 """Transaction status"""
 enum TransactionStatus {
-  UNKNOWN
+  UNPAID
   PENDING
-  DONE
+  PAID
   EXPIRED
+  PARTIALLY_PAID
 }
 
 """Transaction method"""
 enum TransactionMethod {
   ON_CHAIN
   LIGHTNING
+  IN_APP
 }
 
 type Query {
@@ -151,6 +156,7 @@ type TransactionRequestSchema @key(fields: "id") {
   requestTo: String!
   createdAt: String!
   expiredAt: String!
+  settledAt: String
 }
 
 """Transaction request status"""
@@ -185,6 +191,7 @@ type Mutation {
   sendPaymentRequest(data: SendRequestPaymentDto!): SendPaymentRequest
   respondPaymentRequest(data: RespondPaymentRequestDto!): RespondPaymentRequest
   cancelPaymentRequest(data: CancelPaymentRequestDto!): CancelPaymentRequest
+  checkTransactionStatus(data: CheckTransactionStatusDto!): CheckTransactionStatus
 }
 
 type SendInAppPayment {
@@ -257,4 +264,21 @@ type CancelPaymentRequest {
 
 input CancelPaymentRequestDto {
   paymentRequestId: String!
+}
+
+type CheckTransactionStatus {
+  success: Boolean!
+  errors: [ApiError!]
+  data: CheckTransactionStatusResponse
+}
+
+type CheckTransactionStatusResponse {
+  transactionId: String!
+  status: TransactionStatus!
+  paidAmount: Float!
+  method: String!
+}
+
+input CheckTransactionStatusDto {
+  transactionId: String!
 }

@@ -97,7 +97,7 @@ export namespace Transaction {
     blockHeight: number,
     timeStamp: number,
     totalFees: number,
-    destAddressesList: Array<string>,
+    destAddresses: Array<string>,
     rawTxHex: string,
     label: string,
   }

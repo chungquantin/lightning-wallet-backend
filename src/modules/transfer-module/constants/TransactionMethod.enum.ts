@@ -1,11 +1,12 @@
-import { registerEnumType } from 'type-graphql';
+import { registerEnumType } from "type-graphql";
 
 export enum TransactionMethod {
-	ON_CHAIN = 'ON_CHAIN',
-	LIGHTNING = 'LIGHTNING',
+  ON_CHAIN = "ON_CHAIN",
+  LIGHTNING = "LIGHTNING",
+  IN_APP = "IN_APP",
 }
 
 registerEnumType(TransactionMethod, {
-	name: 'TransactionMethod', // this one is mandatory
-	description: 'Transaction method', // this one is optional
+  name: "TransactionMethod", // this one is mandatory
+  description: "Transaction method", // this one is optional
 });

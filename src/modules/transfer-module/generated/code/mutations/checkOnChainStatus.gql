@@ -1,0 +1,15 @@
+mutation checkOnChainStatus($data: CheckOnChainStatusDto!) {
+    checkOnChainStatus(data: $data){
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            amount
+            timeStamp
+            txHash
+            status
+        }
+    }
+}

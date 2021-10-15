@@ -1,0 +1,26 @@
+query getMyBtcAddress() {
+    getMyBtcAddress{
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            lightningInvoice{
+                id
+                userId
+                addIndex
+                payReq
+                rHash
+                createdAt
+                expiresAt
+            }
+            chainInvoice{
+                id
+                userId
+                address
+                createdAt
+            }
+        }
+    }
+}

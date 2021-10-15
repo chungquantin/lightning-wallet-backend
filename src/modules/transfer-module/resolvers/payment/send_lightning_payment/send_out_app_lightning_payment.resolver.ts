@@ -2,7 +2,7 @@ import { Resolver, UseMiddleware, Mutation, Arg, Ctx } from "type-graphql";
 import { Queue } from "neutronpay-wallet-common/dist/constants/queue";
 import {
   ApiResponse,
-  CustomMessage
+  CustomMessage,
 } from "neutronpay-wallet-common/dist/shared";
 import { mqProduce } from "../../../queue";
 import { WalletGQLContext } from "../../../server";
@@ -21,7 +21,7 @@ export const ApiSendOutAppLightningPayment = ApiResponse<Transaction>(
 );
 export type ApiSendOutAppLightningPaymentType = InstanceType<
   typeof ApiSendOutAppLightningPayment
-  >;
+>;
 
 @Service()
 @Resolver(() => String)
@@ -45,8 +45,8 @@ class SendOutAppLightningPaymentResolver {
       // Get the current user wallet
       const wallet = await this.walletRepository.findOne({
         where: {
-          userId: currentUser ?.userId
-        }
+          userId: currentUser?.userId,
+        },
       });
       if (!wallet) {
         return {
@@ -54,9 +54,9 @@ class SendOutAppLightningPaymentResolver {
           errors: [
             {
               path: "userId",
-              message: CustomMessage.walletIsNotFound
-            }
-          ]
+              message: CustomMessage.walletIsNotFound,
+            },
+          ],
         };
       }
       let walletBalance = wallet.balance;
@@ -71,36 +71,34 @@ class SendOutAppLightningPaymentResolver {
           errors: [
             {
               message: "amountSatoshi",
-              path: `Insufficient funds. Available balance ${balanceConvertedBtc} ${walletCurrency}. Please check already requested withdrawals.`
-            }
-          ]
+              path: `Insufficient funds. Available balance ${balanceConvertedBtc} ${walletCurrency}. Please check already requested withdrawals.`,
+            },
+          ],
         };
       }
 
-      const {
-        userWallet,
-        transaction
-      } = await this.transactionRepository.createTransaction(
-        {
-          amount: balanceConvertedBtc,
-          currency: walletCurrency,
-          currentUser,
-          walletId: null,
-          method: "LIGHTNING",
-          description: description
-        },
-        dataSources,
-        this.walletRepository
-      );
+      const { userWallet, transaction } =
+        await this.transactionRepository.createTransaction(
+          {
+            amount: balanceConvertedBtc,
+            currency: walletCurrency,
+            currentUser,
+            walletId: null,
+            method: "LIGHTNING",
+            description: description,
+          },
+          dataSources,
+          this.walletRepository
+        );
 
       if (!userWallet || !transaction) {
         return {
           success: false,
           errors: [
             {
-              message: CustomMessage.cannotCreateTransaction
-            }
-          ]
+              message: CustomMessage.cannotCreateTransaction,
+            },
+          ],
         };
       }
 
@@ -115,16 +113,17 @@ class SendOutAppLightningPaymentResolver {
       // Lightning Module handler
       mqProduce<"lightning_payment_sended">(channel, Queue.LND_QUEUE, {
         data: paymentRequest as any,
-        operation: "lightning_payment_sended"
+        operation: "lightning_payment_sended",
       });
 
       // Update transaction status
-      transaction.status = TransactionStatus.DONE;
+      transaction.status = TransactionStatus.PAID;
+      transaction.paidAmount = balanceConvertedBtc;
       transaction.save();
 
       return {
         success: true,
-        data: transaction
+        data: transaction,
       };
     } else {
       return {
@@ -132,9 +131,9 @@ class SendOutAppLightningPaymentResolver {
         errors: [
           {
             message: "Invalid payment request",
-            path: "amountSatoshi"
-          }
-        ]
+            path: "amountSatoshi",
+          },
+        ],
       };
     }
   }

@@ -4,12 +4,14 @@ import {
   GetInfoRequest,
   GetInfoResponse,
   GetTransactionsRequest,
+  Invoice,
   ListInvoiceRequest,
   ListInvoiceResponse,
   ListPaymentsRequest,
   ListPaymentsResponse,
   NewAddressRequest,
   NewAddressResponse,
+  PaymentHash,
   SendCoinsRequest,
   SendCoinsResponse,
   SendManyRequest,
@@ -63,7 +65,10 @@ export interface ILightningRPCServer extends grpc.Client {
     call?: Partial<SendManyRequest.AsObject>,
     callback?: grpc.sendUnaryData<SendManyResponse.AsObject>
   ) => any;
-  LookupInvoice: (call?: any, callback?: any) => any;
+  LookupInvoice: (
+    call?: Partial<PaymentHash.AsObject>,
+    callback?: any
+  ) => Invoice.AsObject;
   SubscribeTransactions: (call?: any, callback?: any) => any;
   SubscribeInvoices: (call?: any, callback?: any) => any;
 }

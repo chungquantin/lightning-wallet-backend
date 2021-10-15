@@ -7,6 +7,7 @@ import { ILightningRPCServer } from "./node.type";
 import {
   AddInvoiceResponse,
   GetInfoResponse,
+  Invoice,
   ListInvoiceResponse,
   ListPaymentsResponse,
   NewAddressResponse,
@@ -225,19 +226,21 @@ export const AddInvoice = function (description, value) {
   );
 };
 
-export const LookupInvoice = (r_hash) => {
-  return new Promise((resolve, reject) => {
-    const parameters = {
-      r_hash: r_hash,
-    };
-    client.LookupInvoice(parameters, (err, res) => {
-      // log(res, err)
-      if (!err) {
-        resolve(res);
-      } else {
-        reject(err);
+export const LookupInvoice = (rHash) => {
+  return new Promise<Invoice.AsObject | null | undefined>((resolve, reject) => {
+    client.LookupInvoice(
+      {
+        rHash,
+      },
+      (err, res) => {
+        // log(res, err)
+        if (!err) {
+          resolve(res);
+        } else {
+          reject(err);
+        }
       }
-    });
+    );
   });
 };
 

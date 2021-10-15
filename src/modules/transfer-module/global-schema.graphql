@@ -1,0 +1,178 @@
+"""Exposes a URL that specifies the behaviour of this scalar."""
+directive @specifiedBy(
+  """The URL that specifies the behaviour of this scalar."""
+  url: String!
+) on SCALAR
+
+directive @key(fields: String!) on OBJECT | INTERFACE
+
+directive @extends on OBJECT | INTERFACE
+
+directive @external on OBJECT | FIELD_DEFINITION
+
+directive @requires(fields: String!) on FIELD_DEFINITION
+
+directive @provides(fields: String!) on FIELD_DEFINITION
+
+scalar _Any
+
+union _Entity = LightningInvoiceSchema | ChainInvoiceSchema
+
+type _Service {
+  """
+  The sdl representing the federated service capabilities. Includes federation
+  directives, removes federation types, and includes rest of full schema after
+  schema directives have been applied
+  """
+  sdl: String
+}
+
+type ApiError {
+  path: String!
+  message: String!
+}
+
+type BtcAddress {
+  lightningInvoice: LightningInvoiceSchema!
+  chainInvoice: ChainInvoiceSchema!
+}
+
+type BtcAddresses {
+  lightningInvoices: [LightningInvoiceSchema!]!
+  chainInvoices: [ChainInvoiceSchema!]!
+}
+
+type ChainInvoiceSchema {
+  id: ID!
+  userId: String!
+  address: String!
+  createdAt: String!
+}
+
+type CheckLightningStatus {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LightningStatusResponse
+}
+
+input CheckLightningStatusDto {
+  userId: String!
+}
+
+type CheckOnChainStatus {
+  success: Boolean!
+  errors: [ApiError!]
+  data: OnChainStatusResponse
+}
+
+input CheckOnChainStatusDto {
+  userId: String!
+  amount: Float!
+  txFee: Float!
+  createdAt: Float!
+}
+
+type GenerateChainInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: ChainInvoiceSchema
+}
+
+type GenerateLightningInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LightningInvoiceSchema
+}
+
+input GenerateLightningInvoiceDto {
+  amount: Float!
+  currency: String!
+  description: String!
+}
+
+type getBtcAddress {
+  success: Boolean!
+  errors: [ApiError!]
+  data: BtcAddress
+}
+
+type getBtcAddresses {
+  success: Boolean!
+  errors: [ApiError!]
+  data: BtcAddresses
+}
+
+type GetNodeTransactions {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [LightningTransaction!]!
+}
+
+type LightningInvoiceSchema {
+  id: ID!
+  userId: String!
+  addIndex: Float!
+  payReq: String!
+  rHash: String!
+  createdAt: String!
+  expiresAt: String!
+}
+
+type LightningStatusResponse {
+  memo: String!
+  rHash: String!
+  value: Float!
+  settled: Boolean!
+  creationDate: Float!
+  settleDate: Float!
+  paymentRequest: String!
+  cltvExpiry: Float!
+  amtPaid: Float!
+  amtPaidSat: Float!
+  amtPaidMsat: Float!
+}
+
+type LightningTransaction {
+  amount: Float!
+  hash: String!
+  fees: Float!
+  blockHash: String!
+  timeStamp: Float!
+}
+
+type Mutation {
+  checkOnChainStatus(data: CheckOnChainStatusDto!): CheckOnChainStatus
+  checkLightningStatus(data: CheckLightningStatusDto!): CheckLightningStatus
+  generateOnChainInvoice: GenerateChainInvoice
+  generateLightningInvoice(data: GenerateLightningInvoiceDto!): GenerateLightningInvoice
+}
+
+type OnChainStatusResponse {
+  amount: Float!
+  timeStamp: Float!
+  txHash: String!
+  status: TransactionStatus!
+}
+
+input PaginationInputType {
+  limit: Int = 0
+  skip: Int = 0
+}
+
+type Query {
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+  getNodeTransactions(Pagination: PaginationInputType): GetNodeTransactions
+  getMyBtcAddress: getBtcAddress
+  getBtcAddresses: getBtcAddresses
+}
+
+"""Transaction status"""
+enum TransactionStatus {
+  UNPAID
+  PENDING
+  PAID
+  EXPIRED
+  PARTIALLY_PAID
+}
+

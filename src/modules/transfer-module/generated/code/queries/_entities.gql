@@ -1,0 +1,3 @@
+query _entities($representations: [_Any!]!) {
+    _entities(representations: $representations)
+}
