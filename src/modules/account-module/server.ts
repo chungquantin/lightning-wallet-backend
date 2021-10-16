@@ -42,6 +42,7 @@ export async function listen(port: number): Promise<string | undefined> {
             UserResolver.GetMyContacts,
             UserResolver.RegisterResolver,
             UserResolver.AddNewContactResolver,
+            UserResolver.SearchUser,
           ],
           orphanedTypes: [User],
           container: Container,
