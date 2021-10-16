@@ -186,9 +186,9 @@ type GetMyPaymentRequests {
 
 type Mutation {
   sendInAppPayment(data: SendInAppPaymentDto!): SendInAppPayment
-  sendOutAppLightningPayment(data: SendOutAppLightningPaymentDto!): SendOutAppLightningPayment
-  sendInAppLightningPayment(data: SendInAppLightningPaymentDto!): SendInAppLightningPayment
+  sendLightningPayment(data: SendLightningPaymentDto!): SendLightningPayment
   sendPaymentRequest(data: SendRequestPaymentDto!): SendPaymentRequest
+  sendOnchainPayment(data: SendOnchainPaymentDto!): SendOnchainPayment
   respondPaymentRequest(data: RespondPaymentRequestDto!): RespondPaymentRequest
   cancelPaymentRequest(data: CancelPaymentRequestDto!): CancelPaymentRequest
   checkTransactionStatus(data: CheckTransactionStatusDto!): CheckTransactionStatus
@@ -208,27 +208,14 @@ input SendInAppPaymentDto {
   description: String!
 }
 
-type SendOutAppLightningPayment {
+type SendLightningPayment {
   success: Boolean!
   errors: [ApiError!]
   data: TransactionSchema
 }
 
-input SendOutAppLightningPaymentDto {
+input SendLightningPaymentDto {
   paymentRequest: String!
-  description: String!
-}
-
-type SendInAppLightningPayment {
-  success: Boolean!
-  errors: [ApiError!]
-  data: TransactionSchema
-}
-
-input SendInAppLightningPaymentDto {
-  paymentRequest: String!
-  walletId: String!
-  description: String!
 }
 
 type SendPaymentRequest {
@@ -242,6 +229,20 @@ input SendRequestPaymentDto {
   amount: Float!
   currency: String!
   method: String!
+  description: String!
+}
+
+type SendOnchainPayment {
+  success: Boolean!
+  errors: [ApiError!]
+  data: TransactionSchema
+}
+
+input SendOnchainPaymentDto {
+  """Bitcoin Address"""
+  address: String!
+  """Bitcoin Amount"""
+  amount: Float!
   description: String!
 }
 

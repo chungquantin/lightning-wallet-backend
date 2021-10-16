@@ -1,4 +1,4 @@
-mutation checkLightningStatus($data: CheckLightningStatusDto!) {
+query checkLightningStatus($data: CheckLightningStatusDto!) {
     checkLightningStatus(data: $data){
         success
         errors{

@@ -6,11 +6,12 @@ import {
   BeforeInsert,
   BaseEntity,
   ManyToMany,
-  JoinTable
+  JoinTable,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from "bcryptjs";
 import * as moment from "moment";
+import { randomIntFromInterval } from "../utils/number";
 
 @Directive('@key(fields: "id")')
 @ObjectType("UserSchema")
@@ -48,6 +49,14 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
+  @Field(() => String)
+  @Column({
+    default: `neutronpay-${randomIntFromInterval(0, 100000)}`,
+    unique: true,
+    length: 20,
+  })
+  username: string;
+
   @Field(() => String!)
   @Column({ nullable: true })
   firstName: string;
@@ -61,18 +70,13 @@ export class User extends BaseEntity {
   forgotPasswordLock: boolean;
 
   @Field(() => [User])
-  @ManyToMany(
-    () => User,
-    user => user.contacts
-  )
+  @ManyToMany(() => User, (user) => user.contacts)
   @JoinTable()
   contacts: User[];
 
   @Field(() => String!)
   @Column("text", {
-    default: moment()
-      .unix()
-      .toString()
+    default: moment().unix().toString(),
   })
   createdAt: string;
 
@@ -98,7 +102,7 @@ export async function resolveUserReference(
 ): Promise<User | undefined> {
   return await User.findOne({
     where: {
-      id: reference.id
-    }
+      id: reference.id,
+    },
   })!;
 }

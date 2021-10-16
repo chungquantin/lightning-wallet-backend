@@ -34,7 +34,7 @@ class GenerateLightningInvoiceResolver {
       `btc${currency}`
     ]();
     const btcAmount = exchangeRate * amount;
-    const lightningData = await AddInvoice(description, btcAmount);
+    const lightningData = await AddInvoice(description, btcAmount * 100000000);
     if (!lightningData) {
       return {
         success: false,
@@ -46,12 +46,15 @@ class GenerateLightningInvoiceResolver {
         ],
       };
     }
+
     const lightningInvoice = await this.lightningInvoiceRepository
       .create({
         payReq: lightningData.paymentRequest,
         addIndex: lightningData.addIndex,
         userId: currentUser?.userId,
-        rHash: btoa(lightningData.rHash.toString()),
+        rHash: JSON.parse(
+          JSON.stringify(lightningData.rHash) as any
+        ).data.toString(),
       })
       .save();
 

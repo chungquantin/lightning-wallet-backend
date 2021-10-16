@@ -21,6 +21,7 @@ type UserSchema @key(fields: "id") {
   twoFactorVerified: Boolean!
   phoneNumberVerified: Boolean!
   phoneNumber: String!
+  username: String!
   firstName: String!
   lastName: String!
   forgotPasswordLock: Boolean!
@@ -34,6 +35,7 @@ type Query {
   _service: _Service!
   getCurrentUser: Me
   getMyContacts(Pagination: PaginationInputType): GetMyContacts
+  searchUser(data: SearchUserDto!): SearchUser
   getUser(data: GetUserDto!): GetUser
   getUsers(Pagination: PaginationInputType): GetUsers
 }
@@ -67,6 +69,16 @@ type GetMyContacts {
 input PaginationInputType {
   limit: Int = 0
   skip: Int = 0
+}
+
+type SearchUser {
+  success: Boolean!
+  errors: [ApiError!]
+  data: UserSchema
+}
+
+input SearchUserDto {
+  searchInput: String!
 }
 
 type GetUser {
@@ -129,6 +141,7 @@ input RegisterDto {
   password: String!
   phoneNumber: String!
   avatar: String!
+  username: String!
 }
 
 type ForgotPassword {

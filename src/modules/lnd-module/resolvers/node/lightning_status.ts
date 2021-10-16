@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import { Invoice } from "../../../proto/lnd_pb";
+import { Invoice } from "../../proto/lnd_pb";
 
 @ObjectType()
 export class LightningStatusResponse implements Partial<Invoice.AsObject> {

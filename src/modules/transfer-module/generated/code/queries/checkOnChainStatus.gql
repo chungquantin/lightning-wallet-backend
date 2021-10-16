@@ -1,4 +1,4 @@
-mutation checkOnChainStatus($data: CheckOnChainStatusDto!) {
+query checkOnChainStatus($data: CheckOnChainStatusDto!) {
     checkOnChainStatus(data: $data){
         success
         errors{
