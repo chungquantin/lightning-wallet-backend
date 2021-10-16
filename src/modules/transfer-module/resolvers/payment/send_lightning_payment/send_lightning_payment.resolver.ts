@@ -14,7 +14,10 @@ import { TransactionStatus } from "../../../constants";
 import { Transaction } from "../../../entity/Transaction";
 import { WalletRepository, TransactionRepository } from "../../../repository";
 import { Service } from "typedi";
-import { lightningUtil } from "../../../utils";
+import {
+  GetLightningInvoice,
+  GetLightningInvoiceDto,
+} from "../../../generated/graphql";
 
 export const ApiSendLightningPayment = ApiResponse<Transaction>(
   "SendLightningPayment",
@@ -25,7 +28,7 @@ export type ApiSendLightningPaymentType = InstanceType<
 >;
 
 @Service()
-@Resolver(() => String)
+@Resolver(() => Transaction)
 class SendLightningPaymentResolver {
   @InjectRepository(WalletRepository)
   private readonly walletRepository: WalletRepository;
@@ -66,6 +69,17 @@ class SendLightningPaymentResolver {
         `btc${walletCurrency}`
       ]();
       let balanceConvertedBtc = (amountSatoshi / 100000000) * btcRate;
+      if (balanceConvertedBtc <= 0) {
+        return {
+          success: false,
+          errors: [
+            {
+              message: "amount",
+              path: `Invalid bitcoin amount`,
+            },
+          ],
+        };
+      }
       if (balanceConvertedBtc < walletBalance) {
         return {
           success: false,
@@ -78,13 +92,53 @@ class SendLightningPaymentResolver {
         };
       }
 
-      const { userWallet, transaction } =
+      // Find destination userId on app
+      const lightningInvoice = await dataSources.lndService.query<
+        GetLightningInvoice,
+        GetLightningInvoiceDto
+      >("getLightningInvoice", {
+        data: {
+          paymentRequest,
+        },
+      });
+
+      const lightningInvoiceResponse = lightningInvoice.getLightningInvoice;
+
+      if (
+        !lightningInvoiceResponse.success &&
+        lightningInvoiceResponse.errors
+      ) {
+        return {
+          success: false,
+          errors: lightningInvoiceResponse.errors,
+        };
+      }
+
+      if (lightningInvoiceResponse.data?.userId === currentUser?.userId) {
+        return {
+          success: false,
+          errors: [
+            {
+              message: CustomMessage.stopBeingNaughty,
+              path: "userId",
+            },
+          ],
+        };
+      }
+
+      const destinationWallet = await this.walletRepository.findOne({
+        where: {
+          userId: lightningInvoiceResponse.data?.userId,
+        },
+      });
+
+      const { userWallet, transaction, toWallet } =
         await this.transactionRepository.createTransaction(
           {
             amount: balanceConvertedBtc,
             currency: walletCurrency,
             currentUser,
-            walletId: null,
+            walletId: destinationWallet?.id,
             method: "LIGHTNING",
             description: decodedPayReq.tags.filter(
               (tag) => tag.tagName === "description"
@@ -94,7 +148,7 @@ class SendLightningPaymentResolver {
           this.walletRepository
         );
 
-      if (!userWallet || !transaction) {
+      if (!transaction || !userWallet || !toWallet) {
         return {
           success: false,
           errors: [
@@ -105,22 +159,51 @@ class SendLightningPaymentResolver {
         };
       }
 
-      (async () => {
+      if (toWallet) {
+        // Destination is inside app
         // Adding and subtracting money from user balance
         this.walletRepository.addPayment(userWallet, transaction);
         userWallet.balance -= balanceConvertedBtc;
-
         userWallet.save();
-      })();
-
-      // Lightning Module handler
-      mqProduce<"lightning_payment_sended">(channel, Queue.LND_QUEUE, {
-        data: paymentRequest as any,
-        operation: "lightning_payment_sended",
-      });
+        // Adding and subtracting money from destination balance
+        this.walletRepository.addPayment(toWallet, transaction);
+        if (userWallet.defaultCurrency !== toWallet.defaultCurrency) {
+          const exchangeRate = await dataSources.exchangeRateApi.exchangeRate[
+            `${toWallet.defaultCurrency.toLowerCase()}${
+              userWallet.defaultCurrency
+            }`
+          ]();
+          toWallet.balance += exchangeRate * balanceConvertedBtc;
+        } else {
+          toWallet.balance += balanceConvertedBtc;
+        }
+        toWallet.save();
+        transaction.status = TransactionStatus.PAID;
+      } else {
+        // Destination is outside app
+        if (!userWallet || !transaction) {
+          return {
+            success: false,
+            errors: [
+              {
+                message: CustomMessage.cannotCreateTransaction,
+              },
+            ],
+          };
+        }
+        // Adding and subtracting money from user balance
+        this.walletRepository.addPayment(userWallet, transaction);
+        userWallet.balance -= balanceConvertedBtc;
+        userWallet.save();
+        // Lightning Module handler
+        transaction.status = TransactionStatus.PENDING;
+        mqProduce<"lightning_payment_sended">(channel, Queue.LND_QUEUE, {
+          data: paymentRequest as any,
+          operation: "lightning_payment_sended",
+        });
+      }
 
       // Update transaction status
-      transaction.status = TransactionStatus.PAID;
       transaction.paidAmount = balanceConvertedBtc;
       transaction.save();
 

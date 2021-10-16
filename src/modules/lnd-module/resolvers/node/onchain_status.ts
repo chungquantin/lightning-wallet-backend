@@ -1,8 +1,9 @@
 import { Field, ObjectType } from "type-graphql";
-import { TransactionStatus } from "../../../constants/TransactionStatus.enum";
-import { Transaction } from "../../../proto/lnd_pb";
+import { TransactionStatus } from "../../constants/TransactionStatus.enum";
+import { Transaction } from "../../proto/lnd_pb";
 
-interface IOnChainStatusResponse extends Partial<Transaction.AsObject> {
+interface IOnChainStatusResponse
+  extends Pick<Transaction.AsObject, "amount" | "timeStamp" | "txHash"> {
   status: TransactionStatus;
 }
 

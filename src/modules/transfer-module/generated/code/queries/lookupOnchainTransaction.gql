@@ -1,0 +1,21 @@
+query lookupOnchainTransaction($data: LookupOnChainTransactionDto!) {
+    lookupOnchainTransaction(data: $data){
+        success
+        errors{
+            path
+            message
+        }
+        data{
+            txHash
+            amount
+            numConfirmations
+            blockHash
+            blockHeight
+            timeStamp
+            totalFees
+            destAddresses
+            rawTxHex
+            label
+        }
+    }
+}

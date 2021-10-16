@@ -46,12 +46,15 @@ class GenerateLightningInvoiceResolver {
         ],
       };
     }
+
     const lightningInvoice = await this.lightningInvoiceRepository
       .create({
         payReq: lightningData.paymentRequest,
         addIndex: lightningData.addIndex,
         userId: currentUser?.userId,
-        rHash: btoa(lightningData.rHash.toString()),
+        rHash: JSON.parse(
+          JSON.stringify(lightningData.rHash) as any
+        ).data.toString(),
       })
       .save();
 

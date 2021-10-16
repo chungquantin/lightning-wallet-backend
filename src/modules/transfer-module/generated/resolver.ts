@@ -21,6 +21,8 @@ const gqlModules = {
   },
   queries: {
     getMyBtcAddress: loader("./code/queries/getMyBtcAddress.gql"),
+    getChainInvoice: loader("./code/queries/getChainInvoice.gql"),
+    getLightningInvoice: loader("./code/queries/getLightningInvoice.gql"),
   },
 };
 

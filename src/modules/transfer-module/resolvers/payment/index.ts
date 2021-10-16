@@ -1,6 +1,7 @@
 export { default as SendInAppPayment } from "./send_in_app_payment/send_in_app_payment.resolver";
 export { default as SendLightningPayment } from "./send_lightning_payment/send_lightning_payment.resolver";
 export { default as SendPaymentRequest } from "./request_payment/send_payment_request.resolver";
+export { default as SendOnchainPayment } from "./send_onchain_payment/send_onchain_payment.resolver";
 export { default as RespondPaymentRequest } from "./respond_payment_request/respond_payment_request.resolver";
 export { default as GetPaymentRequest } from "./get_payment_request/get_payment_request.resolver";
 export { default as GetPaymentRequests } from "./get_payment_requests/get_payment_requests.resolver";

@@ -90,16 +90,36 @@ input GenerateLightningInvoiceDto {
   description: String!
 }
 
-type getBtcAddress {
+type GetBtcAddress {
   success: Boolean!
   errors: [ApiError!]
   data: BtcAddress
 }
 
-type getBtcAddresses {
+type GetBtcAddresses {
   success: Boolean!
   errors: [ApiError!]
   data: BtcAddresses
+}
+
+type GetChainInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: ChainInvoiceSchema
+}
+
+input GetChainInvoiceDto {
+  address: String!
+}
+
+type GetLightningInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LightningInvoiceSchema
+}
+
+input GetLightningInvoiceDto {
+  paymentRequest: String!
 }
 
 type GetNodeTransactions {
@@ -140,9 +160,27 @@ type LightningTransaction {
   timeStamp: Float!
 }
 
+type LookupLightningInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LightningStatusResponse
+}
+
+input LookupLightningInvoiceDto {
+  rHash: String!
+}
+
+type LookupOnchainTransaction {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [OnchainTransaction!]!
+}
+
+input LookupOnChainTransactionDto {
+  address: String!
+}
+
 type Mutation {
-  checkOnChainStatus(data: CheckOnChainStatusDto!): CheckOnChainStatus
-  checkLightningStatus(data: CheckLightningStatusDto!): CheckLightningStatus
   generateOnChainInvoice: GenerateChainInvoice
   generateLightningInvoice(data: GenerateLightningInvoiceDto!): GenerateLightningInvoice
 }
@@ -154,6 +192,19 @@ type OnChainStatusResponse {
   status: TransactionStatus!
 }
 
+type OnchainTransaction {
+  txHash: String!
+  amount: Float!
+  numConfirmations: Float!
+  blockHash: String!
+  blockHeight: Float!
+  timeStamp: Float!
+  totalFees: Float!
+  destAddresses: [String!]!
+  rawTxHex: String!
+  label: String!
+}
+
 input PaginationInputType {
   limit: Int = 0
   skip: Int = 0
@@ -163,8 +214,14 @@ type Query {
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
   getNodeTransactions(Pagination: PaginationInputType): GetNodeTransactions
-  getMyBtcAddress: getBtcAddress
-  getBtcAddresses: getBtcAddresses
+  checkOnChainStatus(data: CheckOnChainStatusDto!): CheckOnChainStatus
+  checkLightningStatus(data: CheckLightningStatusDto!): CheckLightningStatus
+  lookupLightningInvoice(data: LookupLightningInvoiceDto!): LookupLightningInvoice
+  lookupOnchainTransaction(data: LookupOnChainTransactionDto!): LookupOnchainTransaction
+  getMyBtcAddress: GetBtcAddress
+  getBtcAddresses: GetBtcAddresses
+  getLightningInvoice(data: GetLightningInvoiceDto!): GetLightningInvoice
+  getChainInvoice(data: GetChainInvoiceDto!): GetChainInvoice
 }
 
 """Transaction status"""

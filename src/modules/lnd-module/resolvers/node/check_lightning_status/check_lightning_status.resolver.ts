@@ -1,9 +1,9 @@
-import { Resolver, Mutation, Arg } from "type-graphql";
+import { Resolver, Arg, Query } from "type-graphql";
 import { ApiResponse } from "neutronpay-wallet-common/dist/shared";
 import { Service } from "typedi";
 import { LookupInvoice } from "../../../node";
 import { CheckLightningStatusDto } from "./check_lightning_status.dto";
-import { LightningStatusResponse } from "./lightning_status";
+import { LightningStatusResponse } from "../lightning_status";
 import { LightningInvoiceRepository } from "../../../repository";
 import { InjectRepository } from "typeorm-typedi-extensions";
 
@@ -22,7 +22,7 @@ class CheckLightningStatusResolver {
   @InjectRepository(LightningInvoiceRepository)
   private readonly lightningInvoiceRepository: LightningInvoiceRepository;
 
-  @Mutation(() => ApiCheckLightningStatusResponse, { nullable: true })
+  @Query(() => ApiCheckLightningStatusResponse, { nullable: true })
   async checkLightningStatus(
     @Arg("data") { userId }: CheckLightningStatusDto
   ): Promise<ApiCheckLightningStatusResponseType> {
@@ -46,6 +46,7 @@ class CheckLightningStatusResolver {
         ],
       };
     }
+    console.log(lightningInvoice);
     if (typeof lightningInvoice.rHash !== "undefined") {
       return {
         success: false,

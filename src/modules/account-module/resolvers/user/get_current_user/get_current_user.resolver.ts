@@ -6,7 +6,7 @@ import { GQLContext } from "neutronpay-wallet-common/dist/utils/graphql-utils";
 import { isAuth } from "neutronpay-wallet-common/dist/middleware/isAuth";
 import {
   ApiResponse,
-  CustomMessage
+  CustomMessage,
 } from "neutronpay-wallet-common/dist/shared";
 import { Service } from "typedi";
 
@@ -27,7 +27,7 @@ class GetCurrentUserResolver {
     @Ctx() { currentUser }: GQLContext
   ): Promise<ApiGetCurrentUserResponseType> {
     const user = await this.userRepository.findOne({
-      where: { id: currentUser?.userId }
+      where: { id: currentUser?.userId },
     });
 
     if (!user) {
@@ -36,14 +36,14 @@ class GetCurrentUserResolver {
         errors: [
           {
             path: "userId",
-            message: CustomMessage.userIsNotFound
-          }
-        ]
+            message: CustomMessage.userIsNotFound,
+          },
+        ],
       };
     }
     return {
       success: true,
-      data: user
+      data: user,
     };
   }
 }

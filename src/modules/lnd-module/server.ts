@@ -49,10 +49,14 @@ export async function listen(port: number): Promise<string | undefined> {
             NodeResolver.GetNodeTransactions,
             NodeResolver.CheckOnChainStatus,
             NodeResolver.CheckLightningStatus,
+            NodeResolver.LookupLightningInvoice,
+            NodeResolver.LookupOnchainTransactions,
             BtcResolver.GenerateChainInvoice,
             BtcResolver.GenerateLightningInvoice,
             BtcResolver.GetMyBtcAddress,
             BtcResolver.GetBtcAddresses,
+            BtcResolver.GetLightningInvoice,
+            BtcResolver.GetChainInvoice,
           ],
           orphanedTypes: [],
           container: Container,
@@ -74,7 +78,6 @@ export async function listen(port: number): Promise<string | undefined> {
           { retries: 10, retry: 10000 } // Options
         ),
         context: ({ req }): Partial<LndGQLContext> => {
-          console.log(req.headers);
           const redis = new REDIS().server;
 
           const contextResponse: Partial<LndGQLContext> = {

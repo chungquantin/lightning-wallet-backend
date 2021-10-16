@@ -5,8 +5,14 @@ schema {
 
 type Query {
   getNodeTransactions(Pagination: PaginationInputType): GetNodeTransactions
-  getMyBtcAddress: getBtcAddress
-  getBtcAddresses: getBtcAddresses
+  checkOnChainStatus(data: CheckOnChainStatusDto!): CheckOnChainStatus
+  checkLightningStatus(data: CheckLightningStatusDto!): CheckLightningStatus
+  lookupLightningInvoice(data: LookupLightningInvoiceDto!): LookupLightningInvoice
+  lookupOnchainTransaction(data: LookupOnChainTransactionDto!): LookupOnchainTransaction
+  getMyBtcAddress: GetBtcAddress
+  getBtcAddresses: GetBtcAddresses
+  getLightningInvoice(data: GetLightningInvoiceDto!): GetLightningInvoice
+  getChainInvoice(data: GetChainInvoiceDto!): GetChainInvoice
 }
 
 type GetNodeTransactions {
@@ -31,52 +37,6 @@ type LightningTransaction {
 input PaginationInputType {
   limit: Int = 0
   skip: Int = 0
-}
-
-type getBtcAddress {
-  success: Boolean!
-  errors: [ApiError!]
-  data: BtcAddress
-}
-
-type BtcAddress {
-  lightningInvoice: LightningInvoiceSchema!
-  chainInvoice: ChainInvoiceSchema!
-}
-
-type LightningInvoiceSchema @key(fields: "id") {
-  id: ID!
-  userId: String!
-  addIndex: Float!
-  payReq: String!
-  rHash: String!
-  createdAt: String!
-  expiresAt: String!
-}
-
-type ChainInvoiceSchema @key(fields: "id") {
-  id: ID!
-  userId: String!
-  address: String!
-  createdAt: String!
-}
-
-type getBtcAddresses {
-  success: Boolean!
-  errors: [ApiError!]
-  data: BtcAddresses
-}
-
-type BtcAddresses {
-  lightningInvoices: [LightningInvoiceSchema!]!
-  chainInvoices: [ChainInvoiceSchema!]!
-}
-
-type Mutation {
-  checkOnChainStatus(data: CheckOnChainStatusDto!): CheckOnChainStatus
-  checkLightningStatus(data: CheckLightningStatusDto!): CheckLightningStatus
-  generateOnChainInvoice: GenerateChainInvoice
-  generateLightningInvoice(data: GenerateLightningInvoiceDto!): GenerateLightningInvoice
 }
 
 type CheckOnChainStatus {
@@ -130,6 +90,103 @@ type LightningStatusResponse {
 
 input CheckLightningStatusDto {
   userId: String!
+}
+
+type LookupLightningInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LightningStatusResponse
+}
+
+input LookupLightningInvoiceDto {
+  rHash: String!
+}
+
+type LookupOnchainTransaction {
+  success: Boolean!
+  errors: [ApiError!]
+  data: [OnchainTransaction!]!
+}
+
+type OnchainTransaction {
+  txHash: String!
+  amount: Float!
+  numConfirmations: Float!
+  blockHash: String!
+  blockHeight: Float!
+  timeStamp: Float!
+  totalFees: Float!
+  destAddresses: [String!]!
+  rawTxHex: String!
+  label: String!
+}
+
+input LookupOnChainTransactionDto {
+  address: String!
+}
+
+type GetBtcAddress {
+  success: Boolean!
+  errors: [ApiError!]
+  data: BtcAddress
+}
+
+type BtcAddress {
+  lightningInvoice: LightningInvoiceSchema!
+  chainInvoice: ChainInvoiceSchema!
+}
+
+type LightningInvoiceSchema @key(fields: "id") {
+  id: ID!
+  userId: String!
+  addIndex: Float!
+  payReq: String!
+  rHash: String!
+  createdAt: String!
+  expiresAt: String!
+}
+
+type ChainInvoiceSchema @key(fields: "id") {
+  id: ID!
+  userId: String!
+  address: String!
+  createdAt: String!
+}
+
+type GetBtcAddresses {
+  success: Boolean!
+  errors: [ApiError!]
+  data: BtcAddresses
+}
+
+type BtcAddresses {
+  lightningInvoices: [LightningInvoiceSchema!]!
+  chainInvoices: [ChainInvoiceSchema!]!
+}
+
+type GetLightningInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: LightningInvoiceSchema
+}
+
+input GetLightningInvoiceDto {
+  paymentRequest: String!
+}
+
+type GetChainInvoice {
+  success: Boolean!
+  errors: [ApiError!]
+  data: ChainInvoiceSchema
+}
+
+input GetChainInvoiceDto {
+  address: String!
+}
+
+type Mutation {
+  generateOnChainInvoice: GenerateChainInvoice
+  generateLightningInvoice(data: GenerateLightningInvoiceDto!): GenerateLightningInvoice
 }
 
 type GenerateChainInvoice {

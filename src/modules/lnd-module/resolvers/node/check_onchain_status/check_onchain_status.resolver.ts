@@ -1,11 +1,11 @@
-import { Resolver, Mutation, Arg, ObjectType, Field } from "type-graphql";
+import { Resolver, Arg, Query } from "type-graphql";
 import { ApiResponse } from "neutronpay-wallet-common/dist/shared";
 import { Service } from "typedi";
 import { config } from "../../../config";
 import { GetTransactions } from "../../../node";
 import { CheckOnChainStatusDto } from "./check_onchain_status.dto";
 import { TransactionStatus } from "../../../constants/TransactionStatus.enum";
-import { OnChainStatusResponse } from "./onchain_status";
+import { OnChainStatusResponse } from "../onchain_status";
 import { ChainInvoiceRepository } from "../../../repository";
 import { InjectRepository } from "typeorm-typedi-extensions";
 
@@ -23,7 +23,7 @@ class CheckOnChainStatusResolver {
   @InjectRepository(ChainInvoiceRepository)
   private readonly chainInvoiceRepository: ChainInvoiceRepository;
 
-  @Mutation(() => ApiCheckOnChainStatusResponse, { nullable: true })
+  @Query(() => ApiCheckOnChainStatusResponse, { nullable: true })
   async checkOnChainStatus(
     @Arg("data") { userId, amount, txFee, createdAt }: CheckOnChainStatusDto
   ): Promise<ApiCheckOnChainStatusResponseType> {

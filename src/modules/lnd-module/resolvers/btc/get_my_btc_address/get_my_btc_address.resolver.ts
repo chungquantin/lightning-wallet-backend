@@ -27,7 +27,7 @@ class BtcAddress {
 }
 
 export const ApiGetMyBtcAddress = ApiResponse<BtcAddress>(
-  "getBtcAddress",
+  "GetBtcAddress",
   BtcAddress
 );
 export type ApiGetMyBtcAddressType = InstanceType<typeof ApiGetMyBtcAddress>;

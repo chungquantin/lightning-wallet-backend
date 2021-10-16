@@ -24,6 +24,10 @@ interface OutgoingMessageDataMap {
   lightning_payment_sended: {
     paymentRequest: any;
   };
+  onchain_payment_sended: {
+    amount: number;
+    address: string;
+  };
 }
 
 type OutgoingMessage<Key extends keyof OutgoingMessageDataMap> = {
@@ -54,8 +58,8 @@ const handlerMap: HandlerMap = {
     if (
       !!(await walletRepository.findOne({
         where: {
-          userId
-        }
+          userId,
+        },
       }))
     ) {
       throw new Error(CustomMessage.walletIsCreatedAlready);
@@ -63,11 +67,11 @@ const handlerMap: HandlerMap = {
     await walletRepository
       .create({
         userId,
-        balance: 100000
+        balance: 10000,
       })
       .save();
     console.log(`[TRANSFER_QUEUE] New wallet created for account ${userId}`);
-  }
+  },
 };
 
 export const mqProduce = <Key extends keyof OutgoingMessageDataMap>(
@@ -82,9 +86,9 @@ export const queueHandler = async (conn: Connection, channel: Channel) => {
   const mqConsume = <Key extends keyof IncomingMessageDataMap>(
     queue: Queue
   ) => {
-    channel.consume(queue, async e => {
+    channel.consume(queue, async (e) => {
       let data: IncomingMessage<Key> | undefined;
-      const m = e ?.content.toString();
+      const m = e?.content.toString();
       if (m) {
         data = JSON.parse(m);
         if (data) {
@@ -97,8 +101,8 @@ export const queueHandler = async (conn: Connection, channel: Channel) => {
   channel.assertQueue(Queue.TRANSFER_QUEUE, {
     durable: false,
     arguments: {
-      "x-message-ttl": 0
-    }
+      "x-message-ttl": 0,
+    },
   });
 
   mqConsume<"new_account_created">(Queue.TRANSFER_QUEUE);
