@@ -2,7 +2,7 @@ import { Resolver, Query, Arg, UseMiddleware, Ctx } from "type-graphql";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import {
   ApiArrayResponse,
-  PaginationInputType
+  PaginationInputType,
 } from "neutronpay-wallet-common/dist/shared";
 import { TransactionRequest } from "../../../entity/TransactionRequest";
 import { TransactionRequestRepository } from "../../../repository/TransactionRequestRepository";
@@ -12,9 +12,11 @@ import { WalletRepository } from "../../../repository";
 import { CustomMessage } from "../../../constants";
 import { Service } from "typedi";
 
-export const ApiGetMyPaymentRequestsResponse = ApiArrayResponse<
-  TransactionRequest
->("GetMyPaymentRequests", TransactionRequest);
+export const ApiGetMyPaymentRequestsResponse =
+  ApiArrayResponse<TransactionRequest>(
+    "GetMyPaymentRequests",
+    TransactionRequest
+  );
 export type ApiGetMyPaymentRequestsResponseType = InstanceType<
   typeof ApiGetMyPaymentRequestsResponse
 >;
@@ -37,8 +39,8 @@ class GetMyPaymentRequestsResolver {
   ): Promise<ApiGetMyPaymentRequestsResponseType> {
     const wallet = await this.walletRepository.findOne({
       where: {
-        userId: currentUser?.userId
-      }
+        userId: currentUser?.userId,
+      },
     });
 
     if (!wallet) {
@@ -48,16 +50,21 @@ class GetMyPaymentRequestsResolver {
         errors: [
           {
             path: "currentUser",
-            message: CustomMessage.walletIsNotFound
-          }
-        ]
+            message: CustomMessage.walletIsNotFound,
+          },
+        ],
       };
     }
     const transactionRequests = await this.transactionRequestRepository.find({
-      where: {
-        requestTo: wallet.id
-      },
-      relations: ["transaction"]
+      where: [
+        {
+          requestTo: wallet.id,
+        },
+        {
+          requestFrom: wallet.id,
+        },
+      ],
+      relations: ["transaction"],
     });
 
     return {
@@ -65,7 +72,7 @@ class GetMyPaymentRequestsResolver {
       data: transactionRequests.slice(
         Pagination?.skip,
         Pagination?.limit === 0 ? transactionRequests.length : Pagination?.limit
-      )
+      ),
     };
   }
 }
