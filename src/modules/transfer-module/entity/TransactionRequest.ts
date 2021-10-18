@@ -71,6 +71,7 @@ export class TransactionRequest extends BaseEntity {
         this.expiredAt = moment().add(12, "hours").unix().toString();
         break;
       default:
+        this.expiredAt = moment().add(1, "days").unix().toString();
         break;
     }
   }

@@ -19,6 +19,8 @@ import {
 import { isAuth } from "neutronpay-wallet-common/dist/middleware";
 import { CheckTransactionStatusResponse } from "./transaction_status";
 import { config } from "../../../config";
+import { TransactionRequestRepository } from "../../../repository/TransactionRequestRepository";
+import * as moment from "moment";
 
 export const ApiCheckTransactionStatus =
   ApiResponse<CheckTransactionStatusResponse>(
@@ -34,6 +36,8 @@ export type ApiCheckTransactionStatusType = InstanceType<
 class CheckTransactionStatusResolver {
   @InjectRepository(TransactionRepository)
   private readonly transactionRepository: TransactionRepository;
+  @InjectRepository(TransactionRequestRepository)
+  private readonly transactionRequestRepository: TransactionRequestRepository;
 
   @UseMiddleware(isAuth)
   @Mutation(() => ApiCheckTransactionStatus, { nullable: true })
@@ -126,6 +130,23 @@ class CheckTransactionStatusResolver {
         console.log("lightningStatus", lightningStatus);
         transaction.status = TransactionStatus.PAID;
         transaction.save();
+      } else {
+        // Request in app
+        const transactionRequest =
+          await this.transactionRequestRepository.findOne({
+            where: {
+              transaction: {
+                id: transaction.id,
+              },
+            },
+            relations: ["transaction"],
+          });
+        if (transactionRequest) {
+          if (parseInt(transactionRequest.expiredAt) < moment().unix()) {
+            transaction.status = TransactionStatus.EXPIRED;
+            transaction.save();
+          }
+        }
       }
       console.log("Done", transactionId, transaction.status);
 

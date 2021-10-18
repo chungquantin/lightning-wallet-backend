@@ -14,7 +14,7 @@ import { mqProduce } from "../../../queue";
 import { TransactionStatus } from "../../../constants";
 import { Queue } from "neutronpay-wallet-common/dist/constants/queue";
 import { Service } from "typedi";
-import moment from "moment";
+import * as moment from "moment";
 
 export const ApiSendInAppPaymentResponse = ApiResponse<Transaction>(
   "SendInAppPayment",
@@ -94,6 +94,7 @@ class SendInAppPaymentResolver {
     // Update transaction status
     transaction.status = TransactionStatus.PAID;
     transaction.paidAmount = amount;
+    transaction.settledAt = moment().unix().toString();
     transaction.save();
 
     mqProduce<"transaction_sended">(channel, Queue.NOTIFICATION_QUEUE, {

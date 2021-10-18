@@ -10,7 +10,7 @@ services:
     expose:
       - 6379
 
-  account-service:
+  account:
     image: account
     depends_on:
       - redis
@@ -20,7 +20,7 @@ services:
     ports:
       - 3001:3001
 
-  bank-service:
+  bank:
     image: bank
     depends_on:
       - redis
@@ -30,7 +30,7 @@ services:
     ports:
       - 3002:3002
 
-  transfer-service:
+  transfer:
     image: transfer
     depends_on:
       - redis
@@ -40,7 +40,7 @@ services:
     ports:
       - 3004:3004
 
-  lnd-service:
+  lnd:
     image: lnd
     depends_on:
       - redis
@@ -50,14 +50,14 @@ services:
     ports:
       - 3003:3003
 
-  # gateway-service:
+  # gateway:
   #   image: gateway
   #   depends_on:
   #     - redis
-  #     - account-service
-  #     - bank-service
-  #     - transfer-service
-  #     - lnd-service
+  #     - account
+  #     - bank
+  #     - transfer
+  #     - lnd
   #   environment:
   #     NODE_ENV: development
   #     REDIS_HOST: redis

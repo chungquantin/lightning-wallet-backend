@@ -65,7 +65,7 @@
     "jsonwebtoken": "^8.5.1",
     "module": "^1.2.5",
     "moment": "^2.29.1",
-    "neutronpay-wallet-common": "^1.0.1",
+    "neutronpay-wallet-common": "^1.0.3",
     "node-pre-gyp": "^0.17.0",
     "npm": "^8.0.0",
     "pg": "^8.7.1",
