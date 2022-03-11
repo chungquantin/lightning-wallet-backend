@@ -1,4 +1,4 @@
-# NeutronPay Wallet Microservice Bankend with Apollo Federation
+# Wallet Microservice Bankend with Apollo Federation
 
 **Required installation for:**
 
