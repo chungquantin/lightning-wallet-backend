@@ -1,0 +1,17 @@
+image: docker:latest
+services:
+  - docker:dind
+variables:
+  LATEST_VER: { imagename:tagname }
+stages:
+  - Build image and Push to Docker Hub
+docker build and push:
+  stage: Build image and Push to Docker Hub
+  only:
+    - master
+  before_script:
+    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
+  script:
+    - docker info
+    - docker build -t $LATEST_VER .
+    - docker push $LATEST_VER
